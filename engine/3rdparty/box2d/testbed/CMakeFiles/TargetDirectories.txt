@@ -1,0 +1,3 @@
+G:/VS2019/SDKs/box2d-2.4.1/testbed/CMakeFiles/testbed.dir
+G:/VS2019/SDKs/box2d-2.4.1/testbed/CMakeFiles/edit_cache.dir
+G:/VS2019/SDKs/box2d-2.4.1/testbed/CMakeFiles/rebuild_cache.dir

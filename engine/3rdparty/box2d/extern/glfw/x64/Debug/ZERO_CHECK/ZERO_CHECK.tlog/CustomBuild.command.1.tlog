@@ -1,0 +1,10 @@
+^G:\VS2019\SDKS\BOX2D-2.4.1\EXTERN\GLFW\CMAKEFILES\8C299975DBB48CA524411085285769C4\GENERATE.STAMP.RULE
+setlocal
+E:\CMake\bin\cmake.exe -SG:/VS2019/SDKs/box2d-2.4.1/extern/glfw -BG:/VS2019/SDKs/box2d-2.4.1/extern/glfw --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file G:/VS2019/SDKs/box2d-2.4.1/extern/glfw/Project.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
