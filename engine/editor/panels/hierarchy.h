@@ -14,24 +14,25 @@ class Hierarchy
 {
 public:
     Hierarchy() = default;
-    Hierarchy(const Leaper::Ref<Leaper::Scene>& scene);
+    Hierarchy(const Leaper::Ref<Leaper::Scene> &scene);
 
     void OnAttach();
     void OnUpdate();
-    
-    inline Leaper::Entity& GetSelected() { return m_selected; }
-    void SetScene(const Leaper::Ref<Leaper::Scene>& scene) { m_active_scene = scene; }
 
-    inline Leaper::Ref<Leaper::FrameBuffer>& GetFrameBuffer() {return m_framebuffer;}
+    inline Leaper::Entity &GetSelected() { return m_selected; }
+    void SetScene(const Leaper::Ref<Leaper::Scene> &scene) { m_active_scene = scene; }
+
+    inline Leaper::Ref<Leaper::FrameBuffer> &GetFrameBuffer() { return m_framebuffer; }
+
 private:
     void DrawEntityNode(Leaper::Entity entity);
     void DrawComponents(Leaper::Entity entity);
-    static void DrawVector(const std::string& label, glm::vec3& values, float speed);
+    static void DrawVector(const std::string &label, glm::vec3 &values, float speed);
 
     const glm::vec2 GetMousePosInImguiWindow();
 
-    template<typename T, typename DrawFunc>
-    void DrawComponent(const std::string& name, Leaper::Entity entity, DrawFunc func);
+    template <typename T, typename DrawFunc>
+    void DrawComponent(const std::string &name, Leaper::Entity entity, DrawFunc func);
 
     Leaper::Entity m_selected;
     Leaper::Ref<Leaper::Scene> m_active_scene;

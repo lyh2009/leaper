@@ -87,6 +87,12 @@ int OpenGLFrameBuffer::ReadPixels(uint32_t attachment, int x, int y)
 	return pixels;
 }
 
+void OpenGLFrameBuffer::ClearAttachment(uint32_t attachment_index, int value)
+{
+	glClearTexImage(m_textures[attachment_index], 0,
+	Leaper::Utils::TextureFormatToGL(m_format[attachment_index]), GL_INT, &value);
+}
+
 void OpenGLFrameBuffer::Bind() const
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);

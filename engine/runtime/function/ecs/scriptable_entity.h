@@ -7,20 +7,19 @@ namespace Leaper
     class ScriptableEntity
     {
     public:
-        template<typename T>
-        T& GetComponent()
-        {   
+        template <typename T>
+        T &GetComponent()
+        {
             return m_entity.GetComponent<T>();
-        }   
-    
-    virtual void OnCreate()
-    {
-        
-    }
-    virtual void OnUpdate()
-    {
+        }
 
-    }    
+        virtual void OnCreate()
+        {
+        }
+        virtual void OnUpdate()
+        {
+        }
+
     private:
         Leaper::Entity m_entity;
         friend class Scene;

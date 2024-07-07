@@ -20,6 +20,8 @@ public:
 
 
 	virtual int ReadPixels(uint32_t attachment, int x, int y) override;
+    virtual void ClearAttachment(uint32_t attachment_index, int value) override;
+
 
 	virtual void Bind() const override;
 	virtual void Unbind() const override;

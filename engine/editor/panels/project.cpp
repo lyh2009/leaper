@@ -19,15 +19,15 @@ void Project::OnUpdate()
     ImGui::Begin("Project");
     float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
     if (m_path != std::filesystem::path(g_assets_path))
-	{
-		if (ImGui::Button("<-"))
-		{
-			m_path = m_path.parent_path();
-		}
+    {
+        if (ImGui::Button("<-"))
+        {
+            m_path = m_path.parent_path();
+        }
         ImGui::SameLine();
-	}
-    
-    if(ImGui::Button("..."))
+    }
+
+    if (ImGui::Button("..."))
     {
         ImGui::OpenPopup("Setting");
     }
@@ -36,13 +36,13 @@ void Project::OnUpdate()
 
     static int icon_size = 60;
     static float padding = 16.0f;
-    if(ImGui::BeginPopupContextItem("Setting"))
+    if (ImGui::BeginPopupContextItem("Setting"))
     {
         ImGui::SliderInt("Icon Size", &icon_size, 30, 80);
         ImGui::EndPopup();
     }
 
-    float cellSize = icon_size+ padding;
+    float cellSize = icon_size + padding;
 
     float panelWidth = ImGui::GetContentRegionAvail().x;
     int columnCount = (int)(panelWidth / cellSize);
@@ -53,7 +53,7 @@ void Project::OnUpdate()
 
     for (auto &directory : std::filesystem::directory_iterator(m_path))
     {
-        const auto& path = directory.path();
+        const auto &path = directory.path();
 
         Leaper::Ref<Leaper::Texture> icon = directory.is_directory() ? m_folder_icon : m_file_icon;
         ImGui::PushID(directory.path().string().c_str());
@@ -68,7 +68,6 @@ void Project::OnUpdate()
             ImGui::Text(relative_path.filename().string().c_str());
             ImGui::EndDragDropSource();
         }
-
 
         if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
         {

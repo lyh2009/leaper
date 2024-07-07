@@ -18,6 +18,7 @@ set(INCLUDE_DIR
  "${3RDPARTY}/spdlog/"
  "${3RDPARTY}/lua-5.4.4/"
  "${3RDPARTY}/sol2/include/"
+ "${3RDPARTY}/toml11/single_include/"
  )
 
  
@@ -29,5 +30,6 @@ set(INCLUDE_DIR
  opengl32
  box2d
  spdlog
+ toml11
  lua_static
  )

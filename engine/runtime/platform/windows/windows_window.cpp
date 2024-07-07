@@ -17,8 +17,8 @@ WindowsWindow::WindowsWindow(const std::string &title, uint32_t width, uint32_t 
 void WindowsWindow::Init()
 {
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     m_window = glfwCreateWindow(m_data.width, m_data.height, m_data.title.c_str(), nullptr, nullptr);
@@ -70,7 +70,7 @@ void WindowsWindow::Init()
 void WindowsWindow::OnUpdate()
 {
     glfwPollEvents();
-    //SetVSync(true);
+    SetVSync(true);
     m_context->SwapBuffers();
 }
 

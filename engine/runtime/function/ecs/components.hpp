@@ -5,6 +5,7 @@
 #include "function/render/buffers.h"
 #include "function/render/texture.h"
 #include "function/render/orthographic_camera.h"
+#include "function/render/game_camera.h"
 #include "core/math/uuid.h"
 #include "core/base.h"
 
@@ -19,9 +20,8 @@
 #include <string>
 #include <functional>
 
-
 namespace Leaper
-{	
+{
 	struct TagComponent
 	{
 		TagComponent(std::string _tag)
@@ -51,11 +51,9 @@ namespace Leaper
 		TransformComponent(const glm::mat4 &_transform)
 			: transform(_transform){};
 
-		glm::mat4& GetTransform()
+		glm::mat4 &GetTransform()
 		{
-			transform = glm::translate(glm::mat4(1.0f), position)
-				*glm::toMat4(glm::quat(rotation))
-				*glm::scale(glm::mat4(1.0f), scale);
+			transform = glm::translate(glm::mat4(1.0f), position) * glm::toMat4(glm::quat(rotation)) * glm::scale(glm::mat4(1.0f), scale);
 
 			return transform;
 		}
@@ -69,18 +67,24 @@ namespace Leaper
 	struct Animation2DComponent
 	{
 		int current_frame = 0;
-		int row, col;
-		int speed;
-		glm::vec2 texture_coords[4] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
+		int row = 1;
+		int col = 1;
+		int speed = 24;
+		glm::vec2 texture_coords[4] = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
 	};
 
 	struct SpriteRendererComponent
 	{
 		SpriteRendererComponent()
-		 : color(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)){};
+			: color(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)){};
+
+		SpriteRendererComponent(Leaper::Ref<Leaper::Texture> texture)
+			: m_texture(texture){};
+
 		SpriteRendererComponent(const SpriteRendererComponent &) = default;
+
 		SpriteRendererComponent(const glm::vec4 &_color)
-		 : color(_color) {};
+			: color(_color){};
 
 		Leaper::Ref<Leaper::Texture> m_texture = nullptr;
 		Animation2DComponent anim;
@@ -90,28 +94,32 @@ namespace Leaper
 
 	struct CameraComponent
 	{
-		CameraComponent(float left, float right, float bottom, float top)
-			: camera(left, right, bottom, top) {};
-			
-		OrthgraphicCamera camera;
+		CameraComponent(float ratio)
+			: camera(ratio){};
+
+		GameCamera camera;
 	};
 
 	struct NaviteScriptComponent
 	{
-		Leaper::ScriptableEntity* instance = nullptr;
+		Leaper::ScriptableEntity *instance = nullptr;
 
-		std::function<void ()> instantiate_function;
-		std::function<void ()> destory_instance_function;
-		std::function<void (Leaper::ScriptableEntity*)> on_create_function;
-		std::function<void (Leaper::ScriptableEntity*)> on_update_function;
+		std::function<void()> instantiate_function;
+		std::function<void()> destory_instance_function;
+		std::function<void(Leaper::ScriptableEntity *)> on_create_function;
+		std::function<void(Leaper::ScriptableEntity *)> on_update_function;
 
-		template<typename T>
+		template <typename T>
 		void Bind()
 		{
-			instantiate_function = [&]() { instance = new T(); };
-			destory_instance_function = [&]() { delete instance; instance = nullptr; };
-			on_create_function = [](Leaper::ScriptableEntity* script) { ((T*)script)->OnCreate(); };
-			on_update_function = [](Leaper::ScriptableEntity* script) { ((T*)script)->OnUpdate(); };
+			instantiate_function = [&]()
+			{ instance = new T(); };
+			destory_instance_function = [&]()
+			{ delete instance; instance = nullptr; };
+			on_create_function = [](Leaper::ScriptableEntity *script)
+			{ ((T *)script)->OnCreate(); };
+			on_update_function = [](Leaper::ScriptableEntity *script)
+			{ ((T *)script)->OnUpdate(); };
 		}
 	};
 
@@ -126,7 +134,7 @@ namespace Leaper
 		BodyType body_type = Dynamic;
 
 		glm::vec2 velocity = glm::vec2(0, 0);
-		void* runtime_body = nullptr;
+		void *runtime_body = nullptr;
 	};
 
 	struct FixtureUserData
@@ -148,22 +156,18 @@ namespace Leaper
 
 		bool is_trigger = false;
 
-		FixtureUserData* user_data = new FixtureUserData();
+		FixtureUserData *user_data = new FixtureUserData();
 	};
 
 	struct LuaScriptComponent
 	{
 		LuaScriptComponent()
 			: path("") {}
-		LuaScriptComponent(const std::string& script_path)
+		LuaScriptComponent(const std::string &script_path)
 			: path(script_path) {}
-			
+
 		std::string path;
 		sol::table self;
-
 	};
 
 } // namespace Leaper
-
-
-

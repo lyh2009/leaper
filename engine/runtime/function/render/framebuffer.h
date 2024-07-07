@@ -32,9 +32,11 @@ namespace Leaper
     public:
         virtual uint32_t& GetTexture(int count) = 0;
         virtual void RescaleFrameBuffer(float width, float height) = 0;
-        virtual int ReadPixels(uint32_t attachment, int x, int y) = 0;
         virtual uint32_t CreateTexture(int width, int height, Leaper::TextureFormat internalformat, Leaper::TextureFormat format, Leaper::Attachments attachment) = 0;
         virtual uint32_t AttachmentsToGL(Leaper::Attachments attachment) = 0;
+
+        virtual int ReadPixels(uint32_t attachment, int x, int y) = 0;
+        virtual void ClearAttachment(uint32_t attachment_index, int value) = 0;
 
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;

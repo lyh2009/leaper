@@ -20,6 +20,8 @@ if(NOT TARGET box2d)
     add_subdirectory(box2d)
 endif()
 
+add_subdirectory(toml11)
+
 if(NOT TARGET lua)
     include(lua.cmake)
 endif()

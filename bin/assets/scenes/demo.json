@@ -1,58 +1,28 @@
-{
-    "entities": [
-        {
-            "sprite_renderer_component": {
-                "color": {
-                    "w": 1.0,
-                    "x": 1.0,
-                    "y": 1.0,
-                    "z": 1.0
-                }
+[
+    {
+        "CameraComponent": {
+            "ratio": 0.9797794222831726
+        },
+        "tag": "camera",
+        "transform_component": {
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
             },
-            "tag": "Empty Entity",
-            "transform_component": {
-                "position": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "rotation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "scale": {
-                    "x": 1.0,
-                    "y": 1.0,
-                    "z": 1.0
-                }
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
             },
-            "uuid_component": {
-                "uuid": 4323618215544970562
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
             }
         },
-        {
-            "tag": "camera",
-            "transform_component": {
-                "position": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "rotation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "scale": {
-                    "x": 1.0,
-                    "y": 1.0,
-                    "z": 1.0
-                }
-            },
-            "uuid_component": {
-                "uuid": 8207387907582182059
-            }
+        "uuid_component": {
+            "uuid": 8844800730409813122
         }
-    ]
-}
+    }
+]

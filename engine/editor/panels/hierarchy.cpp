@@ -11,34 +11,32 @@
 
 extern const std::filesystem::path g_assets_path;
 
-Hierarchy::Hierarchy(const Leaper::Ref<Leaper::Scene>& scene)
+Hierarchy::Hierarchy(const Leaper::Ref<Leaper::Scene> &scene)
 {
     SetScene(scene);
 }
 
 void Hierarchy::OnAttach()
 {
-    
 }
 
 void Hierarchy::OnUpdate()
 {
-    //Hierarchy Window
+    // Hierarchy Window
     {
         ImGui::Begin("Hierarchy");
 
         m_active_scene->Reg().each([&](entt::entity id)
-        {
+                                   {
             Leaper::Entity entity = {id, m_active_scene.get()};
-            DrawEntityNode(entity); 
-        });
+            DrawEntityNode(entity); });
 
         if (ImGui::BeginPopupContextWindow(0, 1, false))
-		{
-			if (ImGui::MenuItem("Create Empty Entity"))
-				m_active_scene->CreateEntity("Empty Entity");
-			ImGui::EndPopup();
-		}
+        {
+            if (ImGui::MenuItem("Create Empty Entity"))
+                m_active_scene->CreateEntity("Empty Entity");
+            ImGui::EndPopup();
+        }
 
         ImGui::End();
 
@@ -47,9 +45,8 @@ void Hierarchy::OnUpdate()
             DrawComponents(m_selected);
         ImGui::End();
     }
-
 }
-//mbb
+// mbb
 void Hierarchy::DrawEntityNode(Leaper::Entity entity)
 {
     // Get Component
@@ -57,7 +54,7 @@ void Hierarchy::DrawEntityNode(Leaper::Entity entity)
     // Set TreeNodeFlag
     ImGuiTreeNodeFlags flag = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding | ((m_selected == entity) ? ImGuiTreeNodeFlags_Selected : 0);
 
-    bool create = false;    
+    bool create = false;
     float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
     bool opened = ImGui::TreeNodeEx((void *)(uint32_t)(entity), flag, tag.Tag().c_str());
     // Determine whether the entity is destroyed
@@ -94,94 +91,100 @@ void Hierarchy::DrawEntityNode(Leaper::Entity entity)
 
 void Hierarchy::DrawComponents(Leaper::Entity entity)
 {
-    if(entity.HasComponent<Leaper::TagComponent>() && entity.HasComponent<Leaper::UUIDComponent>())
+    if (entity.HasComponent<Leaper::TagComponent>() && entity.HasComponent<Leaper::UUIDComponent>())
     {
         ImGui::Text(std::to_string(entity.GetComponent<Leaper::UUIDComponent>().uuid).c_str());
-        
-        auto& component = entity.GetComponent<Leaper::TagComponent>();
+
+        auto &component = entity.GetComponent<Leaper::TagComponent>();
         char buffer[256];
-		memset(buffer, 0, sizeof(buffer));
-		strncpy_s(buffer, sizeof(buffer), component.Tag().c_str(), sizeof(buffer));
-		if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
-		{
-			component.Tag() = std::string(buffer);
-		} 
+        memset(buffer, 0, sizeof(buffer));
+        strncpy_s(buffer, sizeof(buffer), component.Tag().c_str(), sizeof(buffer));
+        if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
+        {
+            component.Tag() = std::string(buffer);
+        }
     }
     ImGui::SameLine();
     float size = GImGui->Font->FontSize + GImGui->Style.FramePadding.y - 4.0f;
-    //Add Component Button
+    // Add Component Button
     if (ImGui::Button("+"))
-	{
-		ImGui::OpenPopup("Add Component Popup");
-	}
+    {
+        ImGui::OpenPopup("Add Component Popup");
+    }
 
     if (ImGui::BeginPopupContextItem("Add Component Popup"))
-	{
-		if (ImGui::MenuItem("SpriteRenderer Component"))
-		{
-			if (!entity.HasComponent<Leaper::SpriteRendererComponent>())
-			{
-				entity.AddComponent<Leaper::SpriteRendererComponent>();
-			}
-		}
-        if (ImGui::MenuItem("Rigidbody2D Component"))
-		{
-			if (!entity.HasComponent<Leaper::Rigidbody2DComponent>())
-			{
-				entity.AddComponent<Leaper::Rigidbody2DComponent>();
-			}
-		}
-
-        if (ImGui::MenuItem("BoxCollider2D Component"))
-		{
-			if (!entity.HasComponent<Leaper::BoxCollider2DComponent>())
-			{
-				entity.AddComponent<Leaper::BoxCollider2DComponent>();
-			}
-		}
-
-        if (ImGui::MenuItem("LuaScript Component"))
-		{
-			if (!entity.HasComponent<Leaper::LuaScriptComponent>())
-			{
-				entity.AddComponent<Leaper::LuaScriptComponent>(" ");
-			}
-		}
-
-
-		ImGui::EndPopup();
-	}
-
-    DrawComponent<Leaper::TransformComponent>("Transform Component", entity, [](auto &component) 
     {
-        DrawVector("Position", component.position, 0.01f);
-        DrawVector("Rotation", component.rotation, 0.01f);
-        DrawVector("Scale", component.scale, 0.01f);
-    });
-
-    DrawComponent<Leaper::SpriteRendererComponent>("SpriteRenderer Component", entity, [](auto &component) 
-    {
-        ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
-
-        ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
-        static std::filesystem::path texture_path;
-
-        if(ImGui::BeginDragDropTarget())
+        if (ImGui::MenuItem("SpriteRenderer Component"))
         {
-            if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSETS"))
+            if (!entity.HasComponent<Leaper::SpriteRendererComponent>())
             {
-                const wchar_t* path = (const wchar_t*)payload->Data;
-                texture_path = std::filesystem::path(g_assets_path) / path;
-                component.m_texture = Leaper::Texture::Create(texture_path.string());
+                entity.AddComponent<Leaper::SpriteRendererComponent>();
             }
-
-            ImGui::EndDragDropTarget();
+        }
+        if (ImGui::MenuItem("Rigidbody2D Component"))
+        {
+            if (!entity.HasComponent<Leaper::Rigidbody2DComponent>())
+            {
+                entity.AddComponent<Leaper::Rigidbody2DComponent>();
+            }
         }
 
-    });
+        if (ImGui::MenuItem("BoxCollider2D Component"))
+        {
+            if (!entity.HasComponent<Leaper::BoxCollider2DComponent>())
+            {
+                entity.AddComponent<Leaper::BoxCollider2DComponent>();
+            }
+        }
+
+        if (ImGui::MenuItem("LuaScript Component"))
+        {
+            if (!entity.HasComponent<Leaper::LuaScriptComponent>())
+            {
+                entity.AddComponent<Leaper::LuaScriptComponent>(" ");
+            }
+        }
+
+        if (ImGui::MenuItem("Animation Component"))
+        {
+            if (!entity.HasComponent<Leaper::Animation2DComponent>())
+            {
+                entity.AddComponent<Leaper::Animation2DComponent>();
+            }
+        }
+
+        ImGui::EndPopup();
+    }
+
+    DrawComponent<Leaper::TransformComponent>("Transform Component", entity, [](auto &component)
+                                              {
+        DrawVector("Position", component.position, 0.01f);
+        DrawVector("Rotation", component.rotation, 0.01f);
+        DrawVector("Scale", component.scale, 0.01f); });
+
+    DrawComponent<Leaper::CameraComponent>("Camera Component", entity, [](auto &component) {});
+
+    DrawComponent<Leaper::SpriteRendererComponent>("SpriteRenderer Component", entity, [](auto &component)
+                                                   {
+                                                       ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
+
+                                                       ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
+                                                       static std::filesystem::path texture_path;
+
+                                                       if (ImGui::BeginDragDropTarget())
+                                                       {
+                                                           if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("ASSETS"))
+                                                           {
+                                                               const wchar_t *path = (const wchar_t *)payload->Data;
+                                                               texture_path = std::filesystem::path(g_assets_path) / path;
+                                                               component.m_texture = Leaper::Texture::Create(texture_path.string());
+                                                           }
+
+                                                           ImGui::EndDragDropTarget();
+                                                       } });
 
     DrawComponent<Leaper::Rigidbody2DComponent>("Rigdbody2D Component", entity, [=](auto &component)
-    {
+                                                {
         const char* body_type_strings[] = { "Static", "Dynamic", "Kinematic"};
 		const char* current_body_type_string = body_type_strings[(int)component.body_type];
 		if (ImGui::BeginCombo("Body Type", current_body_type_string))
@@ -201,11 +204,10 @@ void Hierarchy::DrawComponents(Leaper::Entity entity)
 
 			ImGui::EndCombo();
 		}
-        ImGui::DragFloat2("Velocity", glm::value_ptr(component.velocity), 0.01f);
-    });
+        ImGui::DragFloat2("Velocity", glm::value_ptr(component.velocity), 0.01f); });
 
     DrawComponent<Leaper::BoxCollider2DComponent>("BoxCollider2D Component", entity, [=](auto &component)
-    {
+                                                  {
         char buffer[256];
 		memset(buffer, 0, sizeof(buffer));
 		strncpy_s(buffer, sizeof(buffer), component.user_data->name.c_str(), sizeof(buffer));
@@ -218,11 +220,10 @@ void Hierarchy::DrawComponents(Leaper::Entity entity)
         ImGui::DragFloat("Frication", &component.friction, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("Restitution", &component.restitution, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("Density", &component.density, 0.01f);
-        ImGui::Checkbox("IsTrigger", &component.is_trigger);
-    });
+        ImGui::Checkbox("IsTrigger", &component.is_trigger); });
 
     DrawComponent<Leaper::LuaScriptComponent>("LuaScript Component", entity, [=](auto &component)
-    {
+                                              {
         static std::filesystem::path script_path;
 
         ImGui::Button(std::filesystem::path(component.path).stem().string().c_str(), ImVec2(100, 0));
@@ -243,9 +244,13 @@ void Hierarchy::DrawComponents(Leaper::Entity entity)
             }
 
             ImGui::EndDragDropTarget();
-        }
-    });
+        } });
 
+    DrawComponent<Leaper::Animation2DComponent>("Animation2D Component", entity, [=](auto &component)
+                                                {
+        ImGui::DragInt("Col", &component.col, 1, 2);
+        ImGui::DragInt("Row", &component.row, 1, 2);
+        ImGui::DragInt("Speed", &component.speed, 1, 1); });
 }
 
 void Hierarchy::DrawVector(const std::string &label, glm::vec3 &values, float speed)
@@ -287,7 +292,7 @@ const glm::vec2 Hierarchy::GetMousePosInImguiWindow()
 template <typename T, typename DrawFunc>
 void Hierarchy::DrawComponent(const std::string &name, Leaper::Entity entity, DrawFunc func)
 {
-    
+
     const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
     if (entity.HasComponent<T>())
     {
@@ -295,14 +300,14 @@ void Hierarchy::DrawComponent(const std::string &name, Leaper::Entity entity, Dr
         bool header = ImGui::TreeNodeEx(name.c_str(), treeNodeFlags);
         ImGui::SameLine();
 
-        if(ImGui::Button("~"))
+        if (ImGui::Button("~"))
         {
             ImGui::OpenPopup("ComponentSettings");
         }
 
         if (ImGui::BeginPopup("ComponentSettings"))
-		{
-            if(ImGui::MenuItem("Remove Component"))
+        {
+            if (ImGui::MenuItem("Remove Component"))
                 entity.RemoveComponent<T>();
             ImGui::EndPopup();
         }

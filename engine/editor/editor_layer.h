@@ -20,16 +20,19 @@ public:
     virtual void OnUpdate() override;
     virtual void OnImGuiRender() override;
 
-    virtual void OnEvent(Leaper::Event& e) override;
+    virtual void OnEvent(Leaper::Event &e) override;
 
-    inline Hierarchy& GetHierarchyWindow() { return m_hierarchy_window; }
-    inline Project& GetProjectWindow() { return m_project_window; }
+    inline Hierarchy &GetHierarchyWindow() { return m_hierarchy_window; }
+    inline Project &GetProjectWindow() { return m_project_window; }
+
 private:
-    bool OnMouseButtonPressed(Leaper::MouseButtonPressedEvent& e);
+    bool OnMouseButtonPressed(Leaper::MouseButtonPressedEvent &e);
+
 private:
     void OnSceneEdit();
     void OnScenePlay();
     void DrawToolBar();
+
 private:
     Hierarchy m_hierarchy_window;
     Project m_project_window;
@@ -47,10 +50,11 @@ private:
     ImVec2 m_mouse_in_window;
     ImVec2 m_mouse_in_texture;
 
-    Leaper::Entity lua_entity;
+    Leaper::Entity camera_entity;
     Leaper::Entity m_hovered_entity;
+
     Leaper::CameraController m_camera;
-    Leaper::GameCamera m_game_camera;
+
     Leaper::Ref<Leaper::Scene> m_active_scene;
     Leaper::Ref<Leaper::FrameBuffer> m_framebuffer;
     Leaper::Ref<Leaper::Texture> m_play_icon;
@@ -68,8 +72,8 @@ private:
 
     enum class SceneState
     {
-        Edit = 0, Play = 1
+        Edit = 0,
+        Play = 1
     };
     SceneState m_scene_state = SceneState::Edit;
-
 };

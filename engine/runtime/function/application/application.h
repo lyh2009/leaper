@@ -22,30 +22,28 @@ namespace Leaper
         Application(Leaper::RenderAPI::API api, int width, int height, std::string title);
         ~Application();
 
-        static Application& Get() { return *s_instance; }
+        static Application &Get() { return *s_instance; }
 
         inline Leaper::Ref<Leaper::Window> GetWindow() { return m_window; }
         inline Leaper::Ref<Leaper::RenderAPI> GetRenderAPI() { return m_render_api; }
-        inline Leaper::ImGuiLayer* GetImGuiLayer() const { return m_imgui_layer; }
+        inline Leaper::ImGuiLayer *GetImGuiLayer() const { return m_imgui_layer; }
         void OnAttach();
 
-        void PushLayer(Leaper::Layer* layer);
-        void PushOverlay(Leaper::Layer* overlay);
+        void PushLayer(Leaper::Layer *layer);
+        void PushOverlay(Leaper::Layer *overlay);
 
-        void OnEvent(Leaper::Event& e);
+        void OnEvent(Leaper::Event &e);
 
         void Run();
 
-        //static Leaper::CameraController camera_controller;
     private:
-        static Application* s_instance;
+        static Application *s_instance;
 
-        Leaper::ImGuiLayer* m_imgui_layer = nullptr;  
+        Leaper::ImGuiLayer *m_imgui_layer = nullptr;
         Leaper::Ref<Leaper::Window> m_window;
 
         Leaper::Ref<Leaper::RenderAPI> m_render_api;
         Leaper::LayerStack m_layer_stack;
-
     };
 
 } // namespace Leaper

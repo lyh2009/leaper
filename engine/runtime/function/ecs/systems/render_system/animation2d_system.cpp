@@ -1,6 +1,7 @@
 #include "animation2d_system.h"
 #include "lppch.h"
 
+#include "core/time.h"
 #include "function/ecs/scene.h"
 #include "function/ecs/entity.h"
 #include "function/ecs/components.hpp"
@@ -11,7 +12,7 @@ void Leaper::Animation2DSystem::OnUpdate()
 {
     m_scene->Reg().view<Leaper::Animation2DComponent>().each([=](auto other ,Leaper::Animation2DComponent& anim)
     {
-        m_elapsed += Leaper::Renderer2D::GetFlushQuadElapsedTime();
+        m_elapsed += Leaper::Time::GetDeltaTime();
         anim.current_frame = int(m_elapsed * anim.speed) % (anim.col * anim.row);
         int current_col = anim.current_frame % anim.col;
         int current_row = anim.current_frame / anim.col;
@@ -28,7 +29,5 @@ void Leaper::Animation2DSystem::OnUpdate()
             anim.texture_coords[i].x += 1.0 / anim.col * current_col;
             anim.texture_coords[i].y += 1.0 / anim.row * current_row;
         }
-        
-
     });
 }

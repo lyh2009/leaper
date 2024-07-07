@@ -7,7 +7,8 @@ namespace Leaper
     public:
         static const float GetDeltaTime() { return m_delta_time; }
     private:
-        static void Update();
+        static void Begin();
+        static void End();
         static float m_delta_time;
         friend class Application;
     };
