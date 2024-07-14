@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 namespace Leaper
 {
@@ -6,6 +7,8 @@ namespace Leaper
     {
     public:
         static const float GetDeltaTime() { return m_delta_time; }
+        static const std::string GetTime(const std::string &format);
+
     private:
         static void Begin();
         static void End();

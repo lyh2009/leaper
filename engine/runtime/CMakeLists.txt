@@ -18,18 +18,16 @@ set(INCLUDE_DIR
  "${3RDPARTY}/spdlog/"
  "${3RDPARTY}/lua-5.4.4/"
  "${3RDPARTY}/sol2/include/"
- "${3RDPARTY}/toml11/single_include/"
  )
 
- 
- include_directories(${INCLUDE_DIR})
- add_library(leaper_runtime STATIC ${ALL_SOURCE} ${ALL_3RDPARTY_SOURCE})
- 
+include_directories(${INCLUDE_DIR})
+
+add_library(leaper_runtime STATIC ${ALL_SOURCE} ${ALL_3RDPARTY_SOURCE})
+
  target_link_libraries(leaper_runtime PUBLIC
  glfw
  opengl32
  box2d
  spdlog
- toml11
  lua_static
  )

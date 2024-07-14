@@ -1,16 +1,19 @@
 #pragma once
+#include "function/render/orthographic_camera.h"
 #include "panels/hierarchy.h"
 #include "panels/project.h"
 
-#include "function/render/camera_controller.h"
-#include "function/ecs/scene_serializer.h"
-#include "function/render/game_camera.h"
 #include "core/events/events.h"
 #include "core/layer/layer.h"
+#include "function/ecs/scene_serializer.h"
+#include "function/render/camera_controller.h"
+#include "function/render/game_camera.h"
 
-#include <imgui.h>
+
 #include <FileDialog.h>
 #include <ImGuizmo.h>
+#include <imgui.h>
+
 
 class EditorLayer : public Leaper::Layer
 {
@@ -20,13 +23,19 @@ public:
     virtual void OnUpdate() override;
     virtual void OnImGuiRender() override;
 
-    virtual void OnEvent(Leaper::Event &e) override;
+    virtual void OnEvent(Leaper::Event& e) override;
 
-    inline Hierarchy &GetHierarchyWindow() { return m_hierarchy_window; }
-    inline Project &GetProjectWindow() { return m_project_window; }
+    inline Hierarchy& GetHierarchyWindow()
+    {
+        return m_hierarchy_window;
+    }
+    inline Project& GetProjectWindow()
+    {
+        return m_project_window;
+    }
 
 private:
-    bool OnMouseButtonPressed(Leaper::MouseButtonPressedEvent &e);
+    bool OnMouseButtonPressed(Leaper::MouseButtonPressedEvent& e);
 
 private:
     void OnSceneEdit();
@@ -54,6 +63,7 @@ private:
     Leaper::Entity m_hovered_entity;
 
     Leaper::CameraController m_camera;
+    Leaper::GameCamera m_game_camera;
 
     Leaper::Ref<Leaper::Scene> m_active_scene;
     Leaper::Ref<Leaper::FrameBuffer> m_framebuffer;

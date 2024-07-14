@@ -1,21 +1,52 @@
 #pragma once
 #include <spdlog/sinks/sink.h>
+#include <spdlog/sinks/base_sink.h>
 #include <spdlog/spdlog.h>
-#include <string>
 
+#include <core/time.h>
+
+#include <string>
+#include <vector>
 #include <memory>
+#include <mutex>
 
 namespace Leaper
 {
+    class Sink_mt : public spdlog::sinks::base_sink<std::mutex>
+    {
+    public:
+        struct LogItem
+        {
+            std::string message;
+            spdlog::level::level_enum level;
+        };
+
+    protected:
+        void sink_it_(const spdlog::details::log_msg &msg) override
+        {
+            LogItem it;
+            it.message = Leaper::Time::GetTime("%Y-%m-%d%H:%M:%S ") + std::string(msg.payload.data(), msg.payload.size());
+            it.level = msg.level;
+            log_item.push_back(it);
+        };
+
+        void flush_() override {};
+    public:
+        std::vector<LogItem> log_item;
+    };
+
     class Log
     {
     public:
         static void Init();
 
-        static inline std::shared_ptr<spdlog::logger> &GetCoreLogger() { return s_coreLogger; }
-        static inline std::shared_ptr<spdlog::logger> &GetClientLogger() { return s_clientLogger; }
+        [[nodiscard]] static inline std::shared_ptr<spdlog::logger> &GetCoreLogger() { return s_coreLogger; }
+        [[nodiscard]] static inline std::shared_ptr<spdlog::logger> &GetClientLogger() { return s_clientLogger; }
+
+        static inline const std::shared_ptr<Sink_mt> GetSink() { return std::dynamic_pointer_cast<Sink_mt>(s_log_sinks[0]); }
 
     private:
+        static std::vector<spdlog::sink_ptr> s_log_sinks;
         static std::shared_ptr<spdlog::logger> s_coreLogger;
         static std::shared_ptr<spdlog::logger> s_clientLogger;
     };

@@ -1,32 +1,33 @@
 #include "camera_controller.h"
 #include "lppch.h"
 
+#include "core/time.h"
 #include "function/application/application.h"
 #include "function/input/input.h"
-#include "core/time.h"
+
 
 Leaper::CameraController::CameraController(float ratio)
-   : m_camera(-ratio * m_zoom_level, ratio * m_zoom_level, -m_zoom_level, m_zoom_level)
+    : m_camera(-ratio * m_zoom_level, ratio * m_zoom_level, -m_zoom_level, m_zoom_level)
 {
-    m_ratio = ratio;
+    m_ratio      = ratio;
     m_zoom_level = 1.0f;
 }
 
 void Leaper::CameraController::OnUpdate()
 {
-    if(Leaper::Input::IsKeyDown(LP_KEY_A))
+    if (Leaper::Input::IsKeyDown(LP_KEY_A))
     {
         m_camera_position.x -= m_camera_speed * Leaper::Time::GetDeltaTime();
     }
-    if(Leaper::Input::IsKeyDown(LP_KEY_D))
+    if (Leaper::Input::IsKeyDown(LP_KEY_D))
     {
         m_camera_position.x += m_camera_speed * Leaper::Time::GetDeltaTime();
     }
-    if(Leaper::Input::IsKeyDown(LP_KEY_W))
+    if (Leaper::Input::IsKeyDown(LP_KEY_W))
     {
         m_camera_position.y += m_camera_speed * Leaper::Time::GetDeltaTime();
     }
-    if(Leaper::Input::IsKeyDown(LP_KEY_S))
+    if (Leaper::Input::IsKeyDown(LP_KEY_S))
     {
         m_camera_position.y -= m_camera_speed * Leaper::Time::GetDeltaTime();
     }
@@ -42,12 +43,11 @@ void Leaper::CameraController::OnEvent(Leaper::Event& e)
     dispatcher.Dispatch<Leaper::MouseScrolledEvent>(LP_BIND_EVENT_FN(CameraController::OnMouseScrolledEvent));
 }
 
-bool Leaper::CameraController::OnMouseScrolledEvent(Leaper::MouseScrolledEvent &event)
+bool Leaper::CameraController::OnMouseScrolledEvent(Leaper::MouseScrolledEvent& event)
 {
     m_zoom_level -= event.GetYOffset() * 0.25f;
     m_zoom_level = std::max(m_zoom_level, 0.25f);
     m_camera.SetProjectionMat(-m_ratio * m_zoom_level, m_ratio * m_zoom_level, -m_zoom_level, m_zoom_level);
-    LP_LOG("OnMouseScrolledEvent");
     return false;
 }
 
