@@ -1,38 +1,35 @@
-#include "lppch.h"
 #include "imgui_layer.h"
+#include "lppch.h"
+
 #include "function/application/application.h"
 
 #include <algorithm>
 
 void LeaperDarkStyle();
 
-Leaper::ImGuiLayer::ImGuiLayer()
-    : Leaper::Layer("ImGuiLayer")
-{
-
-}
+Leaper::ImGuiLayer::ImGuiLayer() : Leaper::Layer("ImGuiLayer") {}
 void Leaper::ImGuiLayer::OnAttach()
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; 
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
     io.ConfigDockingAlwaysTabBar = true;
 
     LeaperDarkStyle();
-    
+
     ImGuiStyle& style = ImGui::GetStyle();
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
-        style.WindowRounding = 0.0f;
+        style.WindowRounding              = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
 
     Leaper::Application& app = Leaper::Application::Get();
-    GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow()->GetNativeWindow());
+    GLFWwindow* window       = static_cast<GLFWwindow*>(app.GetWindow()->GetNativeWindow());
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
@@ -42,7 +39,8 @@ void Leaper::ImGuiLayer::OnAttach()
 
 void Leaper::ImGuiLayer::Begin()
 {
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -50,18 +48,16 @@ void Leaper::ImGuiLayer::Begin()
     ImGuizmo::BeginFrame();
 }
 
-void Leaper::ImGuiLayer::OnEvent(Leaper::Event& e)
-{
-    
-}
+void Leaper::ImGuiLayer::OnEvent(Leaper::Event& e) {}
 
 void Leaper::ImGuiLayer::End()
 {
     ImGui::Render();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
 
     Application& app = Application::Get();
-	io.DisplaySize = ImVec2((float)app.GetWindow()->GetWidth(), (float)app.GetWindow()->GetHeight());
+    io.DisplaySize   = ImVec2((float)app.GetWindow()->GetWidth(), (float)app.GetWindow()->GetHeight());
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -72,7 +68,6 @@ void Leaper::ImGuiLayer::End()
         ImGui::RenderPlatformWindowsDefault();
         glfwMakeContextCurrent(backup_current_context);
     }
-
 }
 
 ImVec4 Color(float r, float g, float b, float a)
@@ -82,7 +77,7 @@ ImVec4 Color(float r, float g, float b, float a)
 
 void LeaperDarkStyle()
 {
-    ImGuiStyle& style = ImGui::GetStyle();
+    ImGuiStyle& style                            = ImGui::GetStyle();
     style.Colors[ImGuiCol_Text]                  = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
     style.Colors[ImGuiCol_TextDisabled]          = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
     style.Colors[ImGuiCol_WindowBg]              = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
@@ -133,5 +128,5 @@ void LeaperDarkStyle()
     style.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
     style.Colors[ImGuiCol_NavWindowingDimBg]     = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
     style.Colors[ImGuiCol_ModalWindowDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
-    style.GrabRounding                           = style.FrameRounding = 2.3f;
+    style.GrabRounding = style.FrameRounding = 2.3f;
 }

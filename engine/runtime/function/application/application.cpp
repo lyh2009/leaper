@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-Leaper::Application *Leaper::Application::s_instance = nullptr;
+Leaper::Application* Leaper::Application::s_instance = nullptr;
 // Leaper::CameraController Leaper::Application::camera_controller(-1.0f, 1.0f, -1.0f, 1.0f);
 
 Leaper::Application::Application(Leaper::RenderAPI::API api, int width, int height, std::string title)
@@ -20,7 +20,7 @@ Leaper::Application::Application(Leaper::RenderAPI::API api, int width, int heig
 
     // Init ImGuiLayer
     m_imgui_layer = new Leaper::ImGuiLayer();
-    s_instance = this;
+    s_instance    = this;
 
     // init Renderer
     Renderer2D::Init(m_render_api);
@@ -28,21 +28,17 @@ Leaper::Application::Application(Leaper::RenderAPI::API api, int width, int heig
     PushOverlay(m_imgui_layer);
 }
 
-Leaper::Application::~Application()
-{
-}
+Leaper::Application::~Application() {}
 
-void Leaper::Application::OnAttach()
-{
-}
+void Leaper::Application::OnAttach() {}
 
-void Leaper::Application::PushLayer(Leaper::Layer *layer)
+void Leaper::Application::PushLayer(Leaper::Layer* layer)
 {
     m_layer_stack.PushLayer(layer);
     layer->OnAttach();
 }
 
-void Leaper::Application::PushOverlay(Leaper::Layer *overlay)
+void Leaper::Application::PushOverlay(Leaper::Layer* overlay)
 {
     m_layer_stack.PushOverlay(overlay);
     overlay->OnAttach();
@@ -54,24 +50,24 @@ void Leaper::Application::Run()
 
     m_render_api->Clear();
 
-    for (Leaper::Layer *layer : m_layer_stack)
-        layer->OnUpdate();
-
     m_imgui_layer->Begin();
     {
-        for (Leaper::Layer *layer : m_layer_stack)
+        for (Leaper::Layer* layer : m_layer_stack)
             layer->OnImGuiRender();
     }
     m_imgui_layer->End();
+
+    for (Leaper::Layer* layer : m_layer_stack)
+        layer->OnUpdate();
 
     m_window->OnUpdate();
 
     Leaper::Time::End();
 }
 
-void Leaper::Application::OnEvent(Leaper::Event &e)
+void Leaper::Application::OnEvent(Leaper::Event& e)
 {
-    for (Leaper::Layer *layer : m_layer_stack)
+    for (Leaper::Layer* layer : m_layer_stack)
     {
         layer->OnEvent(e);
     }

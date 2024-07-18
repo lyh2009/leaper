@@ -1,6 +1,6 @@
 #pragma once
-#include "function/ecs/scene.h"
 #include "core/base.h"
+#include "function/ecs/scene.h"
 
 namespace Leaper
 {
@@ -8,8 +8,7 @@ namespace Leaper
     {
     public:
         System() = delete;
-        System(Leaper::Scene* scene)
-            : m_scene(scene) {}
+        System(Leaper::Scene* scene) : m_scene(scene) {}
         virtual void OnImGuiRender() {}
         virtual void OnAttach() {}
         virtual void OnUpdate() {}
@@ -18,8 +17,9 @@ namespace Leaper
         virtual void OnGameStart() {}
         virtual void OnGameUpdate() {}
         virtual void OnGameStop() {}
+
     protected:
         Leaper::Scene* m_scene = nullptr;
     };
 
-} // namespace Leaper
+}  // namespace Leaper

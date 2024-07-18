@@ -77,7 +77,7 @@ BreakBeforeTernaryOperators: true
 # 在构造函数的初始化列表的逗号前换行
 BreakConstructorInitializersBeforeComma: false
 # 每行字符的限制，0表示没有限制
-ColumnLimit: 120
+ColumnLimit: 180
 # 描述具有特殊意义的注释的正则表达式，它不应该被分割为多行或以其它方式改变
 CommentPragmas: "^ IWYU pragma:"
 # 构造函数的初始化列表要么都在同一行，要么都各自一行
@@ -120,7 +120,7 @@ MacroBlockEnd: ""
 # 连续空行的最大数量
 MaxEmptyLinesToKeep: 1
 # 命名空间的缩进: None, Inner(缩进嵌套的命名空间中的内容), All
-NamespaceIndentation: Inner
+NamespaceIndentation: All
 # 使用ObjC块时缩进宽度
 ObjCBlockIndentWidth: 4
 # 在ObjC的@property后添加一个空格

@@ -1,12 +1,12 @@
 #pragma once
+#include "function/ecs/components.h"
 #include "leaper.h"
-#include "function/ecs/components.hpp"
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
+
 
 namespace Leaper
 {
-    
 
-} // namespace Leaper
+}  // namespace Leaper

@@ -1,7 +1,7 @@
 {
     "Empty Entity": [
         {
-            "sprite_renderer_component": {
+            "SpriteRendererComponent": {
                 "color": {
                     "w": 1.0,
                     "x": 1.0,
@@ -10,7 +10,7 @@
                 }
             },
             "tag": "Empty Entity",
-            "transform_component": {
+            "TransformComponent": {
                 "position": {
                     "x": 0.0,
                     "y": 0.0,
@@ -27,7 +27,7 @@
                     "z": 1.0
                 }
             },
-            "uuid_component": {
+            "UUIDComponent": {
                 "uuid": 8881940497440373675
             }
         }
@@ -35,7 +35,7 @@
     "camera": [
         {
             "tag": "camera",
-            "transform_component": {
+            "TransformComponent": {
                 "position": {
                     "x": 0.0,
                     "y": 0.0,
@@ -52,7 +52,7 @@
                     "z": 1.0
                 }
             },
-            "uuid_component": {
+            "UUIDComponent": {
                 "uuid": 1332157044741117752
             }
         }

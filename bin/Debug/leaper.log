@@ -1,0 +1,4 @@
+[2024/07/18/10:50:22][app][debug]: Selected
+[2024/07/18/10:50:44][leaper][error]: assets\scripts\sound.lua:7: attempt to index a nil value (global 'this')
+stack traceback:
+	assets\scripts\sound.lua:7: in function <assets\scripts\sound.lua:6>

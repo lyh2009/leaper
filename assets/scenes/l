@@ -2,7 +2,7 @@
     "camera": [
         {
             "tag": "camera",
-            "uuid_component": {
+            "UUIDComponent": {
                 "uuid": 5696129388210596686
             }
         }

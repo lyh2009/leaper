@@ -1,8 +1,9 @@
 #include "scene.h"
-#include "components.hpp"
+#include "components.h"
 #include "entity.h"
 #include "function/render/renderer2d.h"
 #include "lppch.h"
+#include "systems/audio/audio_system.h"
 #include "systems/physics_system/physics2d_system.h"
 #include "systems/render_system/animation2d_system.h"
 #include "systems/render_system/render_system.h"
@@ -54,6 +55,7 @@ void Leaper::Scene::OnAttach()
     m_systems.emplace_back(Leaper::CreateScope<Leaper::Physics2D_System>(this));
     m_systems.emplace_back(Leaper::CreateScope<Leaper::RenderSystem>(this));
     m_systems.emplace_back(Leaper::CreateScope<Leaper::Animation2DSystem>(this));
+    m_systems.emplace_back(Leaper::CreateScope<Leaper::AudioSystem>(this));
 
     for (auto& item : m_systems)
         item->OnAttach();

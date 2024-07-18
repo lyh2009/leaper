@@ -1,4 +1,9 @@
-set(ThirdPartyFolder "ThirdParty")
+set(ThirdPartyFolder "${CMAKE_SOURCE_DIR}/engine/3rdparty")
+
+if(NOT TARGET glad)
+    include(glad.cmake)
+endif()
+
 
 if(NOT TARGET glfw)
     option(GLFW_BUILD_EXAMPLES "" OFF)
@@ -6,6 +11,13 @@ if(NOT TARGET glfw)
     option(GLFW_BUILD_DOCS "" OFF)
     option(GLFW_INSTALL "" OFF)
     add_subdirectory(glfw)
+endif()
+
+if(NOT TARGET glm)
+    option(BUILD_STATIC_LIBS "" ON)
+    option(BUILD_TESTING "" OFF)
+    option(GLM_TEST_ENABLE "" OFF)
+    add_subdirectory(glm)
 endif()
 
 if(NOT TARGET spdlog)
@@ -20,6 +32,9 @@ if(NOT TARGET box2d)
     add_subdirectory(box2d)
 endif()
 
+if(NOT TARGET FMOD)
+    include(FMOD.cmake)
+endif()
 
 if(NOT TARGET lua)
     include(lua.cmake)
