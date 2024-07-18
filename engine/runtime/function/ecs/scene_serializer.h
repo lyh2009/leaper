@@ -1,9 +1,9 @@
 #pragma once
 
+#include "components.h"
 #include "core/base.h"
 #include "entity.h"
 #include "scene.h"
-#include "components.hpp"
 
 #include "json.hpp"
 
@@ -16,8 +16,8 @@ namespace Leaper
     public:
         SceneSerializer() = default;
         SceneSerializer(Leaper::Ref<Leaper::Scene> scene);
-        void Read(const std::string &path);
-        void Write(const std::string &path);
+        void Read(const std::string& path);
+        void Write(const std::string& path);
 
     private:
         void WriteEntity(Leaper::Entity entity);
@@ -27,4 +27,4 @@ namespace Leaper
         nlohmann::json m_json;
     };
 
-} // namespace Leaper
+}  // namespace Leaper

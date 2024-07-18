@@ -2,7 +2,7 @@
 #include "lppch.h"
 
 #include "function/application/application.h"
-#include "function/ecs/components.hpp"
+#include "function/ecs/components.h"
 #include "function/ecs/scene.h"
 #include "function/render/renderer2d.h"
 

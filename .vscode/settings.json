@@ -96,5 +96,7 @@
     "cinttypes": "cpp",
     "source_location": "cpp"
   },
-  "commentTranslate.hover.enabled": true
+  "commentTranslate.hover.enabled": true,
+  "cmake.sourceDirectory": "F:/Repo/leaper",
+  "cmake.ignoreCMakeListsMissing": true
 }

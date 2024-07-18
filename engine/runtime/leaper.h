@@ -1,8 +1,8 @@
 #pragma once
 // core
 #include "core/base.h"
-#include "core/events/events.h"
 #include "core/events/application_event.h"
+#include "core/events/events.h"
 #include "core/events/key_event.h"
 #include "core/events/mouse_event.h"
 #include "core/layer/layer.h"
@@ -10,18 +10,19 @@
 #include "core/log.h"
 #include "core/math/math.h"
 #include "core/time.h"
+
 // function
 #include "function/application/application.h"
 #include "function/application/window.h"
-#include "function/ecs/components.hpp"
+#include "function/ecs/components.h"
 #include "function/ecs/entity.h"
 #include "function/ecs/scene.h"
 #include "function/ecs/scene_serializer.h"
 #include "function/ecs/scriptable_entity.h"
-#include "function/ecs/systems/system.h"
 #include "function/ecs/systems/physics_system/physics2d_system.h"
 #include "function/ecs/systems/render_system/render_system.h"
 #include "function/ecs/systems/script_system/navite_script_system.h"
+#include "function/ecs/systems/system.h"
 #include "function/imgui/imgui_layer.h"
 #include "function/input/input.h"
 #include "function/input/key_codes.h"
@@ -30,11 +31,12 @@
 #include "function/render/context.h"
 #include "function/render/framebuffer.h"
 #include "function/render/orthographic_camera.h"
-#include "function/render/renderer2d.h"
 #include "function/render/render_api.h"
+#include "function/render/renderer2d.h"
 #include "function/render/shader.h"
 #include "function/render/texture.h"
 #include "function/render/vertex_array.h"
+
 // platform
 #include "platform/opengl/opengl_buffers.h"
 #include "platform/opengl/opengl_context.h"

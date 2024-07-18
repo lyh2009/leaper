@@ -4,7 +4,8 @@
 
 #include "core/base.h"
 #include "core/time.h"
-#include "function/ecs/components.hpp"
+#include "function/ecs/components.h"
+#include "function/ecs/entity.h"
 #include <core/math/math.h>
 #include <function/application/application.h>
 #include <function/input/input.h>
@@ -41,6 +42,7 @@ void EditorLayer::OnAttach()
 
     camera_entity = m_active_scene->CreateEntity("camera");
     camera_entity.AddComponent<Leaper::CameraComponent>(1024.0f / 648.0f);
+    camera_entity.AddComponent<Leaper::SoundComponent>("assets\\ikun2.mp3");
 }
 
 void EditorLayer::OnUpdate()
@@ -174,6 +176,11 @@ void EditorLayer::OnImGuiRender()
                     Leaper::SceneSerializer serizlizer(m_active_scene);
                     serizlizer.Read(filepath);
                     m_active_scene->OnAttach();
+                    auto view = m_active_scene->Reg().view<Leaper::CameraComponent>();
+                    for (auto e : view)
+                    {
+                        camera_entity = { e, m_active_scene.get() };
+                    }
                 }
             }
             ImGui::EndMenu();

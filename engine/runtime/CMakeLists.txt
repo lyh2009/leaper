@@ -4,9 +4,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(3RDPARTY ../3rdparty)
 
-file(GLOB_RECURSE ALL_SOURCE "*.cpp" "*.c" "*.hpp")
-file(GLOB_RECURSE ALL_3RDPARTY_SOURCE"${3RDPARTY}/glm/*.hpp" "${3RDPARTY}/imgui/*.cpp" "${3RDPARTY}/imgui_zmo/*.cpp" "${3RDPARTY}/glad/*.c")
-
+file(GLOB_RECURSE ALL_SOURCE "*.cpp" "*.c" "${3RDPARTY}/imgui/backends/*.cpp" "${3RDPARTY}/imgui/*.cpp" "${3RDPARTY}/imgui_zmo/*.cpp")
 set(INCLUDE_DIR
  "./"
  "${3RDPARTY}/glad/include/"
@@ -18,16 +16,21 @@ set(INCLUDE_DIR
  "${3RDPARTY}/spdlog/"
  "${3RDPARTY}/lua-5.4.4/"
  "${3RDPARTY}/sol2/include/"
+ "${3RDPARTY}/FMOD/api/core/inc/"
+ "${3RDPARTY}/FMOD/api/fsbank/inc/"
+ "${3RDPARTY}/FMOD/api/studio/inc/"
  )
 
-include_directories(${INCLUDE_DIR})
+ include_directories(${INCLUDE_DIR})
+add_library(leaper_runtime STATIC ${ALL_SOURCE})
 
-add_library(leaper_runtime STATIC ${ALL_SOURCE} ${ALL_3RDPARTY_SOURCE})
-
- target_link_libraries(leaper_runtime PUBLIC
- glfw
+ target_link_libraries(leaper_runtime 
+ PUBLIC glfw
+ Glad
  opengl32
+ glm
  box2d
  spdlog
  lua_static
+ PUBLIC FMOD::Core FMOD::Fsbank FMOD::Studio
  )
