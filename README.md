@@ -1,7 +1,11 @@
 # Leaper Engine
-It is a 2d game engine.
-## Function
-1.Physical2D <br>
-2.Lua Script <br>
-3.Animation <br>
-4.Editor <br>
+It is a game engine.
+
+<!-- PROJECT LOGO -->
+<br />
+
+<p align="center">
+  <a href="https://github.com/lyh_2009/leaper/">
+    <img src="engine\resource\leaper.png" alt="Logo" width="80" height="80">
+  </a>
+</p>
