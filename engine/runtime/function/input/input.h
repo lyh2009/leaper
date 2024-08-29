@@ -1,4 +1,5 @@
 #pragma once
+#include "glm/fwd.hpp"
 #include "key_codes.h"
 
 namespace Leaper

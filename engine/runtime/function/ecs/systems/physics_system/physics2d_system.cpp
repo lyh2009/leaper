@@ -1,4 +1,5 @@
 #include "physics2d_system.h"
+#include "box2d/b2_circle_shape.h"
 #include "lppch.h"
 
 #include "core/log.h"
@@ -61,6 +62,26 @@ void Leaper::Physics2D_System::OnGameStart()
 
             body->CreateFixture(&fixture_def);
         }
+
+        // circle collider2d
+        if(entity.HasComponent<CircleCollider2DComponent>())
+        {
+            auto cc2d = entity.GetComponent<CircleCollider2DComponent>();
+            b2CircleShape circle_shape;
+            circle_shape.m_p.Set(cc2d.offset.x, cc2d.offset.y);
+            circle_shape.m_radius = trans.scale.x * cc2d.radiu;
+
+            // def fixture
+            b2FixtureDef fixture_def;
+            fixture_def.shape       = &circle_shape;
+            fixture_def.friction    = cc2d.friction;
+            fixture_def.restitution = cc2d.restitution;
+            fixture_def.density     = cc2d.density;
+
+            fixture_def.userData.pointer = reinterpret_cast<uintptr_t>(cc2d.user_data);
+
+            body->CreateFixture(&fixture_def);
+        };
     });
 
     m_physics_world->SetContactListener(&m_contact_listener);

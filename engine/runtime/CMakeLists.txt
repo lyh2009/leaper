@@ -4,7 +4,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(3RDPARTY ../3rdparty)
 
-file(GLOB_RECURSE ALL_SOURCE "*.cpp" "*.c" "${3RDPARTY}/imgui/backends/*.cpp" "${3RDPARTY}/imgui/*.cpp" "${3RDPARTY}/imgui_zmo/*.cpp")
+file(GLOB_RECURSE ALL_SOURCE
+ "*.cpp"
+ "*.c"
+ "${3RDPARTY}/imgui/backends/*.cpp" 
+ "${3RDPARTY}/imgui/*.cpp" 
+ "${3RDPARTY}/imgui_zmo/*.cpp"
+)
 set(INCLUDE_DIR
  "./"
  "${3RDPARTY}/glad/include/"
@@ -19,7 +25,8 @@ set(INCLUDE_DIR
  "${3RDPARTY}/FMOD/api/core/inc/"
  "${3RDPARTY}/FMOD/api/fsbank/inc/"
  "${3RDPARTY}/FMOD/api/studio/inc/"
- )
+ "${3RDPARTY}/tinygltf/"
+ "${3RDPARTY}/assimp/include")
 
  include_directories(${INCLUDE_DIR})
 add_library(leaper_runtime STATIC ${ALL_SOURCE})
@@ -32,5 +39,6 @@ add_library(leaper_runtime STATIC ${ALL_SOURCE})
  box2d
  spdlog
  lua_static
+ assimp
  PUBLIC FMOD::Core FMOD::Fsbank FMOD::Studio
  )

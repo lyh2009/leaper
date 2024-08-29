@@ -16,25 +16,17 @@ void Leaper::ImGuiLayer::OnAttach()
     (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
     io.ConfigDockingAlwaysTabBar = true;
 
     LeaperDarkStyle();
-
-    ImGuiStyle& style = ImGui::GetStyle();
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
-        style.WindowRounding              = 0.0f;
-        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-    }
 
     Leaper::Application& app = Leaper::Application::Get();
     GLFWwindow* window       = static_cast<GLFWwindow*>(app.GetWindow()->GetNativeWindow());
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 330");
+    ImGui_ImplOpenGL3_Init("#version 460");
 
-    io.Fonts->AddFontFromFileTTF("./resource/fonts/JetBrainsMonoNerdFontMono-Medium.ttf", 17.0f);
+    // io.Fonts->AddFontFromFileTTF("./resource/fonts/JetBrainsMonoNerdFontMono-Medium.ttf", 17.0f);
 }
 
 void Leaper::ImGuiLayer::Begin()

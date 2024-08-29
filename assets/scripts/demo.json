@@ -1,0 +1,121 @@
+[
+    {
+        "CameraComponent": {
+            "ratio": 1.8603895902633667
+        },
+        "TagComponent": "camera",
+        "TransformComponent": {
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        },
+        "UUIDComponent": {
+            "uuid": 16633800364068026097
+        }
+    },
+    {
+        "SpriteRendererComponent": {
+            "color": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            }
+        },
+        "TagComponent": "Empty Entity",
+        "TransformComponent": {
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -10.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        },
+        "UUIDComponent": {
+            "uuid": 17472918850791594983
+        }
+    },
+    {
+        "SpriteRendererComponent": {
+            "color": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            }
+        },
+        "TagComponent": "Empty Entity",
+        "TransformComponent": {
+            "position": {
+                "x": 0.5025498270988464,
+                "y": 0.0,
+                "z": -10.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 1.549999475479126,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 0.9999999403953552,
+                "y": 1.0,
+                "z": 0.9999999403953552
+            }
+        },
+        "UUIDComponent": {
+            "uuid": 10136100608230357518
+        }
+    },
+    {
+        "SpriteRendererComponent": {
+            "color": {
+                "w": 1.0,
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "TagComponent": "Empty Entity",
+        "TransformComponent": {
+            "position": {
+                "x": 0.0,
+                "y": 0.5031613707542419,
+                "z": -10.0
+            },
+            "rotation": {
+                "x": 1.5700000524520874,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 0.9999923706054688,
+                "z": 0.9999923706054688
+            }
+        },
+        "UUIDComponent": {
+            "uuid": 5682847714032331407
+        }
+    }
+]

@@ -2,13 +2,23 @@
 
 #include "editor_layer.h"
 
+#include "ImGuizmo.h"
 #include "core/base.h"
 #include "core/time.h"
 #include "function/ecs/components.h"
 #include "function/ecs/entity.h"
+#include "function/render/texture.h"
+#include "glm/ext/matrix_clip_space.hpp"
+#include "glm/fwd.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/trigonometric.hpp"
+#include "imgui.h"
 #include <core/math/math.h>
 #include <function/application/application.h>
 #include <function/input/input.h>
+#include <function/render/perspective_camera_controller.h>
+#include <function/render/render_command.h>
+#include <function/render/renderer3d.h>
 #include <function/utils/platform_utils.h>
 
 #include <glm/glm.hpp>
@@ -16,6 +26,7 @@
 #include <imgui_internal.h>
 
 #include <iostream>
+#include <string>
 
 extern const std::filesystem::path g_assets_path;
 
@@ -28,26 +39,32 @@ void EditorLayer::OnAttach()
 
     // create FrameBuffer
     m_framebuffer = Leaper::FrameBuffer::Create();
-    m_framebuffer->CreateTexture(1024, 648, Leaper::TextureFormat::RGB8, Leaper::TextureFormat::RGB,
-                                 Leaper::Attachments::COLOR_ATTACHMENT0);
-    m_framebuffer->CreateTexture(1024, 648, Leaper::TextureFormat::R32I, Leaper::TextureFormat::RED_INTEGER,
-                                 Leaper::Attachments::COLOR_ATTACHMENT1);
-
+    m_framebuffer->CreateTexture(1024, 648, Leaper::TextureFormat::RGB8, Leaper::TextureFormat::RGB, Leaper::Attachments::COLOR_ATTACHMENT0);
+    m_framebuffer->CreateTexture(1024, 648, Leaper::TextureFormat::R32I, Leaper::TextureFormat::RED_INTEGER, Leaper::Attachments::COLOR_ATTACHMENT1);
+    m_framebuffer->CreateDepthTexture(1024, 648);
     // create Textures
-    m_play_icon = Leaper::Texture::Create("resource\\icons\\play.png");
-    m_stop_icon = Leaper::Texture::Create("resource\\icons\\stop.png");
+    m_play_icon      = Leaper::Texture::Create("./resource/icons/play.png");
+    m_stop_icon      = Leaper::Texture::Create("./resource/icons/stop.png");
+    m_translate_icon = Leaper::Texture::Create("./resource/icons/translate.png");
+    m_rotate_icon    = Leaper::Texture::Create("./resource/icons/rotate.png");
+    m_scale_icon     = Leaper::Texture::Create("./resource/icons/scale.png");
 
     m_active_scene = Leaper::CreateRef<Leaper::Scene>();
     m_active_scene->OnAttach();
 
     camera_entity = m_active_scene->CreateEntity("camera");
     camera_entity.AddComponent<Leaper::CameraComponent>(1024.0f / 648.0f);
-    camera_entity.AddComponent<Leaper::SoundComponent>("assets\\ikun2.mp3");
+    camera_entity.AddComponent<Leaper::CubeRendererComponent>();
+
+    m_console.OnAttach();
+
+    m_perspective_camera = Leaper::EditorCamera(30.0f, 1024 / 648, 0.1f, 1000.0f);
 }
 
 void EditorLayer::OnUpdate()
 {
 
+    Leaper::RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
     m_framebuffer->Bind();
     m_framebuffer->ClearAttachment(1, -1);
 
@@ -57,30 +74,34 @@ void EditorLayer::OnUpdate()
         m_framebuffer->RescaleFrameBuffer(m_viewport_panel_size.x, m_viewport_panel_size.y);
         m_camera.OnResize(m_viewport_panel_size.x, m_viewport_panel_size.y);
         m_game_camera.OnResize(m_viewport_panel_size.x, m_viewport_panel_size.y);
+        m_perspective_camera.SetViewportSize(m_viewport_panel_size.x, m_viewport_panel_size.y);
+        camera_entity.GetComponent<Leaper::CameraComponent>().camera.OnResize(m_viewport_panel_size.x, m_viewport_panel_size.y);
         m_viewport_size = { m_viewport_panel_size.x, m_viewport_panel_size.y };
-        camera_entity.GetComponent<Leaper::CameraComponent>().camera.OnResize(m_viewport_panel_size.x,
-                                                                              m_viewport_panel_size.y);
     }
 
     // scene update
     m_game_camera      = camera_entity.GetComponent<Leaper::CameraComponent>().camera;
     auto& camera_trans = camera_entity.GetComponent<Leaper::TransformComponent>();
+
     if (m_scene_state == SceneState::Edit)
     {
         m_camera.OnUpdate();
-        Leaper::Renderer2D::BeginScene(m_camera.GetCamera());
+        m_perspective_camera.OnUpdate();
+
+        Leaper::Renderer2D::BeginScene(m_perspective_camera.GetViewProjection());
+        Leaper::Renderer3D::BeginScene(m_perspective_camera.GetViewProjection(), m_perspective_camera.GetPosition());
     }
     else if (m_scene_state == SceneState::Play)
     {
         m_game_camera.OnUpdate();
-        Leaper::Renderer2D::BeginScene(m_game_camera.GetCamera(), camera_trans.GetTransform());
+        Leaper::Renderer2D::BeginScene(m_game_camera.GetCamera().GetProjectionMat(), camera_trans.GetTransform());
     }
     m_active_scene->OnUpdate();
 
     // render rect
     if (m_draw_rect)
     {
-        Leaper::Renderer2D::SetLineWidth(2.0f);
+        Leaper::Renderer2D::SetLineWidth(1.0f);
         Leaper::TransformComponent transform;
         float ratio        = m_game_camera.GetRatio();
         float zoom_level   = m_game_camera.GetZoomLevel();
@@ -99,18 +120,30 @@ void EditorLayer::OnUpdate()
             transform.scale    = tc.scale * glm::vec3(bc2d.size * 2.0f, 1.0f);
             transform.rotation = tc.rotation;
 
-            Leaper::Renderer2D::DrawRect(transform, glm::vec4(0, 1, 0, 1), -1);
+            Leaper::Renderer2D::DrawRect(transform, glm::vec4(0, 1, 0, 1));
+        }
+
+        auto cc2d_view = m_active_scene->GetAllEntitiesWith<Leaper::TransformComponent, Leaper::CircleCollider2DComponent>();
+        for (auto entity : cc2d_view)
+        {
+            auto [tc, cc2d] = cc2d_view.get<Leaper::TransformComponent, Leaper::CircleCollider2DComponent>(entity);
+
+            Leaper::TransformComponent transform;
+            transform.position = tc.position;
+            transform.scale    = tc.scale * cc2d.radiu;
+            transform.rotation = tc.rotation;
+
+            Leaper::Renderer2D::DrawCircle(transform, glm::vec4(0, 1, 0, 1), 0.05f);
         }
     }
     Leaper::Renderer2D::EndScene();
+    Leaper::Renderer3D::EndScene();
 
     // get entity
-    if (m_mouse_in_window.x >= 0 && m_mouse_in_window.y >= 0 && m_mouse_in_window.x < m_window_size.x
-        && m_mouse_in_window.x < m_window_size.x)
+    if (m_mouse_in_window.x >= 0 && m_mouse_in_window.y >= 0 && m_mouse_in_window.x < m_window_size.x && m_mouse_in_window.x < m_window_size.x)
     {
-        int entity_id = m_framebuffer->ReadPixels(1, (int)m_mouse_in_texture.x, (int)m_mouse_in_texture.y);
-        m_hovered_entity =
-            entity_id == -1 ? Leaper::Entity() : Leaper::Entity((entt::entity)entity_id, m_active_scene.get());
+        int entity_id    = m_framebuffer->ReadPixels(1, (int)m_mouse_in_texture.x, (int)m_mouse_in_texture.y);
+        m_hovered_entity = entity_id == -1 ? Leaper::Entity() : Leaper::Entity((entt::entity)entity_id, m_active_scene.get());
     }
 
     m_framebuffer->Unbind();
@@ -133,8 +166,7 @@ void EditorLayer::OnImGuiRender()
         ImGui::SetNextWindowViewport(viewport->ID);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize
-                        | ImGuiWindowFlags_NoMove;
+        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
         window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -150,7 +182,6 @@ void EditorLayer::OnImGuiRender()
 
         ImGui::BeginMainMenuBar();
         float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-
         if (ImGui::BeginMenu("File"))
         {
 
@@ -177,14 +208,14 @@ void EditorLayer::OnImGuiRender()
                     serizlizer.Read(filepath);
                     m_active_scene->OnAttach();
                     auto view = m_active_scene->Reg().view<Leaper::CameraComponent>();
-                    for (auto e : view)
-                    {
-                        camera_entity = { e, m_active_scene.get() };
-                    }
+                    for (auto e : view) { camera_entity = { e, m_active_scene.get() }; }
                 }
             }
             ImGui::EndMenu();
         }
+
+        ImGui::ShowDemoWindow();
+
         ImGui::EndMainMenuBar();
         ImGui::PopStyleVar();
 
@@ -206,8 +237,7 @@ void EditorLayer::OnImGuiRender()
     m_viewport_pos        = ImGui::GetWindowPos();
     m_viewport_panel_size = ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetWindowHeight());
 
-    ImGui::Image((void*)m_framebuffer->GetTexture(0), ImVec2(m_viewport_size.x, m_viewport_size.y), ImVec2(0, 1),
-                 ImVec2(1, 0));
+    ImGui::Image((void*)m_framebuffer->GetTexture(0), ImVec2(m_viewport_size.x, m_viewport_size.y), ImVec2(0, 1), ImVec2(1, 0));
 
     if (ImGui::BeginDragDropTarget())
     {
@@ -229,9 +259,9 @@ void EditorLayer::OnImGuiRender()
     }
 
     // gizmo
-    if (m_hierarchy_window.GetSelected())
+    auto select = m_hierarchy_window.GetSelected();
+    if (select)
     {
-        ImGuizmo::SetOrthographic(true);
         ImGuizmo::SetDrawlist();
 
         float window_height = (float)ImGui::GetWindowHeight();
@@ -240,22 +270,31 @@ void EditorLayer::OnImGuiRender()
 
         // gizmo camera
 
-        Leaper::OrthgraphicCamera& camera  = m_camera.GetCamera();
-        const glm::mat4& camera_projection = camera.GetProjectionMat();
-        glm::mat4 camera_view              = camera.GetViewMat();
-
-        auto& tc            = m_hierarchy_window.GetSelected().GetComponent<Leaper::TransformComponent>();
+        auto& tc            = select.GetComponent<Leaper::TransformComponent>();
         glm::mat4 transform = tc.GetTransform();
+        if (m_scene_state == SceneState::Edit)
+        {
+            const glm::mat4& camera_projection = m_perspective_camera.GetProjection();
+            glm::mat4 camera_view              = m_perspective_camera.GetViewMatrix();
 
-        if (Leaper::Input::IsKeyDown(LP_KEY_1))
-            m_gizmo = ImGuizmo::OPERATION::TRANSLATE;
-        if (Leaper::Input::IsKeyDown(LP_KEY_2))
-            m_gizmo = ImGuizmo::OPERATION::ROTATE;
-        if (Leaper::Input::IsKeyDown(LP_KEY_3))
-            m_gizmo = ImGuizmo::OPERATION::SCALE;
+            ImGuizmo::Manipulate(glm::value_ptr(camera_view), glm::value_ptr(camera_projection), (ImGuizmo::OPERATION)m_gizmo, ImGuizmo::LOCAL, glm::value_ptr(transform), nullptr,
+                                 nullptr, nullptr, nullptr);
+            auto viewManipulateRight = ImGui::GetWindowPos().x + window_width;
+            auto viewManipulateTop   = ImGui::GetWindowPos().y;
+        }
+        else
+        {
+            Leaper::OrthgraphicCamera& camera  = m_game_camera.GetCamera();
+            const glm::mat4& camera_projection = camera.GetProjectionMat();
+            glm::mat4 camera_view              = camera.GetViewMat();
 
-        ImGuizmo::Manipulate(glm::value_ptr(camera_view), glm::value_ptr(camera_projection),
-                             (ImGuizmo::OPERATION)m_gizmo, ImGuizmo::LOCAL, glm::value_ptr(transform));
+            ImGuizmo::Manipulate(glm::value_ptr(camera_view), glm::value_ptr(camera_projection), (ImGuizmo::OPERATION)m_gizmo, ImGuizmo::LOCAL, glm::value_ptr(transform), nullptr,
+                                 nullptr, nullptr, nullptr);
+        }
+
+        if (Leaper::Input::IsKeyDown(LP_KEY_1)) m_gizmo = ImGuizmo::OPERATION::TRANSLATE;
+        if (Leaper::Input::IsKeyDown(LP_KEY_2)) m_gizmo = ImGuizmo::OPERATION::ROTATE;
+        if (Leaper::Input::IsKeyDown(LP_KEY_3)) m_gizmo = ImGuizmo::OPERATION::SCALE;
 
         if (ImGuizmo::IsUsing())
         {
@@ -269,58 +308,19 @@ void EditorLayer::OnImGuiRender()
     }
 
     ImGui::EndChild();
-    ImGui::End();
 
-    // Output Log
-    ImGui::Begin("Output Log");
-
-    auto messages_          = Leaper::Log::GetSink()->log_item;
-    const size_t max_shown_ = 1024;
-    const ImColor TXT_DBG_CLR{ 0.5f, 0.5f, 0.5f, 1.0f };
-
-    const ImColor LVL_DBG_CLR{ 0.0f, 1.0f, 0.8f, 1.0f };
-    const ImColor LVL_LOG_CLR{ 0.65f, 0.2f, 1.0f, 1.0f };
-    const ImColor LVL_ERR_CLR{ 1.0f, 0.0f, 0.0f, 1.0f };
-    const ImColor LVL_WRN_CLR{ 1.0f, 0.5f, 0.0f, 1.0f };
-
-    for (size_t i = messages_.size() > max_shown_ ? messages_.size() - max_shown_ : 0; i < messages_.size(); ++i)
-    {
-        auto const& msg = messages_[i];
-
-        switch (msg.level)
-        {
-        case spdlog::level::debug:
-            ImGui::TextColored(LVL_DBG_CLR, "[DEBUG]");
-            ImGui::SameLine();
-            ImGui::TextColored(LVL_DBG_CLR, "%s", msg.message.c_str());
-            break;
-        case spdlog::level::warn:
-            ImGui::TextColored(LVL_WRN_CLR, "[WARING]");
-            ImGui::SameLine();
-            ImGui::Text("%s", msg.message.c_str());
-            break;
-        case spdlog::level::err:
-            ImGui::TextColored(LVL_ERR_CLR, "[ERROR]");
-            ImGui::SameLine();
-            ImGui::Text("%s", msg.message.c_str());
-            break;
-        default:
-            ImGui::TextColored(LVL_LOG_CLR, "[LOG]");
-            ImGui::SameLine();
-            ImGui::TextUnformatted(msg.message.c_str());
-            break;
-        }
-    }
     ImGui::End();
 
     DrawToolBar();
     m_hierarchy_window.OnUpdate();
     m_project_window.OnUpdate();
+    m_console.OnUpdate();
 }
 
 void EditorLayer::OnEvent(Leaper::Event& e)
 {
     m_camera.OnEvent(e);
+    m_perspective_camera.OnEvent(e);
     Leaper::EventDispatcher dispatcher(e);
     dispatcher.Dispatch<Leaper::MouseButtonPressedEvent>(LP_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
 }
@@ -357,36 +357,53 @@ void EditorLayer::DrawToolBar()
     ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
 
     // editor toolbar
-    ImGui::Begin("##toolbar", nullptr,
-                 ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+    ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     // play icon
     Leaper::Ref<Leaper::Texture> button_icon = m_scene_state == SceneState::Edit ? m_play_icon : m_stop_icon;
 
     bool toolbarEnabled = (bool)m_active_scene;
 
     ImVec4 tint_color = ImVec4(1, 1, 1, 1);
-    if (!toolbarEnabled)
-        tint_color.w = 0.5f;
+    if (!toolbarEnabled) tint_color.w = 0.5f;
     float size = ImGui::GetWindowHeight() - 4.0f;
 
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
     // play button
-    if (ImGui::ImageButton((void*)button_icon->GetTexture(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0,
-                           ImVec4(0, 0, 0, 0), tint_color))
+    if (ImGui::ImageButton((void*)button_icon->GetTexture(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0), tint_color))
     {
         if (m_scene_state == SceneState::Edit)
             OnScenePlay();
         else if (m_scene_state == SceneState::Play)
             OnSceneEdit();
     }
+
     ImGui::SameLine();
 
+    ImVec4 translate_color = m_gizmo == ImGuizmo::OPERATION::TRANSLATE ? ImVec4(1.0f, 1.0f, 1.0f, 0.9f) : ImVec4(1.0f, 1.0f, 1.0f, 0.2f);
+    ImVec4 rotate_color    = m_gizmo == ImGuizmo::OPERATION::ROTATE ? ImVec4(1.0f, 1.0f, 1.0f, 0.9f) : ImVec4(1.0f, 1.0f, 1.0f, 0.2f);
+    ImVec4 scale_color     = m_gizmo == ImGuizmo::OPERATION::SCALE ? ImVec4(1.0f, 1.0f, 1.0f, 0.9f) : ImVec4(1.0f, 1.0f, 1.0f, 0.2f);
+    if (ImGui::ImageButton((void*)m_translate_icon->GetTexture(), ImVec2(size, size), ImVec2(0, 1), ImVec2(1, 0), 0.0f, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), translate_color))
+    {
+        m_gizmo = ImGuizmo::OPERATION::TRANSLATE;
+    }
+    ImGui::SameLine();
+    if (ImGui::ImageButton((void*)m_rotate_icon->GetTexture(), ImVec2(size, size), ImVec2(0, 1), ImVec2(1, 0), 0.0f, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), rotate_color))
+    {
+        m_gizmo = ImGuizmo::OPERATION::ROTATE;
+    }
+    ImGui::SameLine();
+    if (ImGui::ImageButton((void*)m_scale_icon->GetTexture(), ImVec2(size, size), ImVec2(0, 1), ImVec2(1, 0), 0.0f, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), scale_color))
+    {
+        m_gizmo = ImGuizmo::OPERATION::SCALE;
+    }
+    ImGui::PopStyleColor();
     // CheckBox("DrawRect")
+    ImGui::SameLine();
     ImGui::Checkbox("DrawRect", &m_draw_rect);
     ImGui::SameLine();
 
     // show fps
     ImGui::Text("(%.1f FPS)", ImGui::GetIO().Framerate);
-
     ImGui::PopStyleVar(2);
     ImGui::End();
 }

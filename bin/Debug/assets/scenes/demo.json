@@ -1,38 +1,7 @@
 [
   {
-    "SpriteRendererComponent": {
-      "color": {
-        "w": 1.0,
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
-      }
-    },
-    "tag": "Empty Entity",
-    "TransformComponent": {
-      "position": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "scale": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
-      }
-    },
-    "UUIDComponent": {
-      "uuid": 17127957172620536372
-    }
-  },
-  {
     "CameraComponent": {
-      "ratio": 1.8361581563949585
+      "ratio": 0.9797794222831726
     },
     "tag": "camera",
     "TransformComponent": {
@@ -53,7 +22,7 @@
       }
     },
     "UUIDComponent": {
-      "uuid": 17479770020584270269
+      "uuid": 8844800730409813122
     }
   }
 ]

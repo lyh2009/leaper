@@ -23,6 +23,7 @@ void OpenGLContext::Init()
     bool status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     
     LP_ASSERT(status, "Failed to initialize Glad!");
+
 }
 
 void OpenGLContext::SetViewPort(float width, float height)

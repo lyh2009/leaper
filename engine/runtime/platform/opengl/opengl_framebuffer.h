@@ -16,6 +16,8 @@ public:
 	virtual void RescaleFrameBuffer(float width, float height) override;
 
 	virtual uint32_t CreateTexture(int width, int height, Leaper::TextureFormat internalformat, Leaper::TextureFormat format, Leaper::Attachments attachment) override;
+	virtual uint32_t CreateDepthTexture(int width, int height) override;
+
 	virtual uint32_t AttachmentsToGL(Leaper::Attachments attachment) override;
 
 
@@ -28,6 +30,7 @@ public:
 
 private:
     unsigned int m_fbo;
+    unsigned int m_depth_buffer;
 	std::vector<uint32_t> m_textures;
 	std::vector<GLenum> m_attachments;
 	std::vector<Leaper::TextureFormat> m_format;

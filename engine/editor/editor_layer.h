@@ -1,5 +1,6 @@
 #pragma once
 #include "function/render/orthographic_camera.h"
+#include "panels/console.h"
 #include "panels/hierarchy.h"
 #include "panels/project.h"
 
@@ -8,6 +9,7 @@
 #include "function/ecs/scene_serializer.h"
 #include "function/render/camera_controller.h"
 #include "function/render/game_camera.h"
+#include "function/render/perspective_camera_controller.h"
 
 #include <ImGuizmo.h>
 #include <imgui.h>
@@ -42,6 +44,7 @@ private:
 private:
     Hierarchy m_hierarchy_window;
     Project m_project_window;
+    Console m_console;
 
     bool m_draw_rect = false;
     bool m_viewport_hovered;
@@ -61,11 +64,15 @@ private:
 
     Leaper::CameraController m_camera;
     Leaper::GameCamera m_game_camera;
+    Leaper::EditorCamera m_perspective_camera;
 
     Leaper::Ref<Leaper::Scene> m_active_scene;
     Leaper::Ref<Leaper::FrameBuffer> m_framebuffer;
     Leaper::Ref<Leaper::Texture> m_play_icon;
     Leaper::Ref<Leaper::Texture> m_stop_icon;
+    Leaper::Ref<Leaper::Texture> m_translate_icon;
+    Leaper::Ref<Leaper::Texture> m_rotate_icon;
+    Leaper::Ref<Leaper::Texture> m_scale_icon;
 
     struct MousePickingData
     {

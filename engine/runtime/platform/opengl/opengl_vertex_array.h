@@ -1,6 +1,6 @@
 #pragma once
-#include "function/render/vertex_array.h"
 #include "function/render/buffers.h"
+#include "function/render/vertex_array.h"
 
 #include <glad/glad.h>
 
@@ -14,6 +14,8 @@ public:
     virtual void UnBind() override;
     virtual void AddVertexBuffer(Leaper::Ref<Leaper::VertexBuffer> vertex_buffer) override;
     virtual void SetIndexBuffer(Leaper::Ref<Leaper::IndexBuffer> index_buffer) override;
+    virtual void DrawArray(uint32_t count) override;
+
 private:
     uint32_t m_vao;
     uint32_t m_vertex_buffer_index = 0;

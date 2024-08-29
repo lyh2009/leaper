@@ -1,32 +1,30 @@
-local player = 
-{ 
+local player
+{
     this,
-    rb2d,
-    isGround
+    rb2d
 }
 
 function player.OnAttach()
-    player.rb2d = player.this:GetRigdbody2DComponent();
+    self.rb2d = self.this:GetRigdbody2DComponent();
+    print("hello")
 end
 
 function player.OnUpdate()
-    player.rb2d.velocity.x = 0.0;
-    player.rb2d.velocity.y = 0.0;
     
     if(Input.IsKeyDown(Key.UP) and isGround)
     then
-        player.rb2d.velocity.y = 2;
+        self.rb2d.velocity.y = 2;
         isGround = false;
     end
 
     if(Input.IsKeyDown(Key.Left))
     then
-        player.rb2d.velocity.x = -0.05;
+        self.rb2d.velocity.x = -0.05;
     end
 
     if(Input.IsKeyDown(Key.Right))
     then
-        player.rb2d.velocity.x = 0.05;
+        self.rb2d.velocity.x = 0.05;
     end
 end
 

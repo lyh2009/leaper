@@ -42,6 +42,7 @@ class OpenGLIndexBuffer : public Leaper::IndexBuffer
 {
 public:
     OpenGLIndexBuffer(uint32_t *indices, uint32_t size);
+    OpenGLIndexBuffer(uint32_t size);
     ~OpenGLIndexBuffer();
     virtual void Bind() override;
     virtual void UnBind() override;

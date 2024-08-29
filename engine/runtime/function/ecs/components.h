@@ -2,11 +2,14 @@
 
 #include "core/base.h"
 #include "core/math/uuid.h"
+#include "function/render/3d/model.h"
 #include "function/render/buffers.h"
 #include "function/render/game_camera.h"
 #include "function/render/orthographic_camera.h"
 #include "function/render/texture.h"
 #include "function/render/vertex_array.h"
+
+#include "glm/fwd.hpp"
 #include "scriptable_entity.h"
 
 #include <glm/glm.hpp>
@@ -46,9 +49,9 @@ namespace Leaper
     {
         glm::vec3 position = { 0, 0, 0 }, rotation = { 0, 0, 0 }, scale = { 1, 1, 1 };
 
-        TransformComponent() : transform(glm::mat4(1.0f)){};
+        TransformComponent() : transform(glm::mat4(1.0f)) {};
         TransformComponent(const TransformComponent&) = default;
-        TransformComponent(const glm::mat4& _transform) : transform(_transform){};
+        TransformComponent(const glm::mat4& _transform) : transform(_transform) {};
 
         glm::mat4& GetTransform()
         {
@@ -77,13 +80,13 @@ namespace Leaper
 
     struct SpriteRendererComponent
     {
-        SpriteRendererComponent() : color(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)){};
+        SpriteRendererComponent() : color(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)) {};
 
-        SpriteRendererComponent(Leaper::Ref<Leaper::Texture> texture) : m_texture(texture){};
+        SpriteRendererComponent(Leaper::Ref<Leaper::Texture> texture) : m_texture(texture) {};
 
         SpriteRendererComponent(const SpriteRendererComponent&) = default;
 
-        SpriteRendererComponent(const glm::vec4& _color) : color(_color){};
+        SpriteRendererComponent(const glm::vec4& _color) : color(_color) {};
 
         Leaper::Ref<Leaper::Texture> m_texture = nullptr;
         Animation2DComponent anim;
@@ -93,7 +96,7 @@ namespace Leaper
 
     struct CameraComponent
     {
-        CameraComponent(float ratio) : camera(ratio){};
+        CameraComponent(float ratio) : camera(ratio) {};
 
         GameCamera camera;
     };
@@ -153,6 +156,20 @@ namespace Leaper
         FixtureUserData* user_data = new FixtureUserData();
     };
 
+    struct CircleCollider2DComponent
+    {
+        glm::vec2 offset = { 0.0f, 0.0f };
+
+        float radiu       = 1.0f;
+        float friction    = 0.3f;
+        float restitution = 0.0f;
+        float density     = 1.0f;
+
+        bool is_trigger = false;
+
+        FixtureUserData* user_data = new FixtureUserData();
+    };
+
     struct LuaScriptComponent
     {
         LuaScriptComponent() : path("") {}
@@ -164,16 +181,62 @@ namespace Leaper
 
     struct SoundComponent
     {
-    public:
         SoundComponent()                      = default;
         SoundComponent(const SoundComponent&) = default;
-        SoundComponent(const std::string& _path) : path(_path) {}
+        SoundComponent(const std::string& path)
+        {
+            this->path = path;
+        }
 
         std::string path = "None";
         bool play;
 
         FMOD::Sound* sound     = nullptr;
         FMOD::Channel* channel = nullptr;
+    };
+
+    struct LightComponent
+    {
+        LightComponent() = default;
+        LightComponent(glm::vec3 color)
+        {
+            this->color = color;
+        }
+
+        glm::vec3 color = glm::vec3(0.999, 0.999, 0.999);
+        float intensity = 0.4f;
+
+        int id;
+    };
+
+    struct CubeRendererComponent
+    {
+        CubeRendererComponent() : color(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)) {};
+
+        CubeRendererComponent(Leaper::Ref<Leaper::Texture> texture) : m_texture(texture) {};
+
+        CubeRendererComponent(const CubeRendererComponent&) = default;
+
+        CubeRendererComponent(const glm::vec4& _color) : color(_color) {};
+
+        Leaper::Ref<Leaper::Texture> m_texture = nullptr;
+
+        glm::vec4 color;
+        std::string texture_path;
+    };
+
+    struct MeshRendererComponment
+    {
+        MeshRendererComponment() = default;
+        MeshRendererComponment(const std::string path)
+        {
+            this->path = path;
+            model      = Leaper::Model(path);
+        };
+
+        std::string path = "";
+
+        Leaper::Model model;
     };
 
 }  // namespace Leaper

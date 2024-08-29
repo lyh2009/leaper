@@ -17,6 +17,7 @@ namespace Leaper
         void OnEvent(Leaper::Event& e);
         bool OnWindowResize(Leaper::WindowResizeEvent& event);
         bool OnMouseScrolledEvent(Leaper::MouseScrolledEvent& event);
+        bool OnMouseMovedEvent(Leaper::MouseMovedEvent& event);
         void OnResize(float width, float height);
 
         inline const float GetZoomLevel() { return m_zoom_level; }

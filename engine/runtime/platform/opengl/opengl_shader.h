@@ -15,11 +15,16 @@ public:
 
     virtual void SetMat4(const std::string value_name, const glm::mat4 value) const override;
     virtual void SetVec4(const std::string value_name, const glm::vec4 value) const override;
+    virtual void SetVec3(const std::string value_name, const glm::vec3 value) const override;
     virtual void SetInt(const std::string value_name, const int value) const override;
+    virtual void SetFloat(const std::string value_name, const float value) const override;
 
     virtual void GetShaderError(uint32_t shader, Leaper::ShaderType shader_type) override;
 
-    virtual uint32_t GetProgram() override {return m_program;};
+    virtual uint32_t GetProgram() override
+    {
+        return m_program;
+    };
 
 private:
     unsigned int m_program;

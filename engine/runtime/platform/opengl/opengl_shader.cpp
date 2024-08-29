@@ -1,9 +1,10 @@
 #include "opengl_shader.h"
 #include "lppch.h"
-#include <string>
 #include <fstream>
-#include <sstream>
 #include <iostream>
+#include <sstream>
+#include <string>
+
 
 OpenGLShader::OpenGLShader(std::string vertex_shader_path, std::string fragment_shader_path)
 {
@@ -28,16 +29,16 @@ OpenGLShader::OpenGLShader(std::string vertex_shader_path, std::string fragment_
         vShaderFile.close();
         fShaderFile.close();
         // convert stream into string
-        vertexCode = vShaderStream.str();
+        vertexCode   = vShaderStream.str();
         fragmentCode = fShaderStream.str();
     }
-    catch (std::ifstream::failure &e)
+    catch (std::ifstream::failure& e)
     {
         std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
     }
 
-    const char *vShaderCode = vertexCode.c_str();
-    const char *fShaderCode = fragmentCode.c_str();
+    const char* vShaderCode = vertexCode.c_str();
+    const char* fShaderCode = fragmentCode.c_str();
     // 2. compile shaders
     unsigned int vertex, fragment;
     // vertex shader
@@ -82,10 +83,22 @@ void OpenGLShader::SetVec4(const std::string value_name, const glm::vec4 value) 
     glUniform4f(vec4formLoc, value.r, value.g, value.b, value.a);
 }
 
+void OpenGLShader::SetVec3(const std::string value_name, const glm::vec3 value) const
+{
+    uint32_t vec4formLoc = glGetUniformLocation(m_program, value_name.c_str());
+    glUniform3f(vec4formLoc, value.x, value.y, value.z);
+}
+
 void OpenGLShader::SetInt(const std::string value_name, const int value) const
 {
     uint32_t uint_uniform_location = glGetUniformLocation(m_program, value_name.c_str());
     glUniform1i(uint_uniform_location, value);
+}
+
+void OpenGLShader::SetFloat(const std::string value_name, const float value) const
+{
+    uint32_t uint_uniform_location = glGetUniformLocation(m_program, value_name.c_str());
+    glUniform1f(uint_uniform_location, value);
 }
 
 void OpenGLShader::SetMat4(const std::string value_name, const glm::mat4 value) const

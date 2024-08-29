@@ -19,15 +19,15 @@ AlignTrailingComments: true
 # 允许函数声明的所有参数在放在下一行
 AllowAllParametersOfDeclarationOnNextLine: true
 # 允许短的块放在同一行
-AllowShortBlocksOnASingleLine: false
+AllowShortBlocksOnASingleLine: true
 # 允许短的case标签放在同一行
-AllowShortCaseLabelsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: true
 # 允许短的函数放在同一行: None, InlineOnly(定义在类中), Empty(空函数), Inline(定义在类中，空函数), All
 AllowShortFunctionsOnASingleLine: Empty
 # 允许短的if语句保持在同一行
-AllowShortIfStatementsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: true
 # 允许短的循环保持在同一行
-AllowShortLoopsOnASingleLine: false
+AllowShortLoopsOnASingleLine: true
 # 总是在定义返回类型后换行(deprecated)
 AlwaysBreakAfterDefinitionReturnType: None
 # 总是在返回类型后换行: None, All, TopLevel(顶级函数，不包括在类中的函数),

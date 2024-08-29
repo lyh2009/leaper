@@ -1,14 +1,14 @@
 #pragma once
-#include <spdlog/sinks/sink.h>
 #include <spdlog/sinks/base_sink.h>
+#include <spdlog/sinks/sink.h>
 #include <spdlog/spdlog.h>
 
 #include <core/time.h>
 
-#include <string>
-#include <vector>
 #include <memory>
 #include <mutex>
+#include <string>
+#include <vector>
 
 namespace Leaper
 {
@@ -18,19 +18,24 @@ namespace Leaper
         struct LogItem
         {
             std::string message;
+            std::string time_str;
+            std::string info;
             spdlog::level::level_enum level;
         };
 
     protected:
-        void sink_it_(const spdlog::details::log_msg &msg) override
+        void sink_it_(const spdlog::details::log_msg& msg) override
         {
             LogItem it;
-            it.message = Leaper::Time::GetTime("%Y-%m-%d%H:%M:%S ") + std::string(msg.payload.data(), msg.payload.size());
-            it.level = msg.level;
+            it.time_str = Leaper::Time::GetTime("%Y-%m-%d%H:%M:%S ");
+            it.info     = std::string(msg.payload.data(), msg.payload.size());
+            it.message  = it.time_str + it.info;
+            it.level    = msg.level;
             log_item.push_back(it);
         };
 
         void flush_() override {};
+
     public:
         std::vector<LogItem> log_item;
     };
@@ -40,17 +45,26 @@ namespace Leaper
     public:
         static void Init();
 
-        [[nodiscard]] static inline std::shared_ptr<spdlog::logger> &GetCoreLogger() { return s_coreLogger; }
-        [[nodiscard]] static inline std::shared_ptr<spdlog::logger> &GetClientLogger() { return s_clientLogger; }
+        [[nodiscard]] static inline std::shared_ptr<spdlog::logger>& GetCoreLogger()
+        {
+            return s_coreLogger;
+        }
+        [[nodiscard]] static inline std::shared_ptr<spdlog::logger>& GetClientLogger()
+        {
+            return s_clientLogger;
+        }
 
-        static inline const std::shared_ptr<Sink_mt> GetSink() { return std::dynamic_pointer_cast<Sink_mt>(s_log_sinks[0]); }
+        static inline const std::shared_ptr<Sink_mt> GetSink()
+        {
+            return std::dynamic_pointer_cast<Sink_mt>(s_log_sinks[0]);
+        }
 
     private:
         static std::vector<spdlog::sink_ptr> s_log_sinks;
         static std::shared_ptr<spdlog::logger> s_coreLogger;
         static std::shared_ptr<spdlog::logger> s_clientLogger;
     };
-}
+}  // namespace Leaper
 
 #define LP_CORE_LOG(...) ::Leaper::Log::GetCoreLogger()->debug(__VA_ARGS__)
 #define LP_CORE_LOG_INFO(...) ::Leaper::Log::GetCoreLogger()->info(__VA_ARGS__)

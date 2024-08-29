@@ -14,9 +14,10 @@ void Leaper::LuaScriptSystem::OnUpdate() {}
 void Leaper::LuaScriptSystem::OnGameStart()
 {
     LuaBinder::CallBinders(state);
-    state.set_function("lpCreateEntity",
-                       [&](const std::string& name) -> Entity { return m_scene->CreateEntity(name); });
-    m_scene->Reg().view<LuaScriptComponent>().each([&](auto other, LuaScriptComponent& lsc) {
+    state.set_function("CreateEntity", [&](const std::string& name) -> Entity { return m_scene->CreateEntity(name); });
+    
+    m_scene->Reg().view<LuaScriptComponent>().each([&](auto other, LuaScriptComponent& lsc) 
+    {
         Entity entity{ other, m_scene };
         auto result = state.safe_script_file(lsc.path, &sol::script_pass_on_error);
         if (result.valid())

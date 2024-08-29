@@ -25,6 +25,7 @@ namespace Leaper
         COLOR_ATTACHMENT5,
         COLOR_ATTACHMENT6,
         COLOR_ATTACHMENT7,
+        DEPTH_STENCIL_ATTACHMENT
     };
 
     class FrameBuffer
@@ -33,6 +34,7 @@ namespace Leaper
         virtual uint32_t& GetTexture(int count) = 0;
         virtual void RescaleFrameBuffer(float width, float height) = 0;
         virtual uint32_t CreateTexture(int width, int height, Leaper::TextureFormat internalformat, Leaper::TextureFormat format, Leaper::Attachments attachment) = 0;
+        virtual uint32_t CreateDepthTexture(int width, int height) = 0;
         virtual uint32_t AttachmentsToGL(Leaper::Attachments attachment) = 0;
 
         virtual int ReadPixels(uint32_t attachment, int x, int y) = 0;

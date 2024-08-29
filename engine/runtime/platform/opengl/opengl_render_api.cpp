@@ -10,6 +10,14 @@ OpenGLRenderAPI::~OpenGLRenderAPI()
 {
 }
 
+void OpenGLRenderAPI::Init()
+{
+    glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LINE_SMOOTH);
+}
 void OpenGLRenderAPI::SetClearColor(glm::vec4 color)
 {
     glClearColor(color.r, color.g, color.b, color.a);
@@ -17,7 +25,7 @@ void OpenGLRenderAPI::SetClearColor(glm::vec4 color)
 
 void OpenGLRenderAPI::Clear()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void OpenGLRenderAPI::DrawElements(Leaper::Ref<Leaper::VertexArray> vertex_array, uint32_t count)

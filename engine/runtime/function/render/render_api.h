@@ -16,6 +16,7 @@ namespace Leaper
             None, OpenGL
         };
     public:
+        virtual void Init() = 0;
         virtual void SetClearColor(glm::vec4 color) = 0;
         virtual void Clear() = 0;
         virtual void DrawElements(Leaper::Ref<Leaper::VertexArray> vertex_array, uint32_t count)  = 0;

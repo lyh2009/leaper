@@ -3,12 +3,40 @@
 layout (location = 0) out vec4 FragColor;
 out int EntityID;
 
+in vec3 		v_Position;
 in vec4 		v_Color;
 in vec2 		v_TexCoord;
 in flat float 	v_TexIndex;
 in flat int 	v_EntityID;
 
 layout (binding = 0) uniform sampler2D u_Textures[32];
+
+struct PointLight
+{
+	vec3 position;
+	vec3 color;
+	float intensity;
+};
+const int MAX_POINT_LIGHT_COUNT = 4;
+
+uniform PointLight u_PointLight[MAX_POINT_LIGHT_COUNT];
+uniform vec3 u_AmbientLight;
+
+vec3 result;
+
+vec3 CalcPointLight(PointLight point_light, vec4 tex_color)
+{
+	vec3 light_pos = point_light.position;
+	vec3 light_color = point_light.color;
+	float intensity = point_light.intensity;
+
+	float distance = distance(light_pos.xy, v_Position.xy);
+    float diffuse = 0.0;
+    if (distance <= intensity)
+    	diffuse =  1.0 - abs(distance / intensity);
+	
+   	return min(tex_color.rgb * (light_color * diffuse + u_AmbientLight), tex_color.rgb);
+}
 
 void main()
 {
@@ -52,6 +80,13 @@ void main()
 
     if (texColor.a == 0.0)
 		discard;
-    FragColor = texColor;
+
+
+	for(int i = 0; i < MAX_POINT_LIGHT_COUNT; i++)
+	{
+		result += CalcPointLight(u_PointLight[i], texColor);
+	}
+
+	FragColor = vec4(result, 1.0);
 	EntityID  = v_EntityID;
 }

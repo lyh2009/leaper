@@ -1,8 +1,8 @@
-#include <glad/glad.h>
 #include "lppch.h"
 #include "opengl_buffers.h"
+#include <glad/glad.h>
 
-OpenGLVertexBuffer::OpenGLVertexBuffer(const void *vertices, size_t size)
+OpenGLVertexBuffer::OpenGLVertexBuffer(const void* vertices, size_t size)
 {
     glGenBuffers(1, &m_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
@@ -23,7 +23,7 @@ OpenGLVertexBuffer::~OpenGLVertexBuffer()
 
 void OpenGLVertexBuffer::Bind()
 {
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);   
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 }
 
 void OpenGLVertexBuffer::UnBind()
@@ -31,25 +31,32 @@ void OpenGLVertexBuffer::UnBind()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void OpenGLVertexBuffer::SetData(const void *vertices, size_t size)
+void OpenGLVertexBuffer::SetData(const void* vertices, size_t size)
 {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     glBufferSubData(GL_ARRAY_BUFFER, 0, size, vertices);
 }
 
-//Index Buffer
+// Index Buffer
 OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count)
 {
     m_count = count;
-    glGenBuffers(1, &m_ebo);
+    glCreateBuffers(1, &m_ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, count, indices, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, count, indices, GL_STATIC_DRAW);
+}
 
+OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t count)
+{
+    m_count = count;
+    glCreateBuffers(1, &m_ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, count, nullptr, GL_DYNAMIC_DRAW);
 }
 
 OpenGLIndexBuffer::~OpenGLIndexBuffer()
 {
-    glDeleteBuffers(sizeof(m_ebo), &m_ebo);
+    glDeleteBuffers(1, &m_ebo);
 }
 
 void OpenGLIndexBuffer::Bind()
@@ -64,6 +71,7 @@ void OpenGLIndexBuffer::UnBind()
 
 void OpenGLIndexBuffer::SetData(uint32_t* indices, uint32_t count)
 {
-    glBindBuffer(GL_ARRAY_BUFFER, m_ebo);
-    glBufferData(GL_ARRAY_BUFFER, count, indices, GL_DYNAMIC_DRAW);
+    m_count = count;
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, count, indices);
 }

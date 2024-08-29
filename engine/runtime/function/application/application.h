@@ -9,54 +9,59 @@
 #include "function/ecs/entity.h"
 #include "function/imgui/imgui_layer.h"
 #include "function/render/camera_controller.h"
+#include "function/render/context.h"
 #include "function/render/renderer2d.h"
 #include "platform/windows/windows_window.h"
 
-
 #include <string.h>
+#include <thread>
 
 namespace Leaper
 {
-class Application
-{
-public:
-    Application(Leaper::RenderAPI::API api, int width, int height, std::string title);
-    ~Application();
-
-    static Application& Get()
+    class Application
     {
-        return *s_instance;
-    }
+    public:
+        Application(Leaper::RenderAPI::API api, int width, int height, std::string title);
+        ~Application();
 
-    inline Leaper::Ref<Leaper::Window> GetWindow()
-    {
-        return m_window;
-    }
-    inline Leaper::Ref<Leaper::RenderAPI> GetRenderAPI()
-    {
-        return m_render_api;
-    }
-    inline Leaper::ImGuiLayer* GetImGuiLayer() const
-    {
-        return m_imgui_layer;
-    }
-    void OnAttach();
+        static Application& Get()
+        {
+            return *s_instance;
+        }
 
-    void PushLayer(Leaper::Layer* layer);
-    void PushOverlay(Leaper::Layer* overlay);
+        inline Leaper::Ref<Leaper::Window> GetWindow()
+        {
+            return m_window;
+        }
+        inline Leaper::Ref<Leaper::RenderAPI> GetRenderAPI()
+        {
+            return m_render_api;
+        }
+        inline Leaper::ImGuiLayer* GetImGuiLayer() const
+        {
+            return m_imgui_layer;
+        }
+        void OnAttach();
 
-    void OnEvent(Leaper::Event& e);
+        void PushLayer(Leaper::Layer* layer);
+        void PushOverlay(Leaper::Layer* overlay);
 
-    void Run();
+        void OnEvent(Leaper::Event& e);
 
-private:
-    static Application* s_instance;
+        void Run();
+        void RenderMain();
 
-    Leaper::ImGuiLayer* m_imgui_layer = nullptr;
-    Leaper::Ref<Leaper::Window> m_window;
+    private:
+        static Application* s_instance;
 
-    Leaper::Ref<Leaper::RenderAPI> m_render_api;
-    Leaper::LayerStack m_layer_stack;
-};
+        Leaper::ImGuiLayer* m_imgui_layer = nullptr;
+        Leaper::Ref<Leaper::Window> m_window;
+
+        Leaper::Ref<Leaper::RenderAPI> m_render_api;
+        Leaper::Scope<Leaper::Context> m_context;
+        Leaper::LayerStack m_layer_stack;
+
+        std::thread m_render_thread;
+    };
 
 }  // namespace Leaper
