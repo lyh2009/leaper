@@ -16,6 +16,7 @@ set(INCLUDE_DIR
  "${3RDPARTY}/glad/include/"
  "${3RDPARTY}/glfw/include/"
  "${3RDPARTY}/box2d/include/"
+ "${3RDPARTY}/stb/include/"
  "${3RDPARTY}/glm/"
  "${3RDPARTY}/imgui/"
  "${3RDPARTY}/imgui_zmo/"
@@ -25,7 +26,6 @@ set(INCLUDE_DIR
  "${3RDPARTY}/FMOD/api/core/inc/"
  "${3RDPARTY}/FMOD/api/fsbank/inc/"
  "${3RDPARTY}/FMOD/api/studio/inc/"
- "${3RDPARTY}/tinygltf/"
  "${3RDPARTY}/assimp/include")
 
  include_directories(${INCLUDE_DIR})

@@ -7,7 +7,6 @@
 #include "core/log.h"
 #include "function/render/buffers.h"
 #include "mesh.h"
-#include "tiny_gltf.h"
 #include <cstdint>
 
 Leaper::Mesh::Mesh(std::vector<MeshVertex> vertices, std::vector<uint32_t> indices, std::vector<Mesh::MeshTexture> textures)
