@@ -1,5 +1,4 @@
-# Leaper Engine
-一个游戏引擎
+# Leaper Engin
 
 <!-- PROJECT LOGO -->
 <br />
@@ -9,6 +8,8 @@
     <img src="engine\resource\leaper.png" alt="Logo" width="100" height="100">
   </a>
 </p>
+
+一个小型的游戏引擎
 
 ## 目录
 - [开发前的配置要求](#开发前的配置要求)
@@ -27,7 +28,7 @@
 1. Clang 18.1.8(或更高版本)
 2. GCC 13.2(或更高版本)
 3. Visual Studio 17 2022(或更高版本)
-注意: 支持C++17的通常都能编译
+4. 注意: 支持C++17的通常都能编译并不是必须要使用推荐的编译器
 
 ### 编译步骤
 ###### Windows编译步骤

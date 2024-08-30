@@ -41,7 +41,7 @@ void Leaper::Mesh::Render(glm::mat4& trans, glm::mat4& camera, glm::vec3 camera_
     m_shader->SetMat4("u_Trans", trans);
     m_shader->SetMat4("u_ProjectionView", camera);
     m_shader->SetVec3("u_ViewPos", camera_pos);
-    RenderCommand::DrawElements(m_vertex_array, m_index_buffer->GetCount());
+    RenderCommand::DrawElements(m_vertex_array, static_cast<unsigned int>(m_indices.size()));
 
     for (int i = 0; i < m_textures.size(); ++i) m_textures[i].texture->UnBind();
     m_shader->UnBind();

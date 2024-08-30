@@ -117,16 +117,30 @@ std::vector<Leaper::Mesh::MeshTexture> Leaper::Model::LoadTexture(aiMaterial* ma
     std::vector<Mesh::MeshTexture> textures;
     for (int i = 0; i < mat->GetTextureCount(type); i++)
     {
-        Mesh::MeshTexture texture;
-
         aiString str;
         mat->GetTexture(type, i, &str);
         std::string path = m_path + "\\" + std::string(str.C_Str());
         LP_CORE_LOG(path);
-        texture.texture = Leaper::Texture::Create(path, false);
-        texture.type    = type_name;
+        bool skip = false;
+        for (unsigned int j = 0; j < textures_loaded.size(); j++)
+        {
+            if (std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0)
+            {
+                textures.push_back(textures_loaded[j]);
+                skip = true;
+                break;
+            }
+        }
+        if (!skip)
+        {  // 如果纹理还没有被加载，则加载它
+            Mesh::MeshTexture texture;
 
-        textures.push_back(texture);
+            texture.texture = Leaper::Texture::Create(path, false);
+            texture.type    = type_name;
+            texture.path    = str.C_Str();
+            textures.push_back(texture);
+            textures_loaded.push_back(texture);  // 添加到已加载的纹理中
+        }
     }
 
     return textures;

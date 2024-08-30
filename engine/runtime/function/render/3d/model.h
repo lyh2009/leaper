@@ -25,6 +25,7 @@ namespace Leaper
 
         std::vector<Mesh> m_meshes;
         Leaper::Ref<Shader> m_shader;
+        std::vector<Mesh::MeshTexture> textures_loaded;
         std::string m_path;
     };
 }  // namespace Leaper

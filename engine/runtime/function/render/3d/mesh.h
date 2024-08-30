@@ -23,14 +23,15 @@ namespace Leaper
     public:
         struct MeshVertex
         {
-            glm::vec3 position = { 0.0f, 0.0f, 0.0f };
-            glm::vec3 normal   = { 0.0f, 0.0f, 0.0f };
-            glm::vec2 texcoord = { 0.0f, 0.0f };
+            glm::vec3 position;
+            glm::vec3 normal;
+            glm::vec2 texcoord;
         };
 
         struct MeshTexture
         {
             Leaper::Ref<Texture> texture = nullptr;
+            std::string path;
             TextureType type;
         };
 
