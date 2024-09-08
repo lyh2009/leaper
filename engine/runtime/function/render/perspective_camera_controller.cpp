@@ -1,8 +1,9 @@
-#include "perspective_camera_controller.h"
 #include "core/base.h"
 #include "core/time.h"
 #include "function/input/input.h"
+#include "function/input/key_codes.h"
 #include "imgui.h"
+#include "perspective_camera_controller.h"
 
 #include <glfw/glfw3.h>
 
@@ -68,7 +69,12 @@ namespace Leaper
             MouseRotate(delta);
         else if (ImGui::IsMouseDown(ImGuiMouseButton_Middle))
             MouseZoom(delta.y);
-        
+
+        float speed = 10.f;
+        if (Input::IsKeyDown(LP_KEY_W)) m_focal_point += GetForwardDirection() * speed * Time::GetDeltaTime();
+        if (Input::IsKeyDown(LP_KEY_S)) m_focal_point -= GetForwardDirection() * speed * Time::GetDeltaTime();
+        if (Input::IsKeyDown(LP_KEY_A)) m_focal_point -= GetRightDirection() * speed * Time::GetDeltaTime();
+        if (Input::IsKeyDown(LP_KEY_D)) m_focal_point += GetRightDirection() * speed * Time::GetDeltaTime();
 
         UpdateView();
     }

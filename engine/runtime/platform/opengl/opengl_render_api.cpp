@@ -1,22 +1,18 @@
-#include "opengl_render_api.h"
 #include "lppch.h"
+#include "opengl_render_api.h"
 
-OpenGLRenderAPI::OpenGLRenderAPI()
-{
-    
-}
 
-OpenGLRenderAPI::~OpenGLRenderAPI()
-{
-}
+OpenGLRenderAPI::OpenGLRenderAPI() {}
+
+OpenGLRenderAPI::~OpenGLRenderAPI() {}
 
 void OpenGLRenderAPI::Init()
 {
     glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LINE_SMOOTH);
 }
 void OpenGLRenderAPI::SetClearColor(glm::vec4 color)
 {
@@ -41,7 +37,7 @@ void OpenGLRenderAPI::DrawLines(const Leaper::Ref<Leaper::VertexArray>& vao, uin
     glDrawArrays(GL_LINES, 0, count);
 }
 
-void OpenGLRenderAPI::SetLineWidth(const float &width)
+void OpenGLRenderAPI::SetLineWidth(const float& width)
 {
     glLineWidth(width);
 }

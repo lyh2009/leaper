@@ -15,7 +15,7 @@ namespace Leaper
     public:
         Model() = default;
         Model(const std::string& path);
-        void Draw(glm::mat4& trans, glm::mat4& camera, glm::vec3 camera_pos);
+        void Draw(glm::mat4& trans, glm::mat4& camera, glm::vec3 camera_pos, int entity_id = -1);
 
     private:
         void LoadModel(const std::string& path);

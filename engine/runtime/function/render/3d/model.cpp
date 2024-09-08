@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <iostream>
 #include <iterator>
+#include <meshoptimizer.h>
 #include <string>
 #include <vector>
 
@@ -21,9 +22,9 @@ Leaper::Model::Model(const std::string& path)
     LoadModel(path);
 }
 
-void Leaper::Model::Draw(glm::mat4& trans, glm::mat4& camera, glm::vec3 camera_pos)
+void Leaper::Model::Draw(glm::mat4& trans, glm::mat4& camera, glm::vec3 camera_pos, int entity_id)
 {
-    for (int i = 0; i < m_meshes.size(); ++i) { m_meshes[i].Render(trans, camera, camera_pos); }
+    for (int i = 0; i < m_meshes.size(); ++i) { m_meshes[i].Render(trans, camera, camera_pos, entity_id); }
 }
 
 void Leaper::Model::LoadModel(const std::string& path)

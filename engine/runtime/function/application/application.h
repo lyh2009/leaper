@@ -12,6 +12,7 @@
 #include "function/render/context.h"
 #include "function/render/renderer2d.h"
 #include "platform/windows/windows_window.h"
+#include <mutex>
 
 #include <string.h>
 #include <thread>
@@ -41,6 +42,7 @@ namespace Leaper
         {
             return m_imgui_layer;
         }
+
         void OnAttach();
 
         void PushLayer(Leaper::Layer* layer);
@@ -62,6 +64,7 @@ namespace Leaper
         Leaper::LayerStack m_layer_stack;
 
         std::thread m_render_thread;
+        std::mutex m_mutex;
     };
 
 }  // namespace Leaper

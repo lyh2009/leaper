@@ -1,5 +1,6 @@
 #include "function/render/texture.h"
 #include "project.h"
+#include <IconsFontAwesome6.h>
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -26,7 +27,7 @@ void Project::OnAttach()
 
 void Project::OnUpdate()
 {
-    ImGui::Begin("Project");
+    ImGui::Begin(ICON_FA_FOLDER "Project");
     float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
 
     static int icon_size = 60;
@@ -40,11 +41,11 @@ void Project::OnUpdate()
 
     if (m_path != std::filesystem::path(g_assets_path))
     {
-        if (ImGui::Button("<-")) { m_path = m_path.parent_path(); }
+        if (ImGui::Button(ICON_FA_REPLY)) { m_path = m_path.parent_path(); }
         ImGui::SameLine();
     }
 
-    if (ImGui::Button("...")) { ImGui::OpenPopup("Setting"); }
+    if (ImGui::Button(ICON_FA_BAHAI)) { ImGui::OpenPopup("Setting"); }
     ImGui::SameLine();
     ImGui::Text(m_path.string().c_str());
 

@@ -10,7 +10,8 @@ file(GLOB_RECURSE ALL_SOURCE
  "${3RDPARTY}/imgui/backends/*.cpp" 
  "${3RDPARTY}/imgui/*.cpp" 
  "${3RDPARTY}/imgui_zmo/*.cpp"
-)
+ "${3RDPARTY}/meshoptimizer/*.cpp"
+ )
 set(INCLUDE_DIR
  "./"
  "${3RDPARTY}/glad/include/"
@@ -26,7 +27,9 @@ set(INCLUDE_DIR
  "${3RDPARTY}/FMOD/api/core/inc/"
  "${3RDPARTY}/FMOD/api/fsbank/inc/"
  "${3RDPARTY}/FMOD/api/studio/inc/"
- "${3RDPARTY}/assimp/include")
+ "${3RDPARTY}/assimp/include"
+ "${3RDPARTY}/meshoptimizer"
+ "${3RDPARTY}/IconFontCppHeaders")
 
  include_directories(${INCLUDE_DIR})
 add_library(leaper_runtime STATIC ${ALL_SOURCE})

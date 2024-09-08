@@ -1,6 +1,15 @@
 #include "console.h"
 #include "core/log.h"
 #include "imgui.h"
+#include <IconsFontAwesome6.h>
+
+const size_t max_shown_ = 1024;
+const ImVec4 LVL_LOG_CLR{ 1.0f, 1.0f, 1.0f, 1.0f };
+
+const ImVec4 LVL_DBG_CLR{ 0.0f, 1.0f, 0.8f, 1.0f };
+const ImVec4 LVL_INFO_CLR{ 0.0f, 0.8f, 0.0f, 1.0f };
+const ImVec4 LVL_WRN_CLR{ 1.0f, 0.7f, 0.0f, 1.0f };
+const ImVec4 LVL_ERR_CLR{ 1.0f, 0.0f, 0.0f, 1.0f };
 
 void Console::OnAttach()
 {
@@ -17,75 +26,58 @@ void Separator(ImVec2 size, ImVec4 color)
     ImGui::PopStyleColor();
 }
 
+void DrawMessageTable(const std::string& label, const std::string& time_str, const std::string& str, ImVec4 color, bool is_draw, float table_row)
+{
+    if (is_draw)
+    {
+        ImGui::TableNextRow(0, table_row);
+        ImGui::TableSetColumnIndex(0);
+        Separator(ImVec2(4.0f, table_row), color);
+        ImGui::SameLine();
+        ImGui::Text(label.c_str());
+        ImGui::TableSetColumnIndex(1);
+        ImGui::Text(time_str.c_str());
+        ImGui::TableSetColumnIndex(2);
+        ImGui::Text(str.c_str());
+    }
+}
+
 void Console::OnUpdate()
 {
-    ImGui::Begin(">_Console", nullptr);
-
-    auto messages_          = Leaper::Log::GetSink()->log_item;
-    const size_t max_shown_ = 1024;
-    const ImVec4 LVL_LOG_CLR{ 1.0f, 1.0f, 1.0f, 1.0f };
-
-    const ImVec4 LVL_DBG_CLR{ 0.0f, 1.0f, 0.8f, 1.0f };
-    const ImVec4 LVL_INFO_CLR{ 0.0f, 0.8f, 0.0f, 1.0f };
-    const ImVec4 LVL_WRN_CLR{ 1.0f, 0.7f, 0.0f, 1.0f };
-    const ImVec4 LVL_ERR_CLR{ 1.0f, 0.0f, 0.0f, 1.0f };
+    auto messages_ = Leaper::Log::GetSink()->log_item;
+    ImGui::Begin(ICON_FA_TERMINAL "Console", nullptr);
+    if (ImGui::Button(ICON_FA_TRASH_CAN "Clear")) { Leaper::Log::GetSink()->log_item.clear(); }
+    static bool checkbox[4] = { true, true, true, true };
+    ImGui::SameLine();
+    ImGui::Checkbox("Debug", &checkbox[0]);
+    ImGui::SameLine();
+    ImGui::Checkbox("Info", &checkbox[1]);
+    ImGui::SameLine();
+    ImGui::Checkbox("Warning", &checkbox[2]);
+    ImGui::SameLine();
+    ImGui::Checkbox("Error", &checkbox[3]);
 
     static ImGuiTableFlags flags =
         ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
-
     ImGui::BeginChild("ConsoleChlid");
     if (ImGui::BeginTable("table1", 3, flags))
     {
-        ImGui::TableSetupColumn("Level", ImGuiTableColumnFlags_WidthFixed);
-        ImGui::TableSetupColumn("Time", ImGuiTableColumnFlags_WidthFixed);
-        ImGui::TableSetupColumn("Info", ImGuiTableColumnFlags_WidthStretch);
-        ImGui::TableHeadersRow();
         for (size_t i = messages_.size() > max_shown_ ? messages_.size() - max_shown_ : 0; i < messages_.size(); ++i)
         {
             auto const& msg       = messages_[i];
             const float table_row = 22.0f;
-            ImGui::TableNextRow(0, table_row);
-            for (int column = 0; column < 3; column++)
+            switch (msg.level)
             {
-                ImGui::TableSetColumnIndex(column);
-                if (column == 0)
-                {
-                    switch (msg.level)
-                    {
-                    case spdlog::level::debug:
-                        Separator(ImVec2(4.0f, table_row), LVL_DBG_CLR);
-                        ImGui::SameLine();
-                        ImGui::Text("Debug");
-                        break;
-                    case spdlog::level::info:
-                        Separator(ImVec2(4.0f, table_row), LVL_INFO_CLR);
-                        ImGui::SameLine();
-                        ImGui::Text("Info ");
-                        break;
-                    case spdlog::level::warn:
-                        Separator(ImVec2(4.0f, table_row), LVL_WRN_CLR);
-                        ImGui::SameLine();
-                        ImGui::Text("Warning");
-                        break;
-                    case spdlog::level::err:
-                        Separator(ImVec2(4.0f, table_row), LVL_ERR_CLR);
-                        ImGui::SameLine();
-                        ImGui::Text("Error");
-                        break;
-                    default:
-                        Separator(ImVec2(4.0f, table_row), LVL_LOG_CLR);
-                        ImGui::SameLine();
-                        ImGui::Text("Log");
-                    }
-                }
-
-                if (column == 1) ImGui::Text(msg.time_str.c_str());
-                if (column == 2) ImGui::Text(msg.info.c_str());
+            case spdlog::level::debug: DrawMessageTable("Debug", msg.time_str, msg.info, LVL_DBG_CLR, checkbox[0], table_row); break;
+            case spdlog::level::info: DrawMessageTable("Info", msg.time_str, msg.info, LVL_INFO_CLR, checkbox[1], table_row); break;
+            case spdlog::level::warn: DrawMessageTable("Warning", msg.time_str, msg.info, LVL_WRN_CLR, checkbox[2], table_row); break;
+            case spdlog::level::err: DrawMessageTable("Error", msg.time_str, msg.info, LVL_ERR_CLR, checkbox[3], table_row); break;
+            default: break;
             }
         }
-
-        ImGui::EndTable();
     }
+
+    ImGui::EndTable();
     if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) ImGui::SetScrollHereY(1.0f);
     ImGui::EndChild();
     ImGui::End();

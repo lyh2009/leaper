@@ -11,6 +11,7 @@ uniform vec3 u_ViewPos;
 
 uniform sampler2D u_Diffuse;
 uniform sampler2D u_Specular;
+uniform int u_EntityID;
 
 uniform vec3 lightPos = vec3(1.2f, -3.0f, -2.0f);
 uniform vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
@@ -38,5 +39,5 @@ void main() {
 
   vec3 result = (ambient + diffuse + specular);
   FragColor = vec4(result, 1.0);
-  EntityID = -1;
+  EntityID = u_EntityID;
 }

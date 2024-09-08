@@ -181,7 +181,7 @@ void Leaper::Renderer3D::DrawCube(glm::mat4& trans, const Leaper::Ref<Leaper::Te
     s_data.cube_index_count += 36;
 }
 
-void Leaper::Renderer3D::DrawModel(Model model, glm::mat4& trans)
+void Leaper::Renderer3D::DrawModel(Model model, glm::mat4& trans, int entity_id)
 {
-    model.Draw(trans, s_data.camera_buffer.view_projection, s_data.camera_buffer.position);
+    model.Draw(trans, s_data.camera_buffer.view_projection, s_data.camera_buffer.position, entity_id);
 }

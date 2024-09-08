@@ -74,6 +74,10 @@ private:
     Leaper::Ref<Leaper::Texture> m_rotate_icon;
     Leaper::Ref<Leaper::Texture> m_scale_icon;
 
+    glm::vec2 m_viewport_bounds[2];
+
+    bool is_read_pixel = false;
+
     struct MousePickingData
     {
         ImVec2 mouse_pos_in_texture;

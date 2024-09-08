@@ -1,6 +1,7 @@
 #include "imgui_layer.h"
 #include "lppch.h"
 
+#include "IconsFontAwesome5.h"
 #include "function/application/application.h"
 
 #include <algorithm>
@@ -27,6 +28,18 @@ void Leaper::ImGuiLayer::OnAttach()
     ImGui_ImplOpenGL3_Init("#version 460");
 
     // io.Fonts->AddFontFromFileTTF("./resource/fonts/JetBrainsMonoNerdFontMono-Medium.ttf", 17.0f);
+
+    io.Fonts->AddFontDefault();
+    float baseFontSize = 13.0f;                       // 13.0f is the size of the default font. Change to the font size you use.
+    float iconFontSize = baseFontSize * 2.0f / 3.0f;  // FontAwesome fonts need to have their sizes reduced by 2.0f/3.0f in order to align correctly
+
+    // merge in icons from Font Awesome
+    static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
+    ImFontConfig icons_config;
+    icons_config.MergeMode        = true;
+    icons_config.PixelSnapH       = true;
+    icons_config.GlyphMinAdvanceX = iconFontSize;
+    io.Fonts->AddFontFromFileTTF("resource\\fonts\\fa-solid-900.ttf", iconFontSize, &icons_config, icons_ranges);
 }
 
 void Leaper::ImGuiLayer::Begin()
@@ -40,7 +53,15 @@ void Leaper::ImGuiLayer::Begin()
     ImGuizmo::BeginFrame();
 }
 
-void Leaper::ImGuiLayer::OnEvent(Leaper::Event& e) {}
+void Leaper::ImGuiLayer::OnEvent(Leaper::Event& e)
+{
+    if (m_block_events)
+    {
+        ImGuiIO& io = ImGui::GetIO();
+        e.handle |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+        e.handle |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+    }
+}
 
 void Leaper::ImGuiLayer::End()
 {

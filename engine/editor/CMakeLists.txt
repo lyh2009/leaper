@@ -13,6 +13,7 @@ set(INCLUDE_DIR
  "${3RDPARTY}/imgui/"
  "${3RDPARTY}/imgui_zmo/"
  "${3RDPARTY}/sol2/include/"
+ "${3RDPARTY}/IconFontCppHeaders/"
  "../runtime/"
  )
 

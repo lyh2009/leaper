@@ -21,6 +21,7 @@
 #include <function/render/renderer3d.h>
 #include <function/utils/platform_utils.h>
 
+#include <IconsFontAwesome6.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <imgui_internal.h>
@@ -85,7 +86,6 @@ void EditorLayer::OnUpdate()
 
     if (m_scene_state == SceneState::Edit)
     {
-        m_camera.OnUpdate();
         m_perspective_camera.OnUpdate();
 
         Leaper::Renderer2D::BeginScene(m_perspective_camera.GetViewProjection());
@@ -140,9 +140,16 @@ void EditorLayer::OnUpdate()
     Leaper::Renderer3D::EndScene();
 
     // get entity
-    if (m_mouse_in_window.x >= 0 && m_mouse_in_window.y >= 0 && m_mouse_in_window.x < m_window_size.x && m_mouse_in_window.x < m_window_size.x)
+    auto [mx, my] = ImGui::GetMousePos();
+    mx -= m_viewport_bounds[0].x;
+    my -= m_viewport_bounds[0].y;
+    glm::vec2 viewport_size = m_viewport_bounds[1] - m_viewport_bounds[0];
+    my                      = viewport_size.y - my;
+    int mouseX              = (int)mx;
+    int mouseY              = (int)my;
+    if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewport_size.x && mouseY < (int)viewport_size.y)
     {
-        int entity_id    = m_framebuffer->ReadPixels(1, (int)m_mouse_in_texture.x, (int)m_mouse_in_texture.y);
+        int entity_id    = m_framebuffer->ReadPixels(1, (int)mouseX, (int)mouseY);
         m_hovered_entity = entity_id == -1 ? Leaper::Entity() : Leaper::Entity((entt::entity)entity_id, m_active_scene.get());
     }
 
@@ -223,21 +230,18 @@ void EditorLayer::OnImGuiRender()
     }
 
     // scene window
-    ImGui::Begin("Scene");
-    ImGui::BeginChild("Scene Render");
+    ImGui::Begin(ICON_FA_DESKTOP "Scene");
 
-    m_mouse_pos        = ImGui::GetMousePos();
-    m_window_size      = ImGui::GetWindowSize();
-    m_window_pos       = ImGui::GetWindowPos();
-    m_mouse_in_window  = ImVec2(m_mouse_pos.x - m_window_pos.x, m_mouse_pos.y - m_window_pos.y);
-    m_mouse_in_texture = ImVec2(m_mouse_in_window.x, m_window_size.y - m_mouse_in_window.y);
+    auto viewport_min_region = ImGui::GetWindowContentRegionMin();
+    auto viewport_max_region = ImGui::GetWindowContentRegionMax();
+    auto viewport_offset     = ImGui::GetWindowPos();
+    m_viewport_bounds[0]     = { viewport_min_region.x + viewport_offset.x, viewport_min_region.y + viewport_offset.y };
+    m_viewport_bounds[1]     = { viewport_max_region.x + viewport_offset.x, viewport_max_region.y + viewport_offset.y };
 
     m_viewport_hovered    = ImGui::IsWindowHovered();
-    m_window_size         = ImGui::GetWindowSize();
-    m_viewport_pos        = ImGui::GetWindowPos();
-    m_viewport_panel_size = ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetWindowHeight());
+    m_viewport_panel_size = ImGui::GetContentRegionAvail();
 
-    ImGui::Image((void*)m_framebuffer->GetTexture(0), ImVec2(m_viewport_size.x, m_viewport_size.y), ImVec2(0, 1), ImVec2(1, 0));
+    ImGui::Image(reinterpret_cast<void*>(m_framebuffer->GetTexture(0)), ImVec2(m_viewport_panel_size.x, m_viewport_panel_size.y), ImVec2(0, 1), ImVec2(1, 0));
 
     if (ImGui::BeginDragDropTarget())
     {
@@ -264,9 +268,7 @@ void EditorLayer::OnImGuiRender()
     {
         ImGuizmo::SetDrawlist();
 
-        float window_height = (float)ImGui::GetWindowHeight();
-        float window_width  = (float)ImGui::GetWindowWidth();
-        ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, window_width, window_height);
+        ImGuizmo::SetRect(m_viewport_bounds[0].x, m_viewport_bounds[0].y, m_viewport_bounds[1].x - m_viewport_bounds[0].x, m_viewport_bounds[1].y - m_viewport_bounds[0].y);
 
         // gizmo camera
 
@@ -279,8 +281,6 @@ void EditorLayer::OnImGuiRender()
 
             ImGuizmo::Manipulate(glm::value_ptr(camera_view), glm::value_ptr(camera_projection), (ImGuizmo::OPERATION)m_gizmo, ImGuizmo::LOCAL, glm::value_ptr(transform), nullptr,
                                  nullptr, nullptr, nullptr);
-            auto viewManipulateRight = ImGui::GetWindowPos().x + window_width;
-            auto viewManipulateTop   = ImGui::GetWindowPos().y;
         }
         else
         {
@@ -307,8 +307,6 @@ void EditorLayer::OnImGuiRender()
         }
     }
 
-    ImGui::EndChild();
-
     ImGui::End();
 
     DrawToolBar();
@@ -329,11 +327,7 @@ bool EditorLayer::OnMouseButtonPressed(Leaper::MouseButtonPressedEvent& e)
 {
     if (e.GetMouseButton() == Leaper::Mosue::ButtonLeft)
     {
-        if (m_viewport_hovered && !ImGuizmo::IsOver())
-        {
-            m_hierarchy_window.GetSelected() = m_hovered_entity;
-            LP_LOG("entity id: {0}", (uint32_t)m_hovered_entity);
-        }
+        if (m_viewport_hovered) m_hierarchy_window.GetSelected() = m_hovered_entity;
     }
     return false;
 }

@@ -4,6 +4,7 @@
 #include "hierarchy.h"
 #include "imgui.h"
 #include "project.h"
+#include <IconsFontAwesome6.h>
 
 #include <ImGuizmo.h>
 #include <imgui_internal.h>
@@ -25,7 +26,7 @@ void Hierarchy::OnUpdate()
 {
     // Hierarchy Window
     {
-        ImGui::Begin("Hierarchy");
+        ImGui::Begin(ICON_FA_LIST "Hierarchy");
 
         m_active_scene->Reg().each([&](entt::entity id) {
             Leaper::Entity entity = { id, m_active_scene.get() };
@@ -40,7 +41,7 @@ void Hierarchy::OnUpdate()
 
         ImGui::End();
 
-        ImGui::Begin("Components");
+        ImGui::Begin(ICON_FA_CIRCLE_INFO "Components");
         if (m_selected) DrawComponents(m_selected);
         ImGui::End();
     }
@@ -56,7 +57,7 @@ void Hierarchy::DrawEntityNode(Leaper::Entity entity)
 
     bool create      = false;
     float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-    bool opened      = ImGui::TreeNodeEx((void*)(uint32_t)(entity), flag, tag.Tag().c_str());
+    bool opened      = ImGui::TreeNodeEx((void*)(uint32_t)(entity), flag, tag.tag.c_str());
     // Determine whether the entity is destroyed
     bool destroy = false;
 
@@ -112,28 +113,28 @@ void Hierarchy::DrawComponents(Leaper::Entity entity)
 
     if (ImGui::BeginPopupContextItem("Add Component Popup"))
     {
-        DrawComponentMenuItem<Leaper::SpriteRendererComponent>("SpriteRenderer Component", entity);
-        DrawComponentMenuItem<Leaper::Rigidbody2DComponent>("Rigidbody2D Component", entity);
-        DrawComponentMenuItem<Leaper::BoxCollider2DComponent>("BoxCollider2D Component", entity);
-        DrawComponentMenuItem<Leaper::CircleCollider2DComponent>("CircleCollider2D Component", entity);
-        DrawComponentMenuItem<Leaper::LuaScriptComponent>("LuaScript Component", entity, " ");
-        DrawComponentMenuItem<Leaper::Animation2DComponent>("Animation2D Component", entity);
-        DrawComponentMenuItem<Leaper::SoundComponent>("Sound Component", entity);
-        DrawComponentMenuItem<Leaper::LightComponent>("Light Component", entity);
-        DrawComponentMenuItem<Leaper::MeshRendererComponment>("Mesh Renderer Component", entity);
+        DrawComponentMenuItem<Leaper::SpriteRendererComponent>(ICON_FA_BRUSH "SpriteRenderer Component", entity);
+        DrawComponentMenuItem<Leaper::Rigidbody2DComponent>(ICON_FA_RADIATION "Rigidbody2D Component", entity);
+        DrawComponentMenuItem<Leaper::BoxCollider2DComponent>(ICON_FA_VECTOR_SQUARE "BoxCollider2D Component", entity);
+        DrawComponentMenuItem<Leaper::CircleCollider2DComponent>(ICON_FA_CIRCLE_NOTCH "CircleCollider2D Component", entity);
+        DrawComponentMenuItem<Leaper::LuaScriptComponent>(ICON_FA_FILE_CODE "LuaScript Component", entity, " ");
+        DrawComponentMenuItem<Leaper::Animation2DComponent>(ICON_FA_BABY "Animation2D Component", entity);
+        DrawComponentMenuItem<Leaper::SoundComponent>(ICON_FA_MUSIC "Sound Component", entity);
+        DrawComponentMenuItem<Leaper::LightComponent>(ICON_FA_LIGHTBULB "Light Component", entity);
+        DrawComponentMenuItem<Leaper::MeshRendererComponment>(ICON_FA_DICE_D20 "Mesh Renderer Component", entity);
 
         ImGui::EndPopup();
     }
 
-    DrawComponent<Leaper::TransformComponent>("Transform Component", entity, [](auto& component) {
+    DrawComponent<Leaper::TransformComponent>(ICON_FA_CROP " Transform Component", entity, [](auto& component) {
         DrawVector("Position", component.position, 0.01f);
         DrawVector("Rotation", component.rotation, 0.01f);
         DrawVector("Scale", component.scale, 0.01f);
     });
 
-    DrawComponent<Leaper::CameraComponent>("Camera Component", entity, [](auto& component) {});
+    DrawComponent<Leaper::CameraComponent>(ICON_FA_VIDEO " Camera Component", entity, [](auto& component) {});
 
-    DrawComponent<Leaper::SpriteRendererComponent>("SpriteRenderer Component", entity, [](auto& component) {
+    DrawComponent<Leaper::SpriteRendererComponent>(ICON_FA_BRUSH " SpriteRenderer Component", entity, [](auto& component) {
         ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
 
         ImGui::Button("Texture", ImVec2(ImGui::GetContentRegionAvail().x, 0));
@@ -152,7 +153,7 @@ void Hierarchy::DrawComponents(Leaper::Entity entity)
         }
     });
 
-    DrawComponent<Leaper::Rigidbody2DComponent>("Rigdbody2D Component", entity, [=](auto& component) {
+    DrawComponent<Leaper::Rigidbody2DComponent>(ICON_FA_RADIATION " Rigdbody2D Component", entity, [=](auto& component) {
         const char* body_type_strings[]      = { "Static", "Dynamic", "Kinematic" };
         const char* current_body_type_string = body_type_strings[(int)component.body_type];
         if (ImGui::BeginCombo("Body Type", current_body_type_string))
@@ -174,7 +175,7 @@ void Hierarchy::DrawComponents(Leaper::Entity entity)
         ImGui::DragFloat2("Velocity", glm::value_ptr(component.velocity), 0.01f);
     });
 
-    DrawComponent<Leaper::BoxCollider2DComponent>("BoxCollider2D Component", entity, [=](auto& component) {
+    DrawComponent<Leaper::BoxCollider2DComponent>(ICON_FA_VECTOR_SQUARE " BoxCollider2D Component", entity, [=](auto& component) {
         char buffer[256];
         memset(buffer, 0, sizeof(buffer));
         strncpy_s(buffer, sizeof(buffer), component.user_data->name.c_str(), sizeof(buffer));
@@ -187,7 +188,7 @@ void Hierarchy::DrawComponents(Leaper::Entity entity)
         ImGui::Checkbox("IsTrigger", &component.is_trigger);
     });
 
-    DrawComponent<Leaper::CircleCollider2DComponent>("CircleCollider2D Component", entity, [=](auto& component) {
+    DrawComponent<Leaper::CircleCollider2DComponent>(ICON_FA_CIRCLE_NOTCH "CircleCollider2D Component", entity, [=](auto& component) {
         char buffer[256];
         memset(buffer, 0, sizeof(buffer));
         strncpy_s(buffer, sizeof(buffer), component.user_data->name.c_str(), sizeof(buffer));
@@ -200,7 +201,7 @@ void Hierarchy::DrawComponents(Leaper::Entity entity)
         ImGui::Checkbox("IsTrigger", &component.is_trigger);
     });
 
-    DrawComponent<Leaper::LuaScriptComponent>("LuaScript Component", entity, [=](auto& component) {
+    DrawComponent<Leaper::LuaScriptComponent>(ICON_FA_FILE_CODE " LuaScript Component", entity, [=](auto& component) {
         static std::filesystem::path script_path;
         std::string label = std::filesystem::path(component.path).stem().string();
         ImGui::Button(label.c_str(), ImVec2(ImGui::GetContentRegionAvail().x / 2, 0));
@@ -221,13 +222,13 @@ void Hierarchy::DrawComponents(Leaper::Entity entity)
         ImGui::Text("Script");
     });
 
-    DrawComponent<Leaper::Animation2DComponent>("Animation2D Component", entity, [=](auto& component) {
+    DrawComponent<Leaper::Animation2DComponent>(ICON_FA_BABY " Animation2D Component", entity, [=](auto& component) {
         ImGui::DragInt("Col", &component.col, 1, 2);
         ImGui::DragInt("Row", &component.row, 1, 2);
         ImGui::DragInt("Speed", &component.speed, 1, 1);
     });
 
-    DrawComponent<Leaper::SoundComponent>("Sound Component", entity, [=](auto& component) {
+    DrawComponent<Leaper::SoundComponent>(ICON_FA_MUSIC " Sound Component", entity, [=](auto& component) {
         static std::filesystem::path sound_path;
 
         std::string label = std::filesystem::path(component.path).stem().string();
@@ -248,12 +249,12 @@ void Hierarchy::DrawComponents(Leaper::Entity entity)
         ImGui::Text("Sound");
     });
 
-    DrawComponent<Leaper::LightComponent>("Light Component", entity, [=](Leaper::LightComponent& component) {
+    DrawComponent<Leaper::LightComponent>(ICON_FA_LIGHTBULB " Light Component", entity, [=](Leaper::LightComponent& component) {
         ImGui::ColorEdit4("Light Color", glm::value_ptr(component.color));
         ImGui::DragFloat("Intensity", &component.intensity);
     });
 
-    DrawComponent<Leaper::MeshRendererComponment>("Mesh Renderer Component", entity, [=](Leaper::MeshRendererComponment& component) {
+    DrawComponent<Leaper::MeshRendererComponment>(ICON_FA_DICE_D20 " Mesh Renderer Component", entity, [=](Leaper::MeshRendererComponment& component) {
         static std::filesystem::path model_path;
 
         std::string label = std::filesystem::path(component.path).stem().string();

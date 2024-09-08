@@ -51,23 +51,21 @@ OpenGLTexture::OpenGLTexture(std::string path, bool is_flip)
         }
 
         m_path = path;
-        glCreateTextures(GL_TEXTURE_2D, 1, &m_texture);
-        glTextureStorage2D(m_texture, 1, internal_format, width, height);
+        glGenTextures(1, &m_texture);
+        glBindTexture(GL_TEXTURE_2D, m_texture);
 
-        glTextureParameteri(m_texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTextureParameteri(m_texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTextureParameteri(m_texture, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTextureParameteri(m_texture, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         GLenum type = internal_format == GL_RGBA16F ? GL_FLOAT : GL_UNSIGNED_BYTE;
-        glTextureSubImage2D(m_texture, 0, 0, 0, width, height, data_format, type, data);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, data_format, type, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
 
         m_width  = width;
         m_height = height;
-
-        glGenerateMipmap(GL_TEXTURE_2D);
 
         stbi_image_free(data);
     }

@@ -38,6 +38,6 @@ void Leaper::RenderSystem::OnUpdate()
     m_scene->Reg().view<Leaper::MeshRendererComponment>().each([=](auto other, Leaper::MeshRendererComponment& mrc) {
         Leaper::Entity entity = { other, m_scene };
         auto& trans           = entity.GetComponent<TransformComponent>();
-        Renderer3D::DrawModel(mrc.model, trans.GetTransform());
+        Renderer3D::DrawModel(mrc.model, trans.GetTransform(), (int)other);
     });
 }

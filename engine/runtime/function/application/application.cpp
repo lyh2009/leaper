@@ -4,6 +4,7 @@
 #include "lppch.h"
 
 #include <iostream>
+#include <mutex>
 #include <thread>
 
 Leaper::Application* Leaper::Application::s_instance = nullptr;
@@ -48,6 +49,7 @@ void Leaper::Application::PushOverlay(Leaper::Layer* overlay)
 
 void Leaper::Application::Run()
 {
+    std::lock_guard<std::mutex> mtx_locker(m_mutex);
     m_window->OnUpdate();
 }
 
