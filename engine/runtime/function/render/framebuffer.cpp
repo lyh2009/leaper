@@ -1,15 +1,21 @@
+#include "core/base.h"
 #include "framebuffer.h"
-#include "lppch.h"
 
-#include "render_api.h"
 #include "platform/opengl/opengl_framebuffer.h"
+#include "render_api.h"
 
-Leaper::Ref<Leaper::FrameBuffer> Leaper::FrameBuffer::Create()
+namespace Leaper
 {
-    switch(Leaper::RenderAPI::GetAPI())
-    {
-        case Leaper::RenderAPI::API::OpenGL:    return Leaper::CreateRef<OpenGLFrameBuffer>();
-    };
 
-    return nullptr;
-}
+    Ref<FrameBuffer> FrameBuffer::Create()
+    {
+        switch (RenderAPI::GetAPI())
+        {
+        case RenderAPI::API::None: return nullptr;
+        case RenderAPI::API::OpenGL: return CreateRef<OpenGLFrameBuffer>();
+        };
+
+        return nullptr;
+    }
+
+}  // namespace Leaper

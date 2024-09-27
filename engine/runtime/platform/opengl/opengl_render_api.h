@@ -1,6 +1,7 @@
 #pragma once
-#include "function/render/render_api.h"
 #include "core/base.h"
+#include "function/render/render_api.h"
+
 
 #include <glad/glad.h>
 
@@ -15,5 +16,4 @@ public:
     virtual void DrawElements(Leaper::Ref<Leaper::VertexArray> vertex_array, uint32_t count) override;
     virtual void DrawLines(const Leaper::Ref<Leaper::VertexArray>& vao, uint32_t count) override;
     virtual void SetLineWidth(const float& width) override;
-
 };

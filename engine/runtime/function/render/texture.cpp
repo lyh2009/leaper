@@ -1,24 +1,28 @@
 #include "lppch.h"
 #include "texture.h"
 
-
 #include "platform/opengl/opengl_texture.h"
 #include "render_api.h"
-
-Leaper::Ref<Leaper::Texture> Leaper::Texture::Create(std::string path, bool is_flip)
+namespace Leaper
 {
-    switch (Leaper::RenderAPI::GetAPI())
-    {
-    case Leaper::RenderAPI::API::OpenGL: return Leaper::CreateRef<OpenGLTexture>(path, is_flip);
-    }
-    return nullptr;
-}
 
-Leaper::Ref<Leaper::Texture> Leaper::Texture::Create(uint32_t width, uint32_t height)
-{
-    switch (Leaper::RenderAPI::GetAPI())
+    Ref<Texture> Texture::Create(std::string path, bool is_flip)
     {
-    case Leaper::RenderAPI::API::OpenGL: return Leaper::CreateRef<OpenGLTexture>(width, height);
+        switch (RenderAPI::GetAPI())
+        {
+        case RenderAPI::API::None: return nullptr;
+        case RenderAPI::API::OpenGL: return CreateRef<OpenGLTexture>(path, is_flip);
+        }
+        return nullptr;
     }
-    return nullptr;
-}
+
+    Ref<Texture> Texture::Create(uint32_t width, uint32_t height)
+    {
+        switch (RenderAPI::GetAPI())
+        {
+        case RenderAPI::API::None: return nullptr;
+        case RenderAPI::API::OpenGL: return CreateRef<OpenGLTexture>(width, height);
+        }
+        return nullptr;
+    }
+}  // namespace Leaper

@@ -10,6 +10,7 @@ class OpenGLShader : public Leaper::Shader
 public:
     OpenGLShader(std::string vertex_shader_path, std::string fragment_shader_path);
     ~OpenGLShader();
+    virtual uint32_t Compile(std::string vertex_shader_path, std::string fragment_shader_path) override;
     virtual void Bind() const override;
     virtual void UnBind() const override;
 

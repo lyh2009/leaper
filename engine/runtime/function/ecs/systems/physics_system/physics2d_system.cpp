@@ -1,17 +1,16 @@
-#include "physics2d_system.h"
 #include "box2d/b2_circle_shape.h"
 #include "lppch.h"
+#include "physics2d_system.h"
+
 
 #include "core/log.h"
 #include "core/time.h"
 #include "function/ecs/components.h"
 
-
 #include <box2d/b2_body.h>
 #include <box2d/b2_fixture.h>
 #include <box2d/b2_polygon_shape.h>
 #include <box2d/b2_world.h>
-
 
 using namespace Leaper;
 
@@ -19,12 +18,9 @@ static b2BodyType Rigidbody2DTypeToBox2DBodyType(Rigidbody2DComponent::BodyType 
 {
     switch (body_type)
     {
-    case Rigidbody2DComponent::BodyType::Static:
-        return b2_staticBody;
-    case Rigidbody2DComponent::BodyType::Kinematic:
-        return b2_kinematicBody;
-    case Rigidbody2DComponent::BodyType::Dynamic:
-        return b2_dynamicBody;
+    case Rigidbody2DComponent::BodyType::Static: return b2_staticBody;
+    case Rigidbody2DComponent::BodyType::Kinematic: return b2_kinematicBody;
+    case Rigidbody2DComponent::BodyType::Dynamic: return b2_dynamicBody;
     }
 }
 
@@ -64,12 +60,12 @@ void Leaper::Physics2D_System::OnGameStart()
         }
 
         // circle collider2d
-        if(entity.HasComponent<CircleCollider2DComponent>())
+        if (entity.HasComponent<CircleCollider2DComponent>())
         {
             auto cc2d = entity.GetComponent<CircleCollider2DComponent>();
             b2CircleShape circle_shape;
             circle_shape.m_p.Set(cc2d.offset.x, cc2d.offset.y);
-            circle_shape.m_radius = trans.scale.x * cc2d.radiu;
+            circle_shape.m_radius = (trans.scale.x * cc2d.radiu) / 2;
 
             // def fixture
             b2FixtureDef fixture_def;

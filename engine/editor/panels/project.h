@@ -4,28 +4,31 @@
 #include <filesystem>
 #include <string>
 #include <unordered_map>
-
-class Project
+namespace Leaper
 {
-public:
-    void OnAttach();
-    void OnUpdate();
 
-private:
-    void DrawTree();
-    void DrawContent(int icon_size);
+    class Project
+    {
+    public:
+        void OnAttach();
+        void OnUpdate();
 
-    Leaper::Ref<Leaper::Texture> m_folder_icon;
-    Leaper::Ref<Leaper::Texture> m_file_icon;
-    Leaper::Ref<Leaper::Texture> m_lua_icon;
-    Leaper::Ref<Leaper::Texture> m_image_icon;
-    Leaper::Ref<Leaper::Texture> m_obj_icon;
-    Leaper::Ref<Leaper::Texture> m_json_icon;
-    Leaper::Ref<Leaper::Texture> m_audio_icon;
-    Leaper::Ref<Leaper::Texture> m_icon = nullptr;
+    private:
+        void DrawTree();
+        void DrawContent(int icon_size);
 
-    std::unordered_map<std::filesystem::path, Leaper::Ref<Leaper::Texture>> m_icon_map;
+        Leaper::Ref<Leaper::Texture> m_folder_icon;
+        Leaper::Ref<Leaper::Texture> m_file_icon;
+        Leaper::Ref<Leaper::Texture> m_lua_icon;
+        Leaper::Ref<Leaper::Texture> m_image_icon;
+        Leaper::Ref<Leaper::Texture> m_obj_icon;
+        Leaper::Ref<Leaper::Texture> m_json_icon;
+        Leaper::Ref<Leaper::Texture> m_audio_icon;
+        Leaper::Ref<Leaper::Texture> m_icon = nullptr;
 
-    std::filesystem::path m_current_directory;
-    std::filesystem::path m_path;
-};
+        std::unordered_map<std::filesystem::path, Leaper::Ref<Leaper::Texture>> m_icon_map;
+
+        std::filesystem::path m_current_directory;
+        std::filesystem::path m_path;
+    };
+}  // namespace Leaper

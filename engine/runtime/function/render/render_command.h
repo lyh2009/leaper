@@ -1,9 +1,9 @@
-#pragma  once
+#pragma once
 #include "glm/fwd.hpp"
-#include <glm/glm.hpp>
 #include "vertex_array.h"
+#include <glm/glm.hpp>
 
-namespace Leaper 
+namespace Leaper
 {
     class RenderCommand
     {
@@ -13,4 +13,4 @@ namespace Leaper
         static void DrawLines(const Leaper::Ref<Leaper::VertexArray>& vao, uint32_t count);
         static void SetLineWidth(float width);
     };
-}
+}  // namespace Leaper

@@ -13,85 +13,88 @@
 
 #include <ImGuizmo.h>
 #include <imgui.h>
-
-class EditorLayer : public Leaper::Layer
+namespace Leaper
 {
-public:
-    EditorLayer();
-    virtual void OnAttach() override;
-    virtual void OnUpdate() override;
-    virtual void OnImGuiRender() override;
 
-    virtual void OnEvent(Leaper::Event& e) override;
-
-    inline Hierarchy& GetHierarchyWindow()
+    class EditorLayer : public Leaper::Layer
     {
-        return m_hierarchy_window;
-    }
-    inline Project& GetProjectWindow()
-    {
-        return m_project_window;
-    }
+    public:
+        EditorLayer();
+        virtual void OnAttach() override;
+        virtual void OnUpdate() override;
+        virtual void OnImGuiRender() override;
 
-private:
-    bool OnMouseButtonPressed(Leaper::MouseButtonPressedEvent& e);
+        virtual void OnEvent(Leaper::Event& e) override;
 
-private:
-    void OnSceneEdit();
-    void OnScenePlay();
-    void DrawToolBar();
+        inline Hierarchy& GetHierarchyWindow()
+        {
+            return m_hierarchy_window;
+        }
+        inline Project& GetProjectWindow()
+        {
+            return m_project_window;
+        }
 
-private:
-    Hierarchy m_hierarchy_window;
-    Project m_project_window;
-    Console m_console;
+    private:
+        bool OnMouseButtonPressed(Leaper::MouseButtonPressedEvent& e);
 
-    bool m_draw_rect = false;
-    bool m_viewport_hovered;
-    int m_gizmo = ImGuizmo::OPERATION::TRANSLATE;
-    ImVec2 m_viewport_panel_size;
-    glm::vec2 m_viewport_size;
-    ImVec2 m_viewport_pos;
+    private:
+        void OnSceneEdit();
+        void OnScenePlay();
+        void DrawToolBar();
 
-    ImVec2 m_mouse_pos;
-    ImVec2 m_window_size;
-    ImVec2 m_window_pos;
-    ImVec2 m_mouse_in_window;
-    ImVec2 m_mouse_in_texture;
+    private:
+        Hierarchy m_hierarchy_window;
+        Project m_project_window;
+        Console m_console;
 
-    Leaper::Entity camera_entity;
-    Leaper::Entity m_hovered_entity;
+        bool m_draw_rect = false;
+        bool m_viewport_hovered;
+        int m_gizmo = ImGuizmo::OPERATION::TRANSLATE;
+        ImVec2 m_viewport_panel_size;
+        glm::vec2 m_viewport_size = { 0.0f, 0.0f };
+        ImVec2 m_viewport_pos;
 
-    Leaper::CameraController m_camera;
-    Leaper::GameCamera m_game_camera;
-    Leaper::EditorCamera m_perspective_camera;
+        ImVec2 m_mouse_pos;
+        ImVec2 m_window_size;
+        ImVec2 m_window_pos;
+        ImVec2 m_mouse_in_window;
+        ImVec2 m_mouse_in_texture;
 
-    Leaper::Ref<Leaper::Scene> m_active_scene;
-    Leaper::Ref<Leaper::FrameBuffer> m_framebuffer;
-    Leaper::Ref<Leaper::Texture> m_play_icon;
-    Leaper::Ref<Leaper::Texture> m_stop_icon;
-    Leaper::Ref<Leaper::Texture> m_translate_icon;
-    Leaper::Ref<Leaper::Texture> m_rotate_icon;
-    Leaper::Ref<Leaper::Texture> m_scale_icon;
+        Leaper::Entity camera_entity;
+        Leaper::Entity m_hovered_entity;
 
-    glm::vec2 m_viewport_bounds[2];
+        Leaper::CameraController m_camera;
+        Leaper::GameCamera m_game_camera;
+        Leaper::EditorCamera m_perspective_camera;
 
-    bool is_read_pixel = false;
+        Leaper::Ref<Leaper::Scene> m_active_scene;
+        Leaper::Ref<Leaper::FrameBuffer> m_framebuffer;
+        Leaper::Ref<Leaper::Texture> m_play_icon;
+        Leaper::Ref<Leaper::Texture> m_stop_icon;
+        Leaper::Ref<Leaper::Texture> m_translate_icon;
+        Leaper::Ref<Leaper::Texture> m_rotate_icon;
+        Leaper::Ref<Leaper::Texture> m_scale_icon;
 
-    struct MousePickingData
-    {
-        ImVec2 mouse_pos_in_texture;
-        ImVec2 mouse_pos_in_window;
-        ImVec2 window_size;
-        ImVec2 window_pos;
-        ImVec2 mouse_pos;
+        glm::vec2 m_viewport_bounds[2];
+
+        bool is_read_pixel = false;
+
+        struct MousePickingData
+        {
+            ImVec2 mouse_pos_in_texture;
+            ImVec2 mouse_pos_in_window;
+            ImVec2 window_size;
+            ImVec2 window_pos;
+            ImVec2 mouse_pos;
+        };
+        MousePickingData m_mouse_picking_data;
+
+        enum class SceneState
+        {
+            Edit = 0,
+            Play = 1
+        };
+        SceneState m_scene_state = SceneState::Edit;
     };
-    MousePickingData m_mouse_picking_data;
-
-    enum class SceneState
-    {
-        Edit = 0,
-        Play = 1
-    };
-    SceneState m_scene_state = SceneState::Edit;
-};
+}  // namespace Leaper

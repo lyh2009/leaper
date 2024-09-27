@@ -7,10 +7,10 @@ int main(int argc, char const* argv[])
     Leaper::Application application(Leaper::RenderAPI::API::OpenGL, 1024, 648, "Leaper Engine");
     application.OnAttach();
 
-    EditorLayer* editor_layer = new EditorLayer();
+    Leaper::EditorLayer* editor_layer = new Leaper::EditorLayer();
     application.PushOverlay(editor_layer);
 
-    while (!application.GetWindow()->IsClose()) { application.Run(); }
+    application.Run();
 
     return 0;
 }

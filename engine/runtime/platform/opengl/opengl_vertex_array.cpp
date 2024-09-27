@@ -1,5 +1,6 @@
-#include "opengl_vertex_array.h"
 #include "lppch.h"
+#include "opengl_vertex_array.h"
+
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -8,28 +9,17 @@ static GLenum ShaderDataTypeToOpenGLBaseType(Leaper::ShaderDataType type)
 {
     switch (type)
     {
-    case Leaper::ShaderDataType::Float:
-        return GL_FLOAT;
-    case Leaper::ShaderDataType::Float2:
-        return GL_FLOAT;
-    case Leaper::ShaderDataType::Float3:
-        return GL_FLOAT;
-    case Leaper::ShaderDataType::Float4:
-        return GL_FLOAT;
-    case Leaper::ShaderDataType::Mat3:
-        return GL_FLOAT;
-    case Leaper::ShaderDataType::Mat4:
-        return GL_FLOAT;
-    case Leaper::ShaderDataType::Int:
-        return GL_INT;
-    case Leaper::ShaderDataType::Int2:
-        return GL_INT;
-    case Leaper::ShaderDataType::Int3:
-        return GL_INT;
-    case Leaper::ShaderDataType::Int4:
-        return GL_INT;
-    case Leaper::ShaderDataType::Bool:
-        return GL_BOOL;
+    case Leaper::ShaderDataType::Float: return GL_FLOAT;
+    case Leaper::ShaderDataType::Float2: return GL_FLOAT;
+    case Leaper::ShaderDataType::Float3: return GL_FLOAT;
+    case Leaper::ShaderDataType::Float4: return GL_FLOAT;
+    case Leaper::ShaderDataType::Mat3: return GL_FLOAT;
+    case Leaper::ShaderDataType::Mat4: return GL_FLOAT;
+    case Leaper::ShaderDataType::Int: return GL_INT;
+    case Leaper::ShaderDataType::Int2: return GL_INT;
+    case Leaper::ShaderDataType::Int3: return GL_INT;
+    case Leaper::ShaderDataType::Int4: return GL_INT;
+    case Leaper::ShaderDataType::Bool: return GL_BOOL;
     }
     return 0;
 }
@@ -60,7 +50,7 @@ void OpenGLVertexArray::AddVertexBuffer(Leaper::Ref<Leaper::VertexBuffer> vertex
         {
         case Leaper::ShaderDataType::None:
         case Leaper::ShaderDataType::Float:
-        case Leaper::ShaderDataType::Float2: 
+        case Leaper::ShaderDataType::Float2:
         case Leaper::ShaderDataType::Float3:
         case Leaper::ShaderDataType::Float4: {
             glEnableVertexAttribArray(m_vertex_buffer_index);

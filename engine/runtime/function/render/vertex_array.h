@@ -2,8 +2,6 @@
 #include "buffers.h"
 #include "core/base.h"
 
-#include <vector>
-
 namespace Leaper
 {
     class VertexArray

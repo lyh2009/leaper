@@ -16,10 +16,22 @@ Leaper::CameraController::CameraController(float ratio) : m_camera(-ratio * m_zo
 
 void Leaper::CameraController::OnUpdate()
 {
-    if (Leaper::Input::IsKeyDown(LP_KEY_A)) { m_camera_position.x -= m_camera_speed * Leaper::Time::GetDeltaTime(); }
-    if (Leaper::Input::IsKeyDown(LP_KEY_D)) { m_camera_position.x += m_camera_speed * Leaper::Time::GetDeltaTime(); }
-    if (Leaper::Input::IsKeyDown(LP_KEY_W)) { m_camera_position.y += m_camera_speed * Leaper::Time::GetDeltaTime(); }
-    if (Leaper::Input::IsKeyDown(LP_KEY_S)) { m_camera_position.y -= m_camera_speed * Leaper::Time::GetDeltaTime(); }
+    if (Leaper::Input::IsKeyDown(LP_KEY_A))
+    {
+        m_camera_position.x -= m_camera_speed * Leaper::Time::GetDeltaTime();
+    }
+    if (Leaper::Input::IsKeyDown(LP_KEY_D))
+    {
+        m_camera_position.x += m_camera_speed * Leaper::Time::GetDeltaTime();
+    }
+    if (Leaper::Input::IsKeyDown(LP_KEY_W))
+    {
+        m_camera_position.y += m_camera_speed * Leaper::Time::GetDeltaTime();
+    }
+    if (Leaper::Input::IsKeyDown(LP_KEY_S))
+    {
+        m_camera_position.y -= m_camera_speed * Leaper::Time::GetDeltaTime();
+    }
 
     m_camera.SetPosition(m_camera_position);
     m_camera_speed = m_zoom_level;
@@ -66,8 +78,11 @@ void Leaper::CameraController::OnResize(float width, float height)
 
 bool Leaper::CameraController::OnWindowResize(Leaper::WindowResizeEvent& event)
 {
-    m_ratio = event.GetWidth() / event.GetHeight();
-    m_camera.SetProjectionMat(-m_ratio * m_zoom_level, m_ratio * m_zoom_level, -m_zoom_level, m_zoom_level);
-    LP_LOG("OnWindowResize");
+    if (event.GetHeight() != 0 || event.GetHeight() != 0)
+    {
+        m_ratio = event.GetWidth() / event.GetHeight();
+        m_camera.SetProjectionMat(-m_ratio * m_zoom_level, m_ratio * m_zoom_level, -m_zoom_level, m_zoom_level);
+        LP_LOG("OnWindowResize");
+    }
     return false;
 }

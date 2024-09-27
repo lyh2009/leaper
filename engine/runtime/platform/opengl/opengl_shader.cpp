@@ -1,12 +1,16 @@
-#include "opengl_shader.h"
 #include "lppch.h"
+#include "opengl_shader.h"
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
 
-
 OpenGLShader::OpenGLShader(std::string vertex_shader_path, std::string fragment_shader_path)
+{
+    m_program = Compile(vertex_shader_path, fragment_shader_path);
+}
+
+uint32_t OpenGLShader::Compile(std::string vertex_shader_path, std::string fragment_shader_path)
 {
     std::string vertexCode;
     std::string fragmentCode;
@@ -35,6 +39,7 @@ OpenGLShader::OpenGLShader(std::string vertex_shader_path, std::string fragment_
     catch (std::ifstream::failure& e)
     {
         std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
+        return 0;
     }
 
     const char* vShaderCode = vertexCode.c_str();
@@ -52,14 +57,16 @@ OpenGLShader::OpenGLShader(std::string vertex_shader_path, std::string fragment_
     glCompileShader(fragment);
     GetShaderError(fragment, Leaper::ShaderType::FragmentShader);
     // shader Program
-    m_program = glCreateProgram();
-    glAttachShader(m_program, vertex);
-    glAttachShader(m_program, fragment);
-    glLinkProgram(m_program);
+    uint32_t program = glCreateProgram();
+    glAttachShader(program, vertex);
+    glAttachShader(program, fragment);
+    glLinkProgram(program);
 
     // delete the shaders as they're linked into our program now and no longer necessary
     glDeleteShader(vertex);
     glDeleteShader(fragment);
+
+    return program;
 }
 
 OpenGLShader::~OpenGLShader()
@@ -117,10 +124,8 @@ void OpenGLShader::GetShaderError(uint32_t shader, Leaper::ShaderType shader_typ
         glGetShaderInfoLog(shader, 512, nullptr, log);
         switch (shader_type)
         {
-        case Leaper::ShaderType::VertexShader:
-            std::cout << "SHADER COMPILE VERTEX SHADER FAILED:" << log << std::endl;
-        case Leaper::ShaderType::FragmentShader:
-            std::cout << "SHADER COMPILE FRAGMENT SHADER FAILED:" << log << std::endl;
+        case Leaper::ShaderType::VertexShader: std::cout << "SHADER COMPILE VERTEX SHADER FAILED:" << log << std::endl;
+        case Leaper::ShaderType::FragmentShader: std::cout << "SHADER COMPILE FRAGMENT SHADER FAILED:" << log << std::endl;
         }
     }
 }

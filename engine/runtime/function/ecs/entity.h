@@ -1,7 +1,5 @@
 #pragma once
-#include "core/base.h"
 #include "scene.h"
-
 
 namespace Leaper
 {

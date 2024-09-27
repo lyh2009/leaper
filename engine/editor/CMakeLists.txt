@@ -8,12 +8,14 @@ set(LIBRARY ../../../build/engine/3rdparty)
 file(COPY ../resource DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 file(COPY ../../assets DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
-set(INCLUDE_DIR
+set(EDITOR_INCLUDE_DIR
  "${3RDPARTY}/glm/"
  "${3RDPARTY}/imgui/"
- "${3RDPARTY}/imgui_zmo/"
+ "${3RDPARTY}/ImGuizmo/"
  "${3RDPARTY}/sol2/include/"
  "${3RDPARTY}/IconFontCppHeaders/"
+ "${3RDPARTY}/SPSCQueue/include/"
+ "${3RDPARTY}/magic_enum/include/"
  "../runtime/"
  )
 
@@ -21,10 +23,10 @@ set(INCLUDE_DIR
   "*.cpp"
   "planes/*.cpp"
   "${3RDPARTY}/imgui/*.cpp" 
-  "${3RDPARTY}/imgui_zmo/*.cpp" 
+  "${3RDPARTY}/ImGuizmo/*.cpp" 
   )
 
- include_directories(${INCLUDE_DIR})
+ include_directories(${EDITOR_INCLUDE_DIR})
 
  add_executable(leaper ${SRC_DIR})
 

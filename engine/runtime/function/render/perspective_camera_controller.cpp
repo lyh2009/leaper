@@ -62,7 +62,7 @@ namespace Leaper
 
     void EditorCamera::OnUpdate()
     {
-        const glm::vec2& mouse{ ImGui::GetMousePos().x, ImGui::GetMousePos().y };
+        const glm::vec2& mouse  = { ImGui::GetMousePos().x, ImGui::GetMousePos().y };
         glm::vec2 delta         = (mouse - m_initia_mouse_position) * Time::GetDeltaTime();
         m_initia_mouse_position = mouse;
         if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
@@ -71,10 +71,14 @@ namespace Leaper
             MouseZoom(delta.y);
 
         float speed = 10.f;
-        if (Input::IsKeyDown(LP_KEY_W)) m_focal_point += GetForwardDirection() * speed * Time::GetDeltaTime();
-        if (Input::IsKeyDown(LP_KEY_S)) m_focal_point -= GetForwardDirection() * speed * Time::GetDeltaTime();
-        if (Input::IsKeyDown(LP_KEY_A)) m_focal_point -= GetRightDirection() * speed * Time::GetDeltaTime();
-        if (Input::IsKeyDown(LP_KEY_D)) m_focal_point += GetRightDirection() * speed * Time::GetDeltaTime();
+        if (Input::IsKeyDown(LP_KEY_W))
+            m_focal_point += GetForwardDirection() * speed * Time::GetDeltaTime();
+        if (Input::IsKeyDown(LP_KEY_S))
+            m_focal_point -= GetForwardDirection() * speed * Time::GetDeltaTime();
+        if (Input::IsKeyDown(LP_KEY_A))
+            m_focal_point -= GetRightDirection() * speed * Time::GetDeltaTime();
+        if (Input::IsKeyDown(LP_KEY_D))
+            m_focal_point += GetRightDirection() * speed * Time::GetDeltaTime();
 
         UpdateView();
     }

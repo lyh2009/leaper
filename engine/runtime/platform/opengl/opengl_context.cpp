@@ -1,13 +1,13 @@
-#include "opengl_context.h"
+#include "core/log.h"
 #include "lppch.h"
+#include "opengl_context.h"
 
 #include "core/base.h"
 
 #include <iostream>
 #include <sstream>
 
-OpenGLContext::OpenGLContext(GLFWwindow *window)
-    : m_window(window)
+OpenGLContext::OpenGLContext(GLFWwindow* window) : m_window(window)
 {
     LP_ASSERT(window, "'window' is null!");
 }
@@ -21,9 +21,15 @@ void OpenGLContext::Init()
 {
     glfwMakeContextCurrent(m_window);
     bool status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    
+
     LP_ASSERT(status, "Failed to initialize Glad!");
 
+    auto vendor   = glGetString(GL_VENDOR);
+    auto version  = glGetString(GL_VERSION);
+    auto renderer = glGetString(GL_RENDERER);
+    LP_CORE_LOG_INFO("Verndor: {0}", vendor);
+    LP_CORE_LOG_INFO("Renderr: {0}", renderer);
+    LP_CORE_LOG_INFO("Version: {0}", version);
 }
 
 void OpenGLContext::SetViewPort(float width, float height)

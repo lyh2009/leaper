@@ -2,9 +2,17 @@
 #include "core/log.h"
 #include <imgui.h>
 
-class Console
+namespace Leaper
 {
-public:
-    void OnAttach();
-    void OnUpdate();
-};
+    class Console
+    {
+    public:
+        void OnAttach();
+        void OnUpdate();
+
+    private:
+        bool m_scroll_to_lastest;
+        bool m_enable_scroll_to_latest;
+        bool m_previous_scroll_y;
+    };
+}  // namespace Leaper

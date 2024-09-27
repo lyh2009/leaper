@@ -1,7 +1,6 @@
 #include "lppch.h"
 #include "opengl_render_api.h"
 
-
 OpenGLRenderAPI::OpenGLRenderAPI() {}
 
 OpenGLRenderAPI::~OpenGLRenderAPI() {}

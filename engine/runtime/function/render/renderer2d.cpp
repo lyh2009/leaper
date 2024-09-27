@@ -1,9 +1,9 @@
-#include "renderer2d.h"
 #include "buffers.h"
 #include "core/base.h"
 #include "function/ecs/components.h"
 #include "glm/fwd.hpp"
 #include "lppch.h"
+#include "renderer2d.h"
 
 #include "perspective_camera.h"
 #include "perspective_camera_controller.h"
@@ -21,9 +21,9 @@
 #include <chrono>
 #include <string>
 
-glm::vec3 Leaper::Renderer2D::m_ambient_light = glm::vec3(0.3f, 0.3f, 0.3f);
-float Leaper::Renderer2D::m_line_width                          = 2.0f;
-float Leaper::Renderer2D::m_flush_quad_elapsed_time             = 0.0f;
+glm::vec3 Leaper::Renderer2D::m_ambient_light       = glm::vec3(0.3f, 0.3f, 0.3f);
+float Leaper::Renderer2D::m_line_width              = 2.0f;
+float Leaper::Renderer2D::m_flush_quad_elapsed_time = 0.0f;
 
 struct QuadVertex
 {
@@ -35,7 +35,6 @@ struct QuadVertex
     // editor only
     int entity_id;
 };
-
 
 struct LineVertex
 {
@@ -94,9 +93,9 @@ struct Renderer2DData
     uint32_t circle_index_count;
     Leaper::Ref<Leaper::VertexArray> circle_vertex_array;
     Leaper::Ref<Leaper::VertexBuffer> circle_vertex_buffer;
-    
+
     CircleVertex* circle_vertex_buffer_base = nullptr;
-    CircleVertex* circle_vertex_buffer_ptr = nullptr;
+    CircleVertex* circle_vertex_buffer_ptr  = nullptr;
 
     Leaper::Ref<Leaper::Shader> circle_shader;
 
@@ -122,8 +121,8 @@ static Renderer2DData s_data;
 
 void Leaper::Renderer2D::Init()
 {
-    s_data.quad_shader = Leaper::Shader::Create("./resource/shaders/quad.vs", "./resource/shaders/quad.fs");
-    s_data.line_shader = Leaper::Shader::Create("./resource/shaders/line.vs", "./resource/shaders/line.fs");
+    s_data.quad_shader   = Leaper::Shader::Create("./resource/shaders/quad.vs", "./resource/shaders/quad.fs");
+    s_data.line_shader   = Leaper::Shader::Create("./resource/shaders/line.vs", "./resource/shaders/line.fs");
     s_data.circle_shader = Leaper::Shader::Create("./resource/shaders/circle.vs", "./resource/shaders/circle.fs");
 
     // quad
@@ -157,14 +156,12 @@ void Leaper::Renderer2D::Init()
     s_data.quad_vertex_array->SetIndexBuffer(quad_index_buffer);
     delete[] quad_indices;
 
-
     // white texture
     s_data.white_texture        = Leaper::Texture::Create(1, 1);
     uint32_t white_texture_data = 0xffffffff;
     s_data.white_texture->SetData(&white_texture_data);
     s_data.texture_slots[0] = s_data.white_texture;
 
-    
     s_data.vertex_position[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
     s_data.vertex_position[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
     s_data.vertex_position[2] = { 0.5f, 0.5f, 0.0f, 1.0f };
@@ -175,9 +172,7 @@ void Leaper::Renderer2D::Init()
         s_data.line_vertex_array  = Leaper::VertexArray::Create();
         s_data.line_vertex_buffer = Leaper::VertexBuffer::Create(s_data.max_vertices * sizeof(LineVertex));
         s_data.line_vertex_buffer->SetLayout(
-            { { Leaper::ShaderDataType::Float3, "a_Position" },
-              { Leaper::ShaderDataType::Float4, "a_Color" }, 
-              { Leaper::ShaderDataType::Int, "a_EntityID" } });
+            { { Leaper::ShaderDataType::Float3, "a_Position" }, { Leaper::ShaderDataType::Float4, "a_Color" }, { Leaper::ShaderDataType::Int, "a_EntityID" } });
 
         s_data.line_vertex_array->AddVertexBuffer(s_data.line_vertex_buffer);
 
@@ -188,19 +183,17 @@ void Leaper::Renderer2D::Init()
     {
         s_data.circle_vertex_array  = Leaper::VertexArray::Create();
         s_data.circle_vertex_buffer = Leaper::VertexBuffer::Create(s_data.max_vertices * sizeof(CircleVertex));
-        s_data.circle_vertex_buffer->SetLayout(
-            { { Leaper::ShaderDataType::Float3, "a_WorldPosition" }, 
-             { Leaper::ShaderDataType::Float3, "a_LocalPosition" }, 
-              { Leaper::ShaderDataType::Float4, "a_Color" }, 
-              { Leaper::ShaderDataType::Float, "a_Thickness" }, 
-              { Leaper::ShaderDataType::Float, "a_Fade" }, 
-              { Leaper::ShaderDataType::Int, "a_EntityID" } });
+        s_data.circle_vertex_buffer->SetLayout({ { Leaper::ShaderDataType::Float3, "a_WorldPosition" },
+                                                 { Leaper::ShaderDataType::Float3, "a_LocalPosition" },
+                                                 { Leaper::ShaderDataType::Float4, "a_Color" },
+                                                 { Leaper::ShaderDataType::Float, "a_Thickness" },
+                                                 { Leaper::ShaderDataType::Float, "a_Fade" },
+                                                 { Leaper::ShaderDataType::Int, "a_EntityID" } });
 
         s_data.circle_vertex_array->AddVertexBuffer(s_data.circle_vertex_buffer);
         s_data.circle_vertex_array->SetIndexBuffer(quad_index_buffer);
         s_data.circle_vertex_buffer_base = new CircleVertex[s_data.max_vertices];
     }
-
 }
 
 void Leaper::Renderer2D::BeginScene(const glm::mat4& camera)
@@ -225,10 +218,10 @@ void Leaper::Renderer2D::StartBatch()
     s_data.quad_index_count       = 0;
     s_data.quad_vertex_buffer_ptr = s_data.quad_vertex_buffer_base;
 
-    s_data.line_index_count      = 0;
+    s_data.line_index_count       = 0;
     s_data.line_vertex_buffer_ptr = s_data.line_vertex_buffer_base;
 
-    s_data.circle_index_count      = 0;
+    s_data.circle_index_count       = 0;
     s_data.circle_vertex_buffer_ptr = s_data.circle_vertex_buffer_base;
 
     s_data.texture_slot_index = 1;
@@ -244,11 +237,9 @@ void Leaper::Renderer2D::Flush()
         s_data.quad_vertex_buffer->SetData(s_data.quad_vertex_buffer_base, data_size);
 
         // bind texture
-        for (uint32_t i = 0; i < s_data.texture_slot_index; i++)
-            s_data.texture_slots[i]->Bind(i);
+        for (uint32_t i = 0; i < s_data.texture_slot_index; i++) s_data.texture_slots[i]->Bind(i);
 
         s_data.quad_shader->Bind();
-        
 
         s_data.quad_shader->SetMat4("u_ViewProjection", s_data.camera_buffer.view_projection);
         s_data.quad_shader->SetVec3("u_AmbientLight", m_ambient_light);
@@ -262,6 +253,9 @@ void Leaper::Renderer2D::Flush()
         }
 
         Leaper::RenderCommand::DrawElements(s_data.quad_vertex_array, s_data.quad_index_count);
+
+        s_data.quad_shader->UnBind();
+        for (uint32_t i = 0; i < s_data.texture_slot_index; i++) s_data.texture_slots[i]->UnBind();
     }
     auto end_time             = std::chrono::high_resolution_clock::now();
     m_flush_quad_elapsed_time = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count() * 0.01 * 0.01 * 0.01;
@@ -276,6 +270,7 @@ void Leaper::Renderer2D::Flush()
         SetLineWidth(m_line_width);
         s_data.line_shader->SetMat4("u_ViewProjection", s_data.camera_buffer.view_projection);
         Leaper::RenderCommand::DrawLines(s_data.line_vertex_array, s_data.line_index_count);
+        s_data.line_shader->UnBind();
     }
 
     // circle
@@ -285,9 +280,10 @@ void Leaper::Renderer2D::Flush()
         s_data.circle_vertex_buffer->SetData(s_data.circle_vertex_buffer_base, data_size);
 
         s_data.circle_shader->Bind();
-            
+
         s_data.circle_shader->SetMat4("u_ViewProjection", s_data.camera_buffer.view_projection);
         Leaper::RenderCommand::DrawElements(s_data.circle_vertex_array, s_data.circle_index_count);
+        s_data.circle_shader->UnBind();
     }
 }
 
@@ -455,8 +451,7 @@ void Leaper::Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, cons
 void Leaper::Renderer2D::DrawRect(Leaper::TransformComponent trans, const glm::vec4& color, int entity_id)
 {
     glm::vec3 line_vertices[4];
-    for (size_t i = 0; i < 4; i++)
-        line_vertices[i] = trans.GetTransform() * s_data.vertex_position[i];
+    for (size_t i = 0; i < 4; i++) line_vertices[i] = trans.GetTransform() * s_data.vertex_position[i];
 
     DrawLine(line_vertices[0], line_vertices[1], color, entity_id);
     DrawLine(line_vertices[1], line_vertices[2], color, entity_id);
@@ -468,12 +463,12 @@ void Leaper::Renderer2D::DrawCircle(Leaper::TransformComponent trans, const glm:
 {
     for (size_t i = 0; i < 4; i++)
     {
-        s_data.circle_vertex_buffer_ptr->world_position  = trans.GetTransform() * s_data.vertex_position[i];
-        s_data.circle_vertex_buffer_ptr->local_position  = s_data.vertex_position[i] * 2.0f;
-        s_data.circle_vertex_buffer_ptr->color     = color;
-        s_data.circle_vertex_buffer_ptr->thickness = thickness;
-        s_data.circle_vertex_buffer_ptr->fade = fade;
-        s_data.circle_vertex_buffer_ptr->entity_id = entity_id;
+        s_data.circle_vertex_buffer_ptr->world_position = trans.GetTransform() * s_data.vertex_position[i];
+        s_data.circle_vertex_buffer_ptr->local_position = s_data.vertex_position[i] * 2.0f;
+        s_data.circle_vertex_buffer_ptr->color          = color;
+        s_data.circle_vertex_buffer_ptr->thickness      = thickness;
+        s_data.circle_vertex_buffer_ptr->fade           = fade;
+        s_data.circle_vertex_buffer_ptr->entity_id      = entity_id;
 
         s_data.circle_vertex_buffer_ptr++;
     }

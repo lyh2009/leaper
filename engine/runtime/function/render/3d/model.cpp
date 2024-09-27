@@ -13,7 +13,6 @@
 #include <cstdint>
 #include <iostream>
 #include <iterator>
-#include <meshoptimizer.h>
 #include <string>
 #include <vector>
 
@@ -29,7 +28,7 @@ void Leaper::Model::Draw(glm::mat4& trans, glm::mat4& camera, glm::vec3 camera_p
 
 void Leaper::Model::LoadModel(const std::string& path)
 {
-    m_shader = Leaper::Shader::Create("./resource/shaders/3d/model.vert", "./resource/shaders/3d/model.frag");
+    // m_shader = Leaper::Shader::Create("./resource/shaders/3d/model.vert", "./resource/shaders/3d/model.frag");
 
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);

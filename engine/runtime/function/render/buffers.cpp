@@ -1,44 +1,48 @@
 #include "buffers.h"
+#include "function/task/render_task_producer.h"
 #include "lppch.h"
 #include "platform/opengl/opengl_buffers.h"
 #include "render_api.h"
 
-
-Leaper::Ref<Leaper::VertexBuffer> Leaper::VertexBuffer::Create(size_t size)
+namespace Leaper
 {
-    switch (Leaper::RenderAPI::GetAPI())
+
+    Ref<VertexBuffer> VertexBuffer::Create(size_t size)
     {
-    case Leaper::RenderAPI::API::OpenGL: return Leaper::CreateRef<OpenGLVertexBuffer>(size);
+        switch (RenderAPI::GetAPI())
+        {
+        case RenderAPI::API::OpenGL: return CreateRef<OpenGLVertexBuffer>(size);
+        }
+
+        return nullptr;
     }
 
-    return nullptr;
-}
-
-Leaper::Ref<Leaper::VertexBuffer> Leaper::VertexBuffer::Create(const void* vertices, size_t size)
-{
-    switch (Leaper::RenderAPI::GetAPI())
+    Ref<VertexBuffer> VertexBuffer::Create(const void* vertices, size_t size)
     {
-    case Leaper::RenderAPI::API::OpenGL: return Leaper::CreateRef<OpenGLVertexBuffer>(vertices, size);
-    }
-    return nullptr;
-}
-
-Leaper::Ref<Leaper::IndexBuffer> Leaper::IndexBuffer::Create(uint32_t* indices, uint32_t count)
-{
-    switch (Leaper::RenderAPI::GetAPI())
-    {
-    case Leaper::RenderAPI::API::OpenGL: return Leaper::CreateRef<OpenGLIndexBuffer>(indices, count);
+        switch (RenderAPI::GetAPI())
+        {
+        case RenderAPI::API::OpenGL: return CreateRef<OpenGLVertexBuffer>(vertices, size);
+        }
+        return nullptr;
     }
 
-    return nullptr;
-}
-
-Leaper::Ref<Leaper::IndexBuffer> Leaper::IndexBuffer::Create(uint32_t count)
-{
-    switch (Leaper::RenderAPI::GetAPI())
+    Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count)
     {
-    case Leaper::RenderAPI::API::OpenGL: return Leaper::CreateRef<OpenGLIndexBuffer>(count);
+        switch (RenderAPI::GetAPI())
+        {
+        case RenderAPI::API::OpenGL: return CreateRef<OpenGLIndexBuffer>(indices, count);
+        }
+
+        return nullptr;
     }
 
-    return nullptr;
-}
+    Ref<IndexBuffer> IndexBuffer::Create(uint32_t count)
+    {
+        switch (RenderAPI::GetAPI())
+        {
+        case RenderAPI::API::OpenGL: return CreateRef<OpenGLIndexBuffer>(count);
+        }
+
+        return nullptr;
+    }
+}  // namespace Leaper

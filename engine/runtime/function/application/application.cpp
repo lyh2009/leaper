@@ -1,11 +1,15 @@
 #include "application.h"
+#include "core/events/application_event.h"
+#include "function/application/window.h"
 #include "function/render/context.h"
+#include "function/render/renderer2d.h"
 #include "function/render/renderer3d.h"
+#include "function/task/render_task_queue.h"
+#include "function/task/render_task_types.h"
 #include "lppch.h"
-
-#include <iostream>
-#include <mutex>
 #include <thread>
+
+#define LP_MUTEX() std::lock_guard<std::mutex> mtx_locker(m_mutex)
 
 Leaper::Application* Leaper::Application::s_instance = nullptr;
 // Leaper::CameraController Leaper::Application::camera_controller(-1.0f, 1.0f, -1.0f, 1.0f);
@@ -22,17 +26,15 @@ Leaper::Application::Application(Leaper::RenderAPI::API api, int width, int heig
 
     m_window->SetEventCallback(LP_BIND_EVENT_FN(Application::OnEvent));
 
-    s_instance = this;
-
     m_render_thread = std::thread(&Application::RenderMain, this);
+    m_render_thread.detach();
+    s_instance = this;
 }
 
 Leaper::Application::~Application()
 {
     if (m_render_thread.joinable())
-    {
-        m_render_thread.join();  // 等待渲染线程结束
-    }
+        m_render_thread.join();
 }
 
 void Leaper::Application::OnAttach() {}
@@ -49,8 +51,39 @@ void Leaper::Application::PushOverlay(Leaper::Layer* overlay)
 
 void Leaper::Application::Run()
 {
-    std::lock_guard<std::mutex> mtx_locker(m_mutex);
-    m_window->OnUpdate();
+    m_context = Leaper::Context::Create((GLFWwindow*)m_window->GetNativeWindow());
+    m_context->Init();
+    m_render_api->Init();
+
+    // Init ImGuiLayer
+    m_imgui_layer = new Leaper::ImGuiLayer();
+    s_instance    = this;
+
+    // init Renderer
+    Renderer2D::Init();
+    Leaper::Renderer3D::Init();
+
+    PushOverlay(m_imgui_layer);
+
+    for (Leaper::Layer* layer : m_layer_stack) { layer->OnAttach(); }
+
+    while (!m_window->IsClose())
+    {
+        Leaper::Time::Begin();
+        if (!m_minimized)
+        {
+
+            m_render_api->Clear();
+            for (Leaper::Layer* layer : m_layer_stack) layer->OnUpdate();
+            m_imgui_layer->Begin();
+            for (Leaper::Layer* layer : m_layer_stack) layer->OnImGuiRender();
+            m_imgui_layer->End();
+            m_context->SwapBuffers();
+        }
+
+        m_window->OnUpdate();
+        Leaper::Time::End();
+    }
 }
 
 void Leaper::Application::OnEvent(Leaper::Event& e)
@@ -64,36 +97,62 @@ void Leaper::Application::OnEvent(Leaper::Event& e)
     // }
 }
 
+bool Leaper::Application::OnWindowResize(Leaper::WindowResizeEvent& e)
+{
+    float width  = e.GetWidth();
+    float height = e.GetHeight();
+    if (width == 0 || height == 0)
+    {
+        m_minimized = true;
+        return false;
+    }
+
+    m_minimized = false;
+    return false;
+}
+
+void Leaper::Application::EndFrame(RenderTaskBase* task)
+{
+    auto end = dynamic_cast<RenderTask_EndFrame*>(task);
+    m_context->SwapBuffers();
+    task->return_result_set = true;
+}
+
 void Leaper::Application::RenderMain()
 {
-    m_context = Leaper::Context::Create((GLFWwindow*)m_window->GetNativeWindow());
-    m_context->Init();
-    m_render_api->Init();
-    // Init ImGuiLayer
-    m_imgui_layer = new Leaper::ImGuiLayer();
-    s_instance    = this;
-
-    // init Renderer
-    Renderer2D::Init();
-    Leaper::Renderer3D::Init();
-
-    PushOverlay(m_imgui_layer);
-
-    for (Leaper::Layer* layer : m_layer_stack) { layer->OnAttach(); }
+    /*
     while (!m_window->IsClose())
     {
-        Leaper::Time::Begin();
 
-        m_render_api->Clear();
-
-        m_imgui_layer->Begin();
+        while (true)
         {
-            for (Leaper::Layer* layer : m_layer_stack) layer->OnImGuiRender();
-        }
-        m_imgui_layer->End();
+            if (RenderTaskQueue::Empty())
+            {  // 渲染线程一直等待主线程发出任务。没有了任务Sleep 1微秒。
+                std::this_thread::sleep_for(std::chrono::microseconds(1));
+                continue;
+            }
 
-        for (Leaper::Layer* layer : m_layer_stack) layer->OnUpdate();
-        m_context->SwapBuffers();
-        Leaper::Time::End();
+            RenderTaskBase* render_task           = RenderTaskQueue::Front();
+            RenderTaskCommand render_task_command = render_task->commands;
+            bool need_return_result               = render_task->need_return_result;
+
+            switch (render_task_command)
+            {
+            case NONE: break;
+            case MODEL_CREATE: RenderTaskCunsumer::Model_Create(render_task);
+            case END_FRAME: EndFrame(render_task); break;
+            }
+            RenderTaskQueue::Pop();
+            // LP_CORE_LOG(magic_enum::enum_name(render_task_command));
+
+            if (need_return_result == false)
+            {
+                delete render_task;
+            }
+
+            if (render_task_command == END_FRAME)
+                break;
+        }
     }
+    */
 }

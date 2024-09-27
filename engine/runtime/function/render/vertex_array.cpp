@@ -1,15 +1,21 @@
-#include "vertex_array.h"
+#include "core/log.h"
 #include "lppch.h"
+#include "vertex_array.h"
 
-#include "render_api.h"
 #include "platform/opengl/opengl_vertex_array.h"
+#include "render_api.h"
 
-Leaper::Ref<Leaper::VertexArray> Leaper::VertexArray::Create()
+namespace Leaper
 {
-    switch (Leaper::RenderAPI::GetAPI())
+    Ref<Leaper::VertexArray> VertexArray::Create()
     {
-        case Leaper::RenderAPI::API::OpenGL:    return Leaper::CreateRef<OpenGLVertexArray>();
-    }
+        switch (RenderAPI::GetAPI())
+        {
+        case RenderAPI::API::None: return nullptr;
+        case RenderAPI::API::OpenGL: return Leaper::CreateRef<OpenGLVertexArray>();
+        }
 
-    return nullptr;
-}
+        LP_LOG_CRITICAL("Unknow render API!!!");
+        return nullptr;
+    }
+}  // namespace Leaper
