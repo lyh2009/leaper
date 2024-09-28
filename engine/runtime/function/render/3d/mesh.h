@@ -6,6 +6,7 @@
 #include "assimp/material.h"
 #include "core/base.h"
 #include "function/render/texture.h"
+#include "function/render/uniform_buffer.h"
 #include <cstdint>
 #include <vector>
 
@@ -36,7 +37,7 @@ namespace Leaper
         };
 
         Mesh(std::vector<MeshVertex> vertices, std::vector<uint32_t> indices, std::vector<MeshTexture> textures);
-        void Render(glm::mat4& trans, glm::mat4& camera, glm::vec3 camera_pos, int entity_id = -1);
+        void Render(glm::mat4& trans, glm::vec3 camera_pos, int entity_id = -1);
 
     private:
         void Init();
@@ -48,6 +49,7 @@ namespace Leaper
         Leaper::Ref<VertexArray> m_vertex_array;
         Leaper::Ref<IndexBuffer> m_index_buffer;
         Leaper::Ref<Shader> m_shader;
+        // Ref<UniformBuffer> m_uniform_buffer;
         Ref<Texture> m_white_texture;
     };
 }  // namespace Leaper

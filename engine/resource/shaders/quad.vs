@@ -13,7 +13,11 @@ out vec2 		v_TexCoord;
 out flat float 	v_TexIndex;
 out flat int 	v_EntityID;
 
-uniform mat4 u_ViewProjection;
+
+layout(std140, binding = 0) uniform Camera
+{
+	mat4 u_ViewProjection;
+};
 
 void main()
 {

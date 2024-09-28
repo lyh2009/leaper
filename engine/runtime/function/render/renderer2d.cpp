@@ -9,6 +9,7 @@
 #include "perspective_camera_controller.h"
 #include "render_command.h"
 #include "shader.h"
+#include "uniform_buffer.h"
 #include "vertex_array.h"
 
 #include <cstddef>
@@ -115,6 +116,7 @@ struct Renderer2DData
         glm::mat4 view_projection;
     };
     CameraData camera_buffer;
+    Leaper::Ref<Leaper::UniformBuffer> uniform_buffer;
 };
 
 static Renderer2DData s_data;
@@ -194,17 +196,21 @@ void Leaper::Renderer2D::Init()
         s_data.circle_vertex_array->SetIndexBuffer(quad_index_buffer);
         s_data.circle_vertex_buffer_base = new CircleVertex[s_data.max_vertices];
     }
+
+    s_data.uniform_buffer = Leaper::UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
 }
 
 void Leaper::Renderer2D::BeginScene(const glm::mat4& camera)
 {
     s_data.camera_buffer.view_projection = camera;
+    s_data.uniform_buffer->SetData(&s_data.camera_buffer, sizeof(Renderer2DData::CameraData));
     StartBatch();
 }
 
 void Leaper::Renderer2D::BeginScene(const glm::mat4& camera, glm::mat4& trans)
 {
     s_data.camera_buffer.view_projection = camera * trans;
+    s_data.uniform_buffer->SetData(&s_data.camera_buffer, sizeof(Renderer2DData::CameraData));
     StartBatch();
 }
 
@@ -241,7 +247,7 @@ void Leaper::Renderer2D::Flush()
 
         s_data.quad_shader->Bind();
 
-        s_data.quad_shader->SetMat4("u_ViewProjection", s_data.camera_buffer.view_projection);
+        // s_data.quad_shader->SetMat4("u_ViewProjection", s_data.camera_buffer.view_projection);
         s_data.quad_shader->SetVec3("u_AmbientLight", m_ambient_light);
 
         // point light
@@ -268,7 +274,7 @@ void Leaper::Renderer2D::Flush()
 
         s_data.line_shader->Bind();
         SetLineWidth(m_line_width);
-        s_data.line_shader->SetMat4("u_ViewProjection", s_data.camera_buffer.view_projection);
+        // s_data.line_shader->SetMat4("u_ViewProjection", s_data.camera_buffer.view_projection);
         Leaper::RenderCommand::DrawLines(s_data.line_vertex_array, s_data.line_index_count);
         s_data.line_shader->UnBind();
     }
@@ -281,7 +287,7 @@ void Leaper::Renderer2D::Flush()
 
         s_data.circle_shader->Bind();
 
-        s_data.circle_shader->SetMat4("u_ViewProjection", s_data.camera_buffer.view_projection);
+        // s_data.circle_shader->SetMat4("u_ViewProjection", s_data.camera_buffer.view_projection);
         Leaper::RenderCommand::DrawElements(s_data.circle_vertex_array, s_data.circle_index_count);
         s_data.circle_shader->UnBind();
     }

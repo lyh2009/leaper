@@ -24,9 +24,9 @@ namespace Leaper
         LoadModel(path);
     }
 
-    void Model::Draw(glm::mat4& trans, glm::mat4& camera, glm::vec3 camera_pos, int entity_id)
+    void Model::Draw(glm::mat4& trans, glm::vec3 camera_pos, int entity_id)
     {
-        for (int i = 0; i < m_meshes.size(); ++i) { m_meshes[i].Render(trans, camera, camera_pos, entity_id); }
+        for (int i = 0; i < m_meshes.size(); ++i) { m_meshes[i].Render(trans, camera_pos, entity_id); }
     }
 
     void Model::LoadModel(const std::string& path)

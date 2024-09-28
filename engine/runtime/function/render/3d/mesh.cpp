@@ -1,3 +1,5 @@
+#include "function/render/renderer2d.h"
+#include "function/render/uniform_buffer.h"
 #include "resource/gpu_resource_mapper.h"
 #include <vector>
 #define TINYGLTF_IMPLEMENTATION
@@ -30,7 +32,7 @@ Leaper::Mesh::Mesh(std::vector<MeshVertex> vertices, std::vector<uint32_t> indic
     m_white_texture = TextureResourceManager::GetWhiteTexture();
 }
 
-void Leaper::Mesh::Render(glm::mat4& trans, glm::mat4& camera, glm::vec3 camera_pos, int entity_id)
+void Leaper::Mesh::Render(glm::mat4& trans, glm::vec3 camera_pos, int entity_id)
 {
     for (int i = 0; i < m_textures.size(); i++)
     {
@@ -44,7 +46,6 @@ void Leaper::Mesh::Render(glm::mat4& trans, glm::mat4& camera, glm::vec3 camera_
     m_shader->Bind();
     Init();
     m_shader->SetMat4("u_Trans", trans);
-    m_shader->SetMat4("u_ProjectionView", camera);
     m_shader->SetVec3("u_ViewPos", camera_pos);
     m_shader->SetInt("u_EntityID", entity_id);
     RenderCommand::DrawElements(m_vertex_array, static_cast<unsigned int>(m_indices.size()));

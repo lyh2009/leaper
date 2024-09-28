@@ -8,14 +8,19 @@ out vec3 v_Position;
 out vec2 v_TexCoord;
 out vec3 v_Normal;
 
-uniform mat4 u_ProjectionView;
+layout(std140, binding = 0) uniform Camera
+{
+    mat4 u_ViewProjection;
+};
+
 uniform mat4 u_Trans;
 
-void main() {
-  v_Normal = mat3(transpose(inverse(u_Trans))) * a_Normal;
+void main()
+{
+    v_Normal = mat3(transpose(inverse(u_Trans))) * a_Normal;
 
-  v_Position = vec3(u_Trans * vec4(a_Position, 1.0));
-  v_TexCoord = a_TexCoord;
+    v_Position = vec3(u_Trans * vec4(a_Position, 1.0));
+    v_TexCoord = a_TexCoord;
 
-  gl_Position = u_ProjectionView * u_Trans * vec4(a_Position, 1.0);
+    gl_Position = u_ViewProjection * u_Trans * vec4(a_Position, 1.0);
 }

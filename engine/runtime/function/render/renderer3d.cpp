@@ -121,50 +121,57 @@ void Leaper::Renderer3D::BeginScene(const glm::mat4& camera, glm::mat4& trans)
 
 void Leaper::Renderer3D::EndScene()
 {
-    Flush();
+    // Flush();
 }
 
 void Leaper::Renderer3D::StartBatch()
 {
+    /*
     s_data.cube_index_count       = 0;
     s_data.cube_vertex_buffer_ptr = s_data.cube_vertex_buffer_base;
 
     s_data.texture_slot_index = 1;
+    */
 }
 
 void Leaper::Renderer3D::Flush()
-{
-    if (s_data.cube_index_count)
-    {
-        uint32_t data_size = (uint32_t)((uint8_t*)s_data.cube_vertex_buffer_ptr - (uint8_t*)s_data.cube_vertex_buffer_base);
-        s_data.cube_vertex_buffer->SetData(s_data.cube_vertex_buffer_base, data_size);
+{ /*
+  if (s_data.cube_index_count)
+  {
+      uint32_t data_size = (uint32_t)((uint8_t*)s_data.cube_vertex_buffer_ptr - (uint8_t*)s_data.cube_vertex_buffer_base);
+      s_data.cube_vertex_buffer->SetData(s_data.cube_vertex_buffer_base, data_size);
 
-        // bind texture
-        for (uint32_t i = 0; i < s_data.texture_slot_index; i++) s_data.texture_slots[i]->Bind(i);
+      // bind texture
+      for (uint32_t i = 0; i < s_data.texture_slot_index; i++) s_data.texture_slots[i]->Bind(i);
 
-        s_data.cube_shader->Bind();
+      s_data.cube_shader->Bind();
 
-        s_data.cube_shader->SetMat4("u_ViewProjection", s_data.camera_buffer.view_projection);
-        s_data.cube_shader->SetVec3("u_ViewPosition", s_data.camera_buffer.position);
+      s_data.cube_shader->SetMat4("u_ViewProjection", s_data.camera_buffer.view_projection);
+      s_data.cube_shader->SetVec3("u_ViewPosition", s_data.camera_buffer.position);
 
-        s_data.cube_vertex_array->DrawArray(s_data.max_vertices);
-    }
+      s_data.cube_vertex_array->DrawArray(s_data.max_vertices);
+  }
+  */
 }
 
 void Leaper::Renderer3D::NextBatch()
 {
+    /*
     Flush();
     StartBatch();
+    */
 }
 
 void Leaper::Renderer3D::DrawCube(glm::mat4& trans, const Leaper::Ref<Leaper::Texture>& texture, glm::vec4 color, int entity_id)
 {
+    /*
     constexpr size_t cube_vertex_count   = 36;
     constexpr glm::vec2 texture_coords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 
     float texture_index = 0.0f;
 
-    if (s_data.cube_index_count >= Renderer3DData::max_indices) NextBatch();
+    if (s_data.cube_index_count >= Renderer3DData::max_indices)
+        NextBatch();
 
     for (uint32_t i = 0; i < cube_vertex_count; i++)
     {
@@ -179,9 +186,10 @@ void Leaper::Renderer3D::DrawCube(glm::mat4& trans, const Leaper::Ref<Leaper::Te
     }
 
     s_data.cube_index_count += 36;
+    */
 }
 
 void Leaper::Renderer3D::DrawModel(Model model, glm::mat4& trans, int entity_id)
 {
-    model.Draw(trans, s_data.camera_buffer.view_projection, s_data.camera_buffer.position, entity_id);
+    model.Draw(trans, s_data.camera_buffer.position, entity_id);
 }
