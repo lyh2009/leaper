@@ -1,5 +1,6 @@
 #include "function/render/texture.h"
 #include "project.h"
+#include "resource/gpu_resource_mapper.h"
 
 #include <IconsFontAwesome6.h>
 #include <imgui.h>
@@ -14,17 +15,17 @@ namespace Leaper
     void Project::OnAttach()
     {
         m_path               = std::filesystem::path(g_assets_path);
-        m_folder_icon        = Texture::Create("./resource/icons/folder.png");
-        m_file_icon          = Texture::Create("./resource/icons/file.png");
-        m_icon_map[".lua"]   = Texture::Create("./resource/icons/lua.png");
-        m_icon_map[".png"]   = Texture::Create("./resource/icons/image.png");
-        m_icon_map[".jpg"]   = Texture::Create("./resource/icons/image.png");
-        m_icon_map[".blend"] = Texture::Create("./resource/icons/blend.png");
-        m_icon_map[".obj"]   = Texture::Create("./resource/icons/blend.png");
-        m_icon_map[".fbx"]   = Texture::Create("./resource/icons/blend.png");
-        m_icon_map[".json"]  = Texture::Create("./resource/icons/json.png");
-        m_icon_map[".mtl"]   = Texture::Create("./resource/icons/json.png");
-        m_icon_map[".mp3"]   = Texture::Create("./resource/icons/audio.png");
+        m_folder_icon        = TextureResourceManager::LoadTexture("./resource/icons/folder.png");
+        m_file_icon          = TextureResourceManager::LoadTexture("./resource/icons/file.png");
+        m_icon_map[".lua"]   = TextureResourceManager::LoadTexture("./resource/icons/lua.png");
+        m_icon_map[".png"]   = TextureResourceManager::LoadTexture("./resource/icons/image.png");
+        m_icon_map[".jpg"]   = TextureResourceManager::LoadTexture("./resource/icons/image.png");
+        m_icon_map[".blend"] = TextureResourceManager::LoadTexture("./resource/icons/blend.png");
+        m_icon_map[".obj"]   = TextureResourceManager::LoadTexture("./resource/icons/blend.png");
+        m_icon_map[".fbx"]   = TextureResourceManager::LoadTexture("./resource/icons/blend.png");
+        m_icon_map[".json"]  = TextureResourceManager::LoadTexture("./resource/icons/json.png");
+        m_icon_map[".mtl"]   = TextureResourceManager::LoadTexture("./resource/icons/json.png");
+        m_icon_map[".mp3"]   = TextureResourceManager::LoadTexture("./resource/icons/audio.png");
     }
 
     void Project::OnUpdate()

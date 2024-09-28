@@ -5,6 +5,7 @@
 #include "hierarchy.h"
 #include "imgui.h"
 #include "project.h"
+#include "resource/gpu_resource_mapper.h"
 #include <IconsFontAwesome6.h>
 
 #include <ImGuizmo.h>
@@ -166,17 +167,19 @@ namespace Leaper
 
         DrawComponent<SpriteRendererComponent>(ICON_FA_BRUSH " SpriteRenderer Component", entity, [](auto& component) {
             static std::filesystem::path texture_path;
+            std::string label = std::filesystem::path(component.texture_path).stem().string();
             UI::BeginColumns();
             {
                 UI::ColorEdit4("Color", glm::value_ptr(component.color));
-                UI::Button("Texture", texture_path.string(), ImVec2(-1, 0));
+                UI::Button("Texture", label, ImVec2(-1, 0));
                 if (ImGui::BeginDragDropTarget())
                 {
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSETS"))
                     {
-                        const wchar_t* path = (const wchar_t*)payload->Data;
-                        texture_path        = std::filesystem::path(g_assets_path) / path;
-                        component.m_texture = Texture::Create(texture_path.string());
+                        const wchar_t* path    = (const wchar_t*)payload->Data;
+                        texture_path           = std::filesystem::path(g_assets_path) / path;
+                        component.texture_path = texture_path.string();
+                        component.m_texture    = TextureResourceManager::LoadTexture(texture_path.string());
                     }
 
                     ImGui::EndDragDropTarget();
@@ -330,7 +333,7 @@ namespace Leaper
                         const wchar_t* path = (const wchar_t*)payload->Data;
                         model_path          = std::filesystem::path(g_assets_path) / path;
                         component.path      = model_path.string();
-                        component.model     = Model(component.path);
+                        component.model     = ModelResourceManager::LoadModel(model_path.string());
                     }
 
                     ImGui::EndDragDropTarget();

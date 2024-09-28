@@ -1,3 +1,4 @@
+#include "resource/gpu_resource_mapper.h"
 #include <vector>
 #define TINYGLTF_IMPLEMENTATION
 #define TINYGLTF_NO_STB_IMAGE_WRITE
@@ -25,6 +26,8 @@ Leaper::Mesh::Mesh(std::vector<MeshVertex> vertices, std::vector<uint32_t> indic
 
     m_index_buffer = Leaper::IndexBuffer::Create(m_indices.data(), indices.size() * sizeof(uint32_t));
     m_vertex_array->SetIndexBuffer(m_index_buffer);
+
+    m_white_texture = TextureResourceManager::GetWhiteTexture();
 }
 
 void Leaper::Mesh::Render(glm::mat4& trans, glm::mat4& camera, glm::vec3 camera_pos, int entity_id)
@@ -36,6 +39,8 @@ void Leaper::Mesh::Render(glm::mat4& trans, glm::mat4& camera, glm::vec3 camera_
         else if (m_textures[i].type == TextureType::Specular)
             m_textures[i].texture->Bind(1);
     }
+    if (m_textures.empty())
+        m_white_texture->Bind();
     m_shader->Bind();
     Init();
     m_shader->SetMat4("u_Trans", trans);

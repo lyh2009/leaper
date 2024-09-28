@@ -48,5 +48,6 @@ namespace Leaper
         Leaper::Ref<VertexArray> m_vertex_array;
         Leaper::Ref<IndexBuffer> m_index_buffer;
         Leaper::Ref<Shader> m_shader;
+        Ref<Texture> m_white_texture;
     };
 }  // namespace Leaper

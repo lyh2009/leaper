@@ -21,11 +21,13 @@ namespace Leaper
         void LoadModel(const std::string& path);
         void ProcessNode(aiNode* node, const aiScene* scene);
         Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
-        std::vector<Mesh::MeshTexture> LoadTexture(aiMaterial* mat, aiTextureType type, Leaper::TextureType type_name);
 
+    private:
+        std::vector<Mesh::MeshTexture> LoadTexture(aiMaterial* mat, aiTextureType type, TextureType type_name);
         std::vector<Mesh> m_meshes;
-        Leaper::Ref<Shader> m_shader;
         std::vector<Mesh::MeshTexture> textures_loaded;
         std::string m_path;
+
+        Ref<Shader> m_shader;
     };
 }  // namespace Leaper

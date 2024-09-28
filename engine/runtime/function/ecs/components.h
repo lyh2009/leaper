@@ -225,6 +225,11 @@ namespace Leaper
         std::string texture_path;
     };
 
+    struct DirectionalLightComponent
+    {
+        DirectionalLightComponent() = default;
+    };
+
     struct MeshRendererComponment
     {
         MeshRendererComponment() = default;
