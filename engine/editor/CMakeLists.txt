@@ -12,10 +12,11 @@ set(EDITOR_INCLUDE_DIR
  "${3RDPARTY}/glm/"
  "${3RDPARTY}/imgui/"
  "${3RDPARTY}/ImGuizmo/"
- "${3RDPARTY}/sol2/include/"
  "${3RDPARTY}/IconFontCppHeaders/"
  "${3RDPARTY}/SPSCQueue/include/"
  "${3RDPARTY}/magic_enum/include/"
+ "${3RDPARTY}/lua-5.4.4/"
+ "${3RDPARTY}/sol2/include/"
  "../runtime/"
  )
 

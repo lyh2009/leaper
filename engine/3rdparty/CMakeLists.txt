@@ -65,10 +65,7 @@ if(NOT TARGET assimp)
       "Disable Assimp's export functionality."
       OFF
     )
-    OPTION( ASSIMP_BUILD_ZLIB
-      "Build your own zlib"
-      OFF
-    )
+
     OPTION( ASSIMP_BUILD_ASSIMP_TOOLS
       "If the supplementary tools for Assimp are built in addition to the library."
       OFF
@@ -116,3 +113,5 @@ if(NOT TARGET assimp)
     )
     add_subdirectory(assimp)
 endif()
+
+find_package(Vulkan REQUIRED)

@@ -21,7 +21,9 @@ namespace Leaper
     public:
         static void Init();
         static void BeginScene(const glm::mat4& camera);
+        static void BeginScene(const glm::mat4& camera, glm::vec3 camera_position);
         static void BeginScene(const glm::mat4& camera, glm::mat4& trans);
+        static void BeginScene(const glm::mat4& camera, glm::mat4& trans, glm::vec3 camera_position);
         static void EndScene();
         static void DrawQuad(Leaper::TransformComponent trans, glm::vec4 color, int entity_id = -1);
 
@@ -34,12 +36,14 @@ namespace Leaper
                                glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), int entity_id = -1);
         static void DrawLight(Leaper::TransformComponent trans, Leaper::LightComponent light);
 
-        
         static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int entity_id = -1);
         static void DrawRect(Leaper::TransformComponent trans, const glm::vec4& color, int entity_id = -1);
         static void DrawCircle(Leaper::TransformComponent trans, const glm::vec4& color, float thickness = 1.0f, float fade = 0.005f, int entity_id = -1);
         static void SetLineWidth(float width);
-        static void SetAmbientLight(const glm::vec3& color) { m_ambient_light = color; }
+        static void SetAmbientLight(const glm::vec3& color)
+        {
+            m_ambient_light = color;
+        }
 
         static float GetFlushQuadElapsedTime()
         {
@@ -49,7 +53,7 @@ namespace Leaper
         {
             return m_line_width;
         };
-        
+
         struct Statistics
         {
             uint32_t DrawCalls = 0;
@@ -74,7 +78,7 @@ namespace Leaper
         static void NextBatch();
 
         static float m_line_width;
-        static glm::vec3 m_ambient_light;        
+        static glm::vec3 m_ambient_light;
         static float m_flush_quad_elapsed_time;
     };
 

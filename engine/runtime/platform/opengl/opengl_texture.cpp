@@ -1,3 +1,4 @@
+#include "core/log.h"
 #include "lppch.h"
 #include "opengl_texture.h"
 
@@ -23,6 +24,33 @@ OpenGLTexture::OpenGLTexture(uint32_t width, uint32_t height)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+}
+
+OpenGLTexture::OpenGLTexture(std::vector<std::string> faces_path)
+{
+    glGenTextures(1, &m_texture);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture);
+    int width, height, nrChannels;
+    for (int i = 0; i < faces_path.size(); ++i)
+    {
+        unsigned char* data = stbi_load(faces_path[i].c_str(), &width, &height, &nrChannels, 0);
+        if (data)
+        {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            stbi_image_free(data);
+        }
+        else
+        {
+            LP_CORE_LOG_ERROR("Failed to load texture !!! Path:{0}", faces_path[i]);
+            stbi_image_free(data);
+        }
+    }
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
 
 OpenGLTexture::OpenGLTexture(std::string path, bool is_flip)
@@ -69,7 +97,10 @@ OpenGLTexture::OpenGLTexture(std::string path, bool is_flip)
 
         stbi_image_free(data);
     }
-    else { std::cout << "import image error" << std::endl; }
+    else
+    {
+        LP_CORE_LOG_ERROR("Failed to load texture!!! Path{0}", path);
+    }
 }
 
 std::string& OpenGLTexture::GetPath()
@@ -87,7 +118,10 @@ void OpenGLTexture::Bind()
 {
     glBindTexture(GL_TEXTURE_2D, m_texture);
 }
-
+void OpenGLTexture::BindCubeMap()
+{
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture);
+}
 void OpenGLTexture::Bind(int slot)
 {
     glActiveTexture(GL_TEXTURE0 + slot);

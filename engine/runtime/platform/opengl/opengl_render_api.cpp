@@ -1,4 +1,5 @@
 #include "lppch.h"
+#include "platform/windows/windows_window.h"
 #include "opengl_render_api.h"
 
 OpenGLRenderAPI::OpenGLRenderAPI() {}
@@ -26,8 +27,8 @@ void OpenGLRenderAPI::Clear()
 void OpenGLRenderAPI::DrawElements(Leaper::Ref<Leaper::VertexArray> vertex_array, uint32_t count)
 {
     vertex_array->Bind();
-    glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
-    vertex_array->UnBind();
+    uint32_t count_n = count ? count : vertex_array->GetIndexBuffer()->GetCount();
+    glDrawElements(GL_TRIANGLES, count_n, GL_UNSIGNED_INT, nullptr);
 }
 
 void OpenGLRenderAPI::DrawLines(const Leaper::Ref<Leaper::VertexArray>& vao, uint32_t count)
@@ -39,4 +40,20 @@ void OpenGLRenderAPI::DrawLines(const Leaper::Ref<Leaper::VertexArray>& vao, uin
 void OpenGLRenderAPI::SetLineWidth(const float& width)
 {
     glLineWidth(width);
+}
+void OpenGLRenderAPI::CullFrontFace() const
+{
+    glCullFace(GL_FRONT);
+}
+void OpenGLRenderAPI::DisableCull() const
+{
+    glDisable(GL_CULL_FACE);
+}
+void OpenGLRenderAPI::EnableCull() const
+{
+    glEnable(GL_CULL_FACE);
+}
+void OpenGLRenderAPI::DepthMask(bool enable) 
+{
+    glDepthMask(enable);
 }

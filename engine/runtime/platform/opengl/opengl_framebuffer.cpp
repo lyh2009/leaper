@@ -1,12 +1,15 @@
+#include "core/log.h"
 #include "function/render/framebuffer.h"
 #include "lppch.h"
 #include "opengl_framebuffer.h"
 
 #include "function/application/application.h"
 #include "function/render/renderer2d.h"
+#include "opengl_context.h"
 
 #include <cstdint>
 #include <iostream>
+#include <string>
 
 OpenGLFrameBuffer::OpenGLFrameBuffer()
 {
@@ -22,7 +25,10 @@ OpenGLFrameBuffer::~OpenGLFrameBuffer()
 
 uint32_t& OpenGLFrameBuffer::GetTexture(int count)
 {
-    if (count <= m_textures.size()) { return m_textures[count]; }
+    if (count <= m_textures.size())
+    {
+        return m_textures[count];
+    }
     LP_CORE_LOG_ERROR("Failed to load image!");
 }
 
@@ -39,6 +45,9 @@ void OpenGLFrameBuffer::RescaleFrameBuffer(float width, float height)
         glFramebufferTexture2D(GL_FRAMEBUFFER, m_attachments[i], GL_TEXTURE_2D, m_textures[i], 0);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
+
+    m_width  = width;
+    m_height = height;
 }
 
 uint32_t OpenGLFrameBuffer::CreateTexture(int width, int height, Leaper::TextureFormat internalformat, Leaper::TextureFormat format, Leaper::Attachments attachment)
@@ -60,15 +69,14 @@ uint32_t OpenGLFrameBuffer::CreateTexture(int width, int height, Leaper::Texture
 
 uint32_t OpenGLFrameBuffer::CreateDepthTexture(int width, int height)
 {
-    uint32_t textureColorbuffer = m_depth_buffer;
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 
-    glGenTextures(1, &textureColorbuffer);
-    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+    glGenTextures(1, &m_depth_texture);
+    glBindTexture(GL_TEXTURE_2D, m_depth_texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, textureColorbuffer, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_depth_texture, 0);
     // create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
     unsigned int rbo;
     glGenRenderbuffers(1, &rbo);
@@ -79,7 +87,33 @@ uint32_t OpenGLFrameBuffer::CreateDepthTexture(int width, int height)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     glBindTexture(GL_TEXTURE_2D, 0);
-    return textureColorbuffer;
+
+    return m_depth_texture;
+}
+
+uint32_t OpenGLFrameBuffer::CreateDepthMap(int width, int height)
+{
+    glGenFramebuffers(1, &m_depth_fbo);
+    glGenTextures(1, &m_depth_map);
+    glBindTexture(GL_TEXTURE_2D, m_depth_map);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    GLfloat borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+    // 绑定深度缓冲
+    glBindFramebuffer(GL_FRAMEBUFFER, m_depth_fbo);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depth_map, 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    m_width  = width;
+    m_height = height;
+
+    return m_depth_map;
 }
 
 uint32_t OpenGLFrameBuffer::AttachmentsToGL(Leaper::Attachments attachment)
@@ -115,18 +149,38 @@ void OpenGLFrameBuffer::ClearAttachment(uint32_t attachment_index, int value)
 
 void OpenGLFrameBuffer::Bind() const
 {
+    glViewport(0, 0, m_width, m_height);
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     glDrawBuffers(m_attachments.size(), m_attachments.data());
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void OpenGLFrameBuffer::Unbind() const
 {
-    glDisable(GL_DEPTH_TEST);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+uint32_t& OpenGLFrameBuffer::GetDepthTexture()
+{
+    return m_depth_map;
+}
+void OpenGLFrameBuffer::BindDepthTexture(uint32_t active)
+{
+    glActiveTexture(GL_TEXTURE0 + active);
+    glBindTexture(GL_TEXTURE_2D, m_depth_map);
+}
+void OpenGLFrameBuffer::UnBindDepthTexture()
+{
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+void OpenGLFrameBuffer::BindDepthFBO()
+{
+    glViewport(0, 0, m_width, m_height);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_depth_fbo);
+    glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+void OpenGLFrameBuffer::UnBindDepthFBO()
+{
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

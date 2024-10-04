@@ -2,7 +2,6 @@
 #include "core/base.h"
 #include "function/render/render_api.h"
 
-
 #include <glad/glad.h>
 
 class OpenGLRenderAPI : public Leaper::RenderAPI
@@ -16,4 +15,8 @@ public:
     virtual void DrawElements(Leaper::Ref<Leaper::VertexArray> vertex_array, uint32_t count) override;
     virtual void DrawLines(const Leaper::Ref<Leaper::VertexArray>& vao, uint32_t count) override;
     virtual void SetLineWidth(const float& width) override;
+    virtual void CullFrontFace() const override;
+    virtual void DisableCull() const override;
+    virtual void EnableCull() const override;
+    virtual void DepthMask(bool enable) override;
 };

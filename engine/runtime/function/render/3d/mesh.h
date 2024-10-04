@@ -37,7 +37,7 @@ namespace Leaper
         };
 
         Mesh(std::vector<MeshVertex> vertices, std::vector<uint32_t> indices, std::vector<MeshTexture> textures);
-        void Render(glm::mat4& trans, glm::vec3 camera_pos, int entity_id = -1);
+        void Render(glm::mat4& trans, Ref<Shader> shader, int entity_id = -1);
 
     private:
         void Init();

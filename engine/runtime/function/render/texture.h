@@ -14,12 +14,14 @@ namespace Leaper
         virtual void SetData(void* data) = 0;
 
         virtual void Bind()                                 = 0;
+        virtual void BindCubeMap()                          = 0;
         virtual void Bind(int slot)                         = 0;
         virtual void UnBind()                               = 0;
         virtual bool operator==(const Texture& other) const = 0;
 
         static Leaper::Ref<Leaper::Texture> Create(std::string path, bool is_flip = true);
         static Leaper::Ref<Leaper::Texture> Create(uint32_t width, uint32_t height);
+        static Leaper::Ref<Leaper::Texture> CreateCubeMap(std::vector<std::string> faces);
     };
 
 }  // namespace Leaper

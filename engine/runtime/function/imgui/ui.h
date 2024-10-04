@@ -18,6 +18,7 @@ namespace Leaper
         static void DragFloat2(const std::string& label, float* v, float speed = 1.0f, float min = 0.0f, float max = 0.0f, const std::string& format = "%.3f");
         static bool Checkbox(const std::string& label, bool* b);
         static void ColorEdit4(const std::string& label, float* v);
+        static void ColorEdit3(const std::string& label, float* v);
         static bool InputText(const std::string& label, std::string v);
         static inline ImRect RectExpanded(const ImRect& rect, float x, float y)
         {

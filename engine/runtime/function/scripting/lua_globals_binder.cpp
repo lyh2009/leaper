@@ -1,5 +1,6 @@
-#include "lua_globals_binder.h"
 #include "lppch.h"
+#include "lua_globals_binder.h"
+
 
 #include "core/time.h"
 #include "function/ecs/scene.h"

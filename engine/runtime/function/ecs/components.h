@@ -11,6 +11,7 @@
 
 #include "glm/fwd.hpp"
 #include "scriptable_entity.h"
+#include <sol/sol.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -19,7 +20,6 @@
 #include <box2d/b2_fixture.h>
 #include <fmod.hpp>
 #include <glm/gtx/quaternion.hpp>
-#include <sol/sol.hpp>
 
 #include <functional>
 #include <string>
@@ -174,9 +174,8 @@ namespace Leaper
     {
         LuaScriptComponent() : path("") {}
         LuaScriptComponent(const std::string& script_path) : path(script_path) {}
-
-        std::string path;
         sol::table self;
+        std::string path;
     };
 
     struct SoundComponent
@@ -228,6 +227,14 @@ namespace Leaper
     struct DirectionalLightComponent
     {
         DirectionalLightComponent() = default;
+        DirectionalLightComponent(glm::vec3 _color, float _ambient_strength, float _specular_strength)
+            : color(_color), ambient_strength(_ambient_strength), specular_strength(_specular_strength)
+        {
+        }
+
+        glm::vec3 color         = { 1, 1, 1 };
+        float ambient_strength  = 0.1f;
+        float specular_strength = 0.5f;
     };
 
     struct MeshRendererComponment

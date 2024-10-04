@@ -7,6 +7,7 @@
 #include "function/task/render_task_queue.h"
 #include "function/task/render_task_types.h"
 #include "lppch.h"
+#include "resource/shader_library.h"
 #include <thread>
 
 #define LP_MUTEX() std::lock_guard<std::mutex> mtx_locker(m_mutex)
@@ -60,8 +61,9 @@ void Leaper::Application::Run()
     s_instance    = this;
 
     // init Renderer
-    Renderer2D::Init();
+    Leaper::ShaderLibrary::Init();
     Leaper::Renderer3D::Init();
+    Renderer2D::Init();
 
     PushOverlay(m_imgui_layer);
 

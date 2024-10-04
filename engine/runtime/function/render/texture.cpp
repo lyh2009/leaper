@@ -25,4 +25,14 @@ namespace Leaper
         }
         return nullptr;
     }
+
+    Ref<Texture> Texture::CreateCubeMap(std::vector<std::string> faces)
+    {
+        switch (RenderAPI::GetAPI())
+        {
+        case RenderAPI::API::None: return nullptr;
+        case RenderAPI::API::OpenGL: return CreateRef<OpenGLTexture>(faces);
+        }
+        return nullptr;
+    }
 }  // namespace Leaper

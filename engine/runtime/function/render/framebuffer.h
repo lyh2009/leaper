@@ -31,10 +31,18 @@ namespace Leaper
     {
     public:
         virtual uint32_t& GetTexture(int count)                                                                                                                   = 0;
+        virtual uint32_t& GetDepthTexture()                                                                                                                       = 0;
         virtual void RescaleFrameBuffer(float width, float height)                                                                                                = 0;
         virtual uint32_t CreateTexture(int width, int height, Leaper::TextureFormat internalformat, Leaper::TextureFormat format, Leaper::Attachments attachment) = 0;
         virtual uint32_t CreateDepthTexture(int width, int height)                                                                                                = 0;
+        virtual uint32_t CreateDepthMap(int width, int height)                                                                                                    = 0;
         virtual uint32_t AttachmentsToGL(Leaper::Attachments attachment)                                                                                          = 0;
+
+        virtual void BindDepthTexture(uint32_t active) = 0;
+        virtual void UnBindDepthTexture()              = 0;
+
+        virtual void BindDepthFBO()   = 0;
+        virtual void UnBindDepthFBO() = 0;
 
         virtual int ReadPixels(uint32_t attachment, int x, int y)          = 0;
         virtual void ClearAttachment(uint32_t attachment_index, int value) = 0;

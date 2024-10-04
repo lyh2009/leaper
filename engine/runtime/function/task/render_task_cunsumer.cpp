@@ -14,8 +14,8 @@ namespace Leaper
     void RenderTaskCunsumer::Shader_Create(RenderTaskBase* task)
     {
 
-        auto shader_task               = dynamic_cast<RenderTaskShader_Create*>(task);
-        shader_task->shader            = Shader::Create(shader_task->vertex_shader_source, shader_task->fragment_shader_source);
+        auto shader_task = dynamic_cast<RenderTaskShader_Create*>(task);
+        // shader_task->shader            = Shader::Create(shader_task->vertex_shader_source, shader_task->fragment_shader_source);
         shader_task->return_result_set = true;
     }
     // -----------------------------------------------VertexArray-------------------------------------------------

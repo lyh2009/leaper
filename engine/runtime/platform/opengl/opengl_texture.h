@@ -9,6 +9,7 @@ class OpenGLTexture : public Leaper::Texture
 {
 public:
     OpenGLTexture(uint32_t width, uint32_t height);
+    OpenGLTexture(std::vector<std::string> faces_path);
     OpenGLTexture(std::string path, bool is_flip = true);
 
     virtual uint32_t GetTexture() const override
@@ -20,6 +21,7 @@ public:
     virtual void SetData(void* data);
 
     virtual void Bind() override;
+    virtual void BindCubeMap() override;
     virtual void Bind(int slot) override;
     virtual void UnBind() override;
 

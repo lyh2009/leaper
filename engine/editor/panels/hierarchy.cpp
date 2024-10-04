@@ -2,11 +2,13 @@
 #include "function/application/application.h"
 #include "function/ecs/components.h"
 #include "function/imgui/ui.h"
+#include "glm/gtc/type_ptr.hpp"
 #include "hierarchy.h"
 #include "imgui.h"
 #include "project.h"
 #include "resource/gpu_resource_mapper.h"
 #include <IconsFontAwesome6.h>
+
 
 #include <ImGuizmo.h>
 #include <imgui_internal.h>
@@ -153,6 +155,7 @@ namespace Leaper
             DrawComponentMenuItem<SoundComponent>(ICON_FA_MUSIC "Sound Component", entity);
             DrawComponentMenuItem<LightComponent>(ICON_FA_LIGHTBULB "Light Component", entity);
             DrawComponentMenuItem<MeshRendererComponment>(ICON_FA_DICE_D20 "Mesh Renderer Component", entity);
+            DrawComponentMenuItem<DirectionalLightComponent>("Directional Light Component", entity);
 
             ImGui::EndPopup();
         }
@@ -338,6 +341,16 @@ namespace Leaper
 
                     ImGui::EndDragDropTarget();
                 }
+            }
+            UI::EndColumns();
+        });
+
+        DrawComponent<DirectionalLightComponent>("Directional Light Component", entity, [=](auto& component) {
+            UI::BeginColumns();
+            {
+                UI::ColorEdit3("Light Color", glm::value_ptr(component.color));
+                UI::DragFloat("Ambient Strength", &component.ambient_strength, 0.01f, 0.0f, 1.0f);
+                UI::DragFloat("Specular Strength", &component.specular_strength, 0.01f, 0.0f, 1.0f);
             }
             UI::EndColumns();
         });

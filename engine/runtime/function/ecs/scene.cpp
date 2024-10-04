@@ -51,38 +51,33 @@ void Leaper::Scene::DestroyEntity(Leaper::Entity entity)
 void Leaper::Scene::OnAttach()
 {
     m_systems.emplace_back(Leaper::CreateScope<Leaper::NaviteScriptSystem>(this));
-    m_systems.emplace_back(Leaper::CreateScope<Leaper::LuaScriptSystem>(this));
     m_systems.emplace_back(Leaper::CreateScope<Leaper::Physics2D_System>(this));
     m_systems.emplace_back(Leaper::CreateScope<Leaper::RenderSystem>(this));
     m_systems.emplace_back(Leaper::CreateScope<Leaper::Animation2DSystem>(this));
+    m_systems.emplace_back(Leaper::CreateScope<Leaper::LuaScriptSystem>(this));
     m_systems.emplace_back(Leaper::CreateScope<Leaper::AudioSystem>(this));
 
-    for (auto& item : m_systems)
-        item->OnAttach();
+    for (auto& item : m_systems) item->OnAttach();
 }
 
 void Leaper::Scene::OnUpdate()
 {
-    for (auto& item : m_systems)
-        item->OnUpdate();
+    for (auto& item : m_systems) item->OnUpdate();
 
     if (is_running)
     {
-        for (auto& item : m_systems)
-            item->OnGameUpdate();
+        for (auto& item : m_systems) item->OnGameUpdate();
     }
 }
 
 void Leaper::Scene::OnRuntimeStart()
 {
     is_running = true;
-    for (auto& item : m_systems)
-        item->OnGameStart();
+    for (auto& item : m_systems) item->OnGameStart();
 }
 
 void Leaper::Scene::OnRuntimeStop()
 {
     is_running = false;
-    for (auto& item : m_systems)
-        item->OnGameStop();
+    for (auto& item : m_systems) item->OnGameStop();
 }

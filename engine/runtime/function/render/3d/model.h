@@ -15,7 +15,7 @@ namespace Leaper
     public:
         Model() = default;
         Model(const std::string& path);
-        void Draw(glm::mat4& trans, glm::vec3 camera_pos, int entity_id = -1);
+        void Draw(glm::mat4& trans, Ref<Shader> shader, int entity_id = -1);
 
     private:
         void LoadModel(const std::string& path);
@@ -27,7 +27,5 @@ namespace Leaper
         std::vector<Mesh> m_meshes;
         std::vector<Mesh::MeshTexture> textures_loaded;
         std::string m_path;
-
-        Ref<Shader> m_shader;
     };
 }  // namespace Leaper

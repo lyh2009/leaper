@@ -47,6 +47,13 @@ namespace Leaper
         ImGui::ColorEdit4(std::string("##" + label).c_str(), v);
         NextColumns();
     }
+    void UI::ColorEdit3(const std::string& label, float* v)
+    {
+        ImGui::Text(label.c_str());
+        NextColumns();
+        ImGui::ColorEdit3(std::string("##" + label).c_str(), v);
+        NextColumns();
+    }
     bool UI::InputText(const std::string& label, std::string v)
     {
         bool returnValue;

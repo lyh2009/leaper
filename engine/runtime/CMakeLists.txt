@@ -1,10 +1,35 @@
 set(RUNTIME leaper_runtime)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
 set(3RDPARTY ../3rdparty)
+set(VulkanDir ${3RDPARTY}/VulkanSDK)
+if(WIN32)
+   if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+      file(GLOB_RECURSE VulkanSDK_Lib
+       "${VulkanDir}/Win32/Lib/dxcompiler.lib"
+       "${VulkanDir}/Win32/Lib/shadercd.lib"
+       "${VulkanDir}/Win32/Lib/shaderc_utild.lib"
+       "${VulkanDir}/Win32/Lib/spirv-cross-cored.lib"
+       "${VulkanDir}/Win32/Lib/spirv-cross-glsld.lib"
+       "${VulkanDir}/Win32/Lib/glslangd.lib"
+       "${VulkanDir}/Win32/Lib/SPIRVd.lib"
+       "${VulkanDir}/Win32/Lib/HLSLd.lib"
+       "${VulkanDir}/Win32/Lib/MachineIndependentd.lib"
+       "${VulkanDir}/Win32/Lib/GenericCodeGend.lib"
+       "${VulkanDir}/Win32/Lib/OSDependentd.lib"
+       "${VulkanDir}/Win32/Lib/OGLCompilerd.lib"
+       "${VulkanDir}/Win32/Lib/SPIRV-Toolsd.lib"
+       "${VulkanDir}/Win32/Lib/SPIRV-Tools-optd.lib")
+   endif()
+   if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+      file(GLOB_RECURSE VulkanSDK_Lib
+      "${VulkanDir}/Win32/Lib/dxcompiler.lib"
+       "${VulkanDir}/Win32/Lib/shaderc.lib"
+       "${VulkanDir}/Win32/Lib/shaderc_util.lib"    
+       "${VulkanDir}/Win32/Lib/spirv-cross-core.lib"
+       "${VulkanDir}/Win32/Lib/spirv-cross-glsl.lib")
+   endif()
+
+endif()
 
 file(GLOB_RECURSE ALL_SOURCE
  "*.cpp"
@@ -33,7 +58,8 @@ set(INCLUDE_DIR
  "${3RDPARTY}/FMOD/api/studio/inc/"
  "${3RDPARTY}/assimp/include"
  "${3RDPARTY}/meshoptimizer"
- "${3RDPARTY}/IconFontCppHeaders")
+ "${3RDPARTY}/IconFontCppHeaders"
+ "${VulkanDir}/Include/")
  
  
  include_directories(${INCLUDE_DIR})
@@ -41,13 +67,14 @@ set(INCLUDE_DIR
  target_precompile_headers(${RUNTIME} PUBLIC "./lppch.h")
 
  target_link_libraries(${RUNTIME}
- PUBLIC PUBLIC glfw
- PUBLIC Glad
- PUBLIC opengl32
- PUBLIC glm
- PUBLIC box2d
- PUBLIC spdlog
- PUBLIC lua_static
- PUBLIC assimp
- PUBLIC FMOD::Core FMOD::Fsbank FMOD::Studio
+    PUBLIC PUBLIC glfw
+    PUBLIC Glad
+    PUBLIC opengl32
+    PUBLIC glm
+    PUBLIC box2d
+    PUBLIC spdlog
+    PUBLIC lua_static
+    ${VulkanSDK_Lib}
+    PUBLIC assimp
+    PUBLIC FMOD::Core FMOD::Fsbank FMOD::Studio
  )

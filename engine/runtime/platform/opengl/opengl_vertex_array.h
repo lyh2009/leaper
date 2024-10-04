@@ -14,6 +14,10 @@ public:
     virtual void UnBind() override;
     virtual void AddVertexBuffer(Leaper::Ref<Leaper::VertexBuffer> vertex_buffer) override;
     virtual void SetIndexBuffer(Leaper::Ref<Leaper::IndexBuffer> index_buffer) override;
+    virtual Leaper::Ref<Leaper::IndexBuffer> GetIndexBuffer() override
+    {
+        return m_ebo;
+    }
     virtual void DrawArray(uint32_t count) override;
 
 private:

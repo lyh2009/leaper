@@ -2,8 +2,6 @@
 #include "lppch.h"
 
 #include <function/ecs/components.h>
-#include <function/ecs/systems/script_system/lua_script_system.h>
-
 
 void Leaper::ContactListener::BeginContact(b2Contact* contact)
 {
@@ -14,7 +12,7 @@ void Leaper::ContactListener::BeginContact(b2Contact* contact)
     FixtureUserData* data2 = reinterpret_cast<FixtureUserData*>(fixture2->GetUserData().pointer);
 
     m_scene->Reg().view<LuaScriptComponent>().each([&](auto other, LuaScriptComponent& lsc) {
-        LuaScriptSystem::LuaCall(lsc, "OnTriggerEnter", data1->name, data2->name);
+
     });
 }
 

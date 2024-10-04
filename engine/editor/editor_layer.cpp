@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <function/render/renderer2d.h>
 
 #include "editor_layer.h"
@@ -66,19 +67,24 @@ namespace Leaper
     void EditorLayer::OnUpdate()
     {
 
-        Leaper::RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+        Leaper::RenderCommand::SetClearColor(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
+        RenderCommand::Clear();
         m_framebuffer->Bind();
+        RenderCommand::SetMainFrameBuffer(m_framebuffer);
         m_framebuffer->ClearAttachment(1, -1);
+        // Renderer3D::SetFrameBuffer(m_framebuffer);
 
         // resize window
         if (m_viewport_size != *((glm::vec2*)&m_viewport_panel_size))
         {
-            m_framebuffer->RescaleFrameBuffer(m_viewport_panel_size.x, m_viewport_panel_size.y);
             m_camera.OnResize(m_viewport_panel_size.x, m_viewport_panel_size.y);
             m_game_camera.OnResize(m_viewport_panel_size.x, m_viewport_panel_size.y);
             m_perspective_camera.SetViewportSize(m_viewport_panel_size.x, m_viewport_panel_size.y);
-            camera_entity.GetComponent<Leaper::CameraComponent>().camera.OnResize(m_viewport_panel_size.x, m_viewport_panel_size.y);
             m_viewport_size = { m_viewport_panel_size.x, m_viewport_panel_size.y };
+            camera_entity.GetComponent<Leaper::CameraComponent>().camera.OnResize(m_viewport_panel_size.x, m_viewport_panel_size.y);
+
+            m_framebuffer->RescaleFrameBuffer(m_viewport_panel_size.x, m_viewport_panel_size.y);
+            // Renderer3D::s_frame_buffer->RescaleFrameBuffer(m_viewport_panel_size.x, m_viewport_panel_size.y);
         }
 
         // scene update
@@ -89,7 +95,8 @@ namespace Leaper
         {
             m_perspective_camera.OnUpdate();
 
-            Leaper::Renderer2D::BeginScene(m_perspective_camera.GetViewProjection());
+            Leaper::Renderer2D::BeginScene(m_perspective_camera.GetViewProjection(), m_perspective_camera.GetPosition());
+            Leaper::Renderer3D::SetCamera(m_perspective_camera.GetViewMatrix(), m_perspective_camera.GetProjection(), m_perspective_camera.GetPosition());
             Leaper::Renderer3D::BeginScene(m_perspective_camera.GetViewProjection(), m_perspective_camera.GetPosition());
         }
         else if (m_scene_state == SceneState::Play)
@@ -97,6 +104,8 @@ namespace Leaper
             m_game_camera.OnUpdate();
             Leaper::Renderer2D::BeginScene(m_game_camera.GetCamera().GetProjectionMat(), camera_trans.GetTransform());
         }
+
+        RenderCommand::SetLightSpaceMat(m_perspective_camera.GetProjection());
         m_active_scene->OnUpdate();
 
         // render rect
@@ -148,12 +157,12 @@ namespace Leaper
         my                      = viewport_size.y - my;
         int mouseX              = (int)mx;
         int mouseY              = (int)my;
+
         if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewport_size.x && mouseY < (int)viewport_size.y)
         {
             int entity_id    = m_framebuffer->ReadPixels(1, (int)mouseX, (int)mouseY);
             m_hovered_entity = entity_id == -1 ? Leaper::Entity() : Leaper::Entity((entt::entity)entity_id, m_active_scene.get());
         }
-
         m_framebuffer->Unbind();
     }
 
@@ -314,6 +323,9 @@ namespace Leaper
         ImGui::End();
 
         ImGui::Begin("Debug");
+        ImGui::Image(reinterpret_cast<void*>(Renderer3D::s_frame_buffer->GetDepthTexture()), ImVec2(200, 200), ImVec2(0, 1), ImVec2(1, 0));
+
+        ImGui::Text(std::to_string((uint32_t)m_hovered_entity).c_str());
         ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
         ImGui::Text("%.3f ms", 1000.0f / ImGui::GetIO().Framerate);
         ImGui::Checkbox("DrawRect", &m_draw_rect);
@@ -338,7 +350,10 @@ namespace Leaper
         if (e.GetMouseButton() == Leaper::Mosue::ButtonLeft)
         {
             if (m_viewport_hovered && !ImGuizmo::IsOver() && m_hovered_entity)
+            {
+                LP_CORE_LOG(std::to_string((uint32_t)m_hovered_entity));
                 m_hierarchy_window.GetSelected() = m_hovered_entity;
+            }
         }
 
         return false;

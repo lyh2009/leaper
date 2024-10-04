@@ -8,6 +8,7 @@
 #include "function/render/texture.h"
 #include "glm/fwd.hpp"
 #include "model.h"
+#include "resource/shader_library.h"
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <cstdint>
@@ -24,14 +25,13 @@ namespace Leaper
         LoadModel(path);
     }
 
-    void Model::Draw(glm::mat4& trans, glm::vec3 camera_pos, int entity_id)
+    void Model::Draw(glm::mat4& trans,Ref<Shader> shader, int entity_id)
     {
-        for (int i = 0; i < m_meshes.size(); ++i) { m_meshes[i].Render(trans, camera_pos, entity_id); }
+        for (int i = 0; i < m_meshes.size(); ++i) { m_meshes[i].Render(trans, shader, entity_id); }
     }
 
     void Model::LoadModel(const std::string& path)
     {
-        // m_shader = Shader::Create("./resource/shaders/3d/model.vert", "./resource/shaders/3d/model.frag");
 
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);

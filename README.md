@@ -1,4 +1,4 @@
-# Leaper Engin
+# Leaper Engine
 
 <!-- PROJECT LOGO -->
 <br />
@@ -9,39 +9,29 @@
   </a>
 </p>
 
-一个小型的游戏引擎
+**Leaper Engine** is a tiny game engine.
 
-## 目录
-- [开发前的配置要求](#开发前的配置要求)
-  -[编译器](#推荐编译器)
-- [编译步骤](#编译步骤)
-  -[Windows](#Windows编译步骤)
-- [第三方库](#使用到的第三方库)
-- [版本控制](#版本控制)
-- [作者](#作者)
+ ![Static Badge](https://img.shields.io/badge/C%2B%2B-17-brightgreen?style=flat&logo=cplusplus&logoSize=auto) ![Static Badge](https://img.shields.io/badge/OpenGL-4.5-blue?logo=OpenGL&logoSize=auto) [![Static Badge](https://img.shields.io/badge/License-MIT-blue?style=flat)](https://github.com/lyh2009/leaper/blob/main/LICENSE)
+[![Static Badge](https://img.shields.io/badge/GitHub-lyh_2009-blue?logo=github)](https://github.com/lyh2009) [![Static Badge](https://img.shields.io/badge/BiliBili-天庭小伙-fb7299?logo=Bilibili&labelColor=fb7299&color=23ADE5&logoColor=ffffff)](https://space.bilibili.com/1593901415?spm_id_from=333.1007.0.0)
+ 
 
+### Prerequisites
 
-### 开发前的配置要求
-1. CMake 3.12(或更高版本)
-2. Git 2.1(或更高版本)
-###### 推荐编译器
-1. Clang 18.1.8(或更高版本)
-2. GCC 13.2(或更高版本)
-3. Visual Studio 17 2022(或更高版本)
-4. 注意: 支持C++17的通常都能编译并不是必须要使用推荐的编译器
+1. CMake 3.12(or more recent)
+2. Git 2.1(or more recent)
+3. Compiler with C++17 support (Clang 18.1 , GCC 13.2 , MSVC 14)
 
-### 编译步骤
-###### Windows编译步骤
+### Build Leaper
+###### Build on Windows
 ```
 mkdir build
 cd build
 cmake ../
 ```
+### Screenshot
+![Static Badge](github\screen_shot.png)
 
-### 版本控制
 
-该项目使用Git进行版本管理。您可以在repository参看当前可用版本。
+### License
 
-### 版权说明
-
-该项目签署了MIT 授权许可，详情请参阅 [LICENSE.txt](https://github.com/lyh2009/leaper/blob/main/LICENSE)
+The project is licensed under the **MIT license**, see  [LICENSE.txt](https://github.com/lyh2009/leaper/blob/main/LICENSE)
