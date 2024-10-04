@@ -16,9 +16,7 @@ if(WIN32)
        "${VulkanDir}/Win32/Lib/MachineIndependentd.lib"
        "${VulkanDir}/Win32/Lib/GenericCodeGend.lib"
        "${VulkanDir}/Win32/Lib/OSDependentd.lib"
-       "${VulkanDir}/Win32/Lib/OGLCompilerd.lib"
-       "${VulkanDir}/Win32/Lib/SPIRV-Toolsd.lib"
-       "${VulkanDir}/Win32/Lib/SPIRV-Tools-optd.lib")
+       "${VulkanDir}/Win32/Lib/OGLCompilerd.lib")
    endif()
    if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
       file(GLOB_RECURSE VulkanSDK_Lib
