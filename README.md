@@ -34,4 +34,10 @@ cmake ../
 
 ### License
 
+<<<<<<< HEAD
 The project is licensed under the **MIT license**, see  [LICENSE.txt](https://github.com/lyh2009/leaper/blob/main/LICENSE)
+=======
+### 版权说明
+
+该项目签署了MIT 授权许可，详情请参阅 [LICENSE.txt](https://github.com/lyh2009/leaper/blob/main/LICENSE)
+>>>>>>> refs/remotes/origin/main
