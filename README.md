@@ -22,6 +22,7 @@
 3. Compiler with C++17 support (Clang 18.1 , GCC 13.2 , MSVC 14)
 
 ### Build Leaper
+Install the Vulkan SDK and copy the 'Lib' folder to the 'engine/3rdparty/Vulkan/Win32/' directory.
 ###### Build on Windows
 ```
 mkdir build
