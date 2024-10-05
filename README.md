@@ -29,7 +29,7 @@ cd build
 cmake ../
 ```
 ### Screenshot
-![Static Badge](github\screen_shot.png)
+<img src= "./github/screen_shot.png">
 
 
 ### License
