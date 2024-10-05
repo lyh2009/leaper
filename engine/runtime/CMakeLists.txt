@@ -16,6 +16,8 @@ if(WIN32)
        "${VulkanDir}/Win32/Lib/MachineIndependentd.lib"
        "${VulkanDir}/Win32/Lib/GenericCodeGend.lib"
        "${VulkanDir}/Win32/Lib/OSDependentd.lib"
+       "${VulkanDir}/Win32/Lib/shaderc_combinedd.lib"
+       "${VulkanDir}/Win32/Lib/SPIRV-Tools-optd.lib"
        "${VulkanDir}/Win32/Lib/OGLCompilerd.lib")
    endif()
    if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
