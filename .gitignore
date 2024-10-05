@@ -1,6 +1,7 @@
 build
 bin
-engine\3rdparty\VulkanSDK\Win32\Lib
+
+engine/3rdparty/VulkanSDK/Win32/Lib/
 **.exe
 **.pdb
 **.idx
