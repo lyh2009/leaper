@@ -13,7 +13,7 @@ namespace Leaper
 
     void ToJson(nlohmann::json& j, const glm::vec2& t)
     {
-        j = nlohmann::json{ { "x", t.x }, { "y", t.y } };
+        j = { { "x", t.x }, { "y", t.y } };
     }
     void FromJson(const nlohmann::json& j, glm::vec2& t)
     {
@@ -24,7 +24,7 @@ namespace Leaper
     // vec3
     void ToJson(nlohmann::json& j, const glm::vec3& t)
     {
-        j = nlohmann::json{ { "x", t.x }, { "y", t.y }, { "z", t.z } };
+        j = { { "x", t.x }, { "y", t.y }, { "z", t.z } };
     }
     void FromJson(const nlohmann::json& j, glm::vec3& t)
     {
@@ -36,7 +36,7 @@ namespace Leaper
     // vec4
     void ToJson(nlohmann::json& j, const glm::vec4& t)
     {
-        j = nlohmann::json{ { "x", t.x }, { "y", t.y }, { "z", t.z }, { "w", t.w } };
+        j = { { "x", t.x }, { "y", t.y }, { "z", t.z }, { "w", t.w } };
     }
     void FromJson(const nlohmann::json& j, glm::vec4& t)
     {
@@ -49,7 +49,7 @@ namespace Leaper
     // TagComponent
     void ToJson(nlohmann::json& j, const TagComponent& t)
     {
-        j = nlohmann::json{ { "TagComponent", t.tag } };
+        j = { { "TagComponent", t.tag } };
     }
     void FromJson(const nlohmann::json& j, TagComponent& t)
     {
@@ -65,7 +65,7 @@ namespace Leaper
         ToJson(j_position, t.position);
         ToJson(j_rotation, t.rotation);
         ToJson(j_scale, t.scale);
-        j["TransformComponent"] = nlohmann::json{ { "position", j_position }, { "rotation", j_rotation }, { "scale", j_scale } };
+        j["TransformComponent"] = { { "position", j_position }, { "rotation", j_rotation }, { "scale", j_scale } };
     }
     void FromJson(const nlohmann::json& j, TransformComponent& t)
     {
@@ -77,7 +77,7 @@ namespace Leaper
     // Camera Component
     void ToJson(nlohmann::json& j, const CameraComponent& t)
     {
-        j["CameraComponent"] = nlohmann::json{ { "ratio", t.camera.GetRatio() } };
+        j["CameraComponent"] = { { "ratio", t.camera.GetRatio() } };
     }
 
     // SpriteRendererComponent
@@ -86,9 +86,9 @@ namespace Leaper
         nlohmann::json j_vec4;
         ToJson(j_vec4, t.color);
         if (t.m_texture)
-            j["SpriteRendererComponent"] = nlohmann::json{ { "color", j_vec4 }, { "path", t.m_texture->GetPath() } };
+            j["SpriteRendererComponent"] = { { "color", j_vec4 }, { "path", t.m_texture->GetPath() } };
         else
-            j["SpriteRendererComponent"] = nlohmann::json{ { "color", j_vec4 } };
+            j["SpriteRendererComponent"] = { { "color", j_vec4 } };
     }
     void FromJson(const nlohmann::json& j, SpriteRendererComponent& t)
     {
@@ -99,7 +99,7 @@ namespace Leaper
 
     void ToJson(nlohmann::json& j, const Rigidbody2DComponent& t)
     {
-        j["Rigidbody2DComponent"] = nlohmann::json{ { "type", t.body_type } };
+        j["Rigidbody2DComponent"] = { { "type", t.body_type } };
     }
     void FromJson(const nlohmann::json& j, Rigidbody2DComponent& t)
     {
@@ -111,8 +111,8 @@ namespace Leaper
         nlohmann::json j_size;
         nlohmann::json j_offset;
         ToJson(j_size, t.size);
-        j["BoxCollider2DComponent"] = nlohmann::json{ { "tag", t.user_data->name },     { "size", j_size },       { "offset", j_offset },        { "friction", t.friction },
-                                                      { "restitution", t.restitution }, { "density", t.density }, { "is_trigger", t.is_trigger } };
+        j["BoxCollider2DComponent"] = { { "tag", t.user_data->name },     { "size", j_size },       { "offset", j_offset },        { "friction", t.friction },
+                                        { "restitution", t.restitution }, { "density", t.density }, { "is_trigger", t.is_trigger } };
     }
     void FromJson(const nlohmann::json& j, BoxCollider2DComponent& t)
     {
@@ -124,9 +124,23 @@ namespace Leaper
         j.at("BoxCollider2DComponent").at("is_trigger").get_to(t.is_trigger);
     }
 
+    void ToJson(nlohmann::json& j, const DirectionalLightComponent& t)
+    {
+        nlohmann::json j_color;
+        ToJson(j_color, t.color);
+        j["DirectionalLightComponent"] = { { "color", j_color }, { "ambient_strength", t.ambient_strength }, { "specular_strength", t.specular_strength } };
+    }
+
+    void FromJson(const nlohmann::json& j, DirectionalLightComponent& t)
+    {
+        FromJson(j.at("DirectionalLightComponent").at("color"), t.color);
+        j.at("DirectionalLightComponent").at("ambient_strength").get_to(t.ambient_strength);
+        j.at("DirectionalLightComponent").at("specular_strength").get_to(t.specular_strength);
+    }
+
     void ToJson(nlohmann::json& j, const LuaScriptComponent& t)
     {
-        j["LuaScriptComponent"] = nlohmann::json{ { "script", t.path } };
+        j["LuaScriptComponent"] = { { "script", t.path } };
     }
 
     void FromJson(const nlohmann::json& j, LuaScriptComponent& t)
@@ -136,7 +150,7 @@ namespace Leaper
 
     void ToJson(nlohmann::json& j, const UUIDComponent& t)
     {
-        j["UUIDComponent"] = nlohmann::json{ { "uuid", (uint64_t)t.uuid } };
+        j["UUIDComponent"] = { { "uuid", (uint64_t)t.uuid } };
     }
 
     void FromJson(const nlohmann::json& j, UUIDComponent& t)
@@ -146,7 +160,7 @@ namespace Leaper
 
     void ToJson(nlohmann::json& j, const SoundComponent& t)
     {
-        j["SoundComponent"] = nlohmann::json{ { "path", t.path.c_str() } };
+        j["SoundComponent"] = { { "path", t.path.c_str() } };
     }
 
     void from_jon(const nlohmann::json& j, SoundComponent& t)
@@ -156,7 +170,7 @@ namespace Leaper
 
     void ToJson(nlohmann::json& j, const MeshRendererComponment& t)
     {
-        j["MeshRendererComponent"] = nlohmann::json{ { "path", t.path.c_str() } };
+        j["MeshRendererComponent"] = { { "path", t.path.c_str() } };
     }
     void FromJson(const nlohmann::json& j, MeshRendererComponment& t)
     {
@@ -218,6 +232,7 @@ namespace Leaper
             ReadComponent<LuaScriptComponent>(element, entity, "LuaScriptComponent");
             ReadComponent<LuaScriptComponent>(element, entity, "SoundComponent");
             ReadComponent<MeshRendererComponment>(element, entity, "MeshRendererComponent");
+            ReadComponent<DirectionalLightComponent>(element, entity, "DirectionalLightComponent");
         }
     }
 
@@ -246,6 +261,7 @@ namespace Leaper
         WriteComponent<LuaScriptComponent>(j_entity, entity);
         WriteComponent<SoundComponent>(j_entity, entity);
         WriteComponent<MeshRendererComponment>(j_entity, entity);
+        WriteComponent<DirectionalLightComponent>(j_entity, entity);
 
         m_json.push_back(j_entity);
     }

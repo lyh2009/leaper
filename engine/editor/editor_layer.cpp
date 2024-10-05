@@ -42,9 +42,9 @@ namespace Leaper
 
         // create FrameBuffer
         m_framebuffer = Leaper::FrameBuffer::Create();
-        m_framebuffer->CreateTexture(1024, 648, Leaper::TextureFormat::RGB8, Leaper::TextureFormat::RGB, Leaper::Attachments::COLOR_ATTACHMENT0);
-        m_framebuffer->CreateTexture(1024, 648, Leaper::TextureFormat::R32I, Leaper::TextureFormat::RED_INTEGER, Leaper::Attachments::COLOR_ATTACHMENT1);
-        m_framebuffer->CreateDepthTexture(1024, 648);
+        m_framebuffer->CreateTexture(1920, 1080, Leaper::TextureFormat::RGB8, Leaper::TextureFormat::RGB, Leaper::Attachments::COLOR_ATTACHMENT0);
+        m_framebuffer->CreateTexture(1920, 1080, Leaper::TextureFormat::R32I, Leaper::TextureFormat::RED_INTEGER, Leaper::Attachments::COLOR_ATTACHMENT1);
+        m_framebuffer->CreateDepthTexture(1920, 1080);
         // create Textures
         m_play_icon      = Leaper::Texture::Create("./resource/icons/play.png");
         m_stop_icon      = Leaper::Texture::Create("./resource/icons/stop.png");
@@ -84,6 +84,7 @@ namespace Leaper
             camera_entity.GetComponent<Leaper::CameraComponent>().camera.OnResize(m_viewport_panel_size.x, m_viewport_panel_size.y);
 
             m_framebuffer->RescaleFrameBuffer(m_viewport_panel_size.x, m_viewport_panel_size.y);
+            LP_CORE_LOG("x{0}, y{1}", m_viewport_panel_size.x, m_viewport_size.y);
             // Renderer3D::s_frame_buffer->RescaleFrameBuffer(m_viewport_panel_size.x, m_viewport_panel_size.y);
         }
 
