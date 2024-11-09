@@ -1,5 +1,8 @@
 #include "content_broswer.h"
+#include "core/base.h"
 #include "core/log.h"
+#include "function/ecs/scene.h"
+#include "function/ecs/scene_serializer.h"
 #include "function/render/texture.h"
 #include "resource/gpu_resource_mapper.h"
 
@@ -130,6 +133,11 @@ namespace Leaper
         BaseMenu("Lua Script", [=](std::filesystem::path dir) {
             std::ofstream of(dir.string() + ".lua");
             of.close();
+        });
+        BaseMenu("Scene", [=](std::filesystem::path dir) {
+            Ref<Scene> new_scene = CreateRef<Scene>();
+            SceneSerializer scene_serializer(new_scene);
+            scene_serializer.Write(dir.string() + ".leaper");
         });
     }
 

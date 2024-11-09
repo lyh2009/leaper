@@ -301,10 +301,11 @@ namespace Leaper
 
                 m_active_scene = CreateRef<Scene>();
                 m_hierarchy_window.SetScene(m_active_scene);
-
                 SceneSerializer serizlizer(m_active_scene);
                 serizlizer.Read(filepath.string());
                 m_active_scene->OnAttach();
+                auto view = m_active_scene->Reg().view<CameraComponent>();
+                for (auto e : view) { camera_entity = { e, m_active_scene.get() }; }
             }
 
             ImGui::EndDragDropTarget();
@@ -444,16 +445,6 @@ namespace Leaper
         float size = ImGui::GetWindowHeight() - 4.0f;
 
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-        // play button
-        if (ImGui::ImageButton((void*)button_icon->GetTexture(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0), tint_color))
-        {
-            if (m_scene_state == SceneState::Edit)
-                OnScenePlay();
-            else if (m_scene_state == SceneState::Play)
-                OnSceneEdit();
-        }
-
-        ImGui::SameLine();
 
         ImVec4 translate_color = m_gizmo == ImGuizmo::OPERATION::TRANSLATE ? ImVec4(1.0f, 1.0f, 1.0f, 0.9f) : ImVec4(1.0f, 1.0f, 1.0f, 0.2f);
         ImVec4 rotate_color    = m_gizmo == ImGuizmo::OPERATION::ROTATE ? ImVec4(1.0f, 1.0f, 1.0f, 0.9f) : ImVec4(1.0f, 1.0f, 1.0f, 0.2f);
@@ -473,6 +464,18 @@ namespace Leaper
                                scale_color))
         {
             m_gizmo = ImGuizmo::OPERATION::SCALE;
+        }
+        ImGui::SameLine();
+
+        // play button
+        ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+
+        if (ImGui::ImageButton((void*)button_icon->GetTexture(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0), tint_color))
+        {
+            if (m_scene_state == SceneState::Edit)
+                OnScenePlay();
+            else if (m_scene_state == SceneState::Play)
+                OnSceneEdit();
         }
         ImGui::PopStyleColor();
 
