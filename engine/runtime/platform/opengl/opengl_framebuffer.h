@@ -6,74 +6,50 @@
 
 #include <vector>
 
-class OpenGLFrameBuffer : public Leaper::FrameBuffer
+namespace Leaper
 {
-public:
-    OpenGLFrameBuffer();
-    ~OpenGLFrameBuffer();
 
-    virtual uint32_t& GetTexture(int count) override;
-    virtual uint32_t& GetDepthTexture() override;
-    virtual void RescaleFrameBuffer(float width, float height) override;
-
-    virtual uint32_t CreateTexture(int width, int height, Leaper::TextureFormat internalformat, Leaper::TextureFormat format, Leaper::Attachments attachment) override;
-    virtual uint32_t CreateDepthTexture(int width, int height) override;
-    virtual uint32_t CreateDepthMap(int width, int height) override;
-
-    virtual uint32_t AttachmentsToGL(Leaper::Attachments attachment) override;
-
-    virtual void BindDepthTexture(uint32_t active) override;
-    virtual void UnBindDepthTexture() override;
-    virtual void BindDepthFBO() override;
-    virtual void UnBindDepthFBO() override;
-
-    virtual int ReadPixels(uint32_t attachment, int x, int y) override;
-    virtual void ClearAttachment(uint32_t attachment_index, int value) override;
-
-    virtual void Bind() const override;
-    virtual void Unbind() const override;
-
-private:
-    unsigned int m_fbo;
-    unsigned int m_depth_texture;
-    unsigned int m_depth_map;
-    unsigned int m_depth_fbo;
-    unsigned int pbo;
-    std::vector<uint32_t> m_textures;
-    std::vector<GLenum> m_attachments;
-    std::vector<Leaper::TextureFormat> m_format;
-    std::vector<Leaper::TextureFormat> m_internalformat;
-
-    bool* m_has_attachment = nullptr;
-
-    float m_width, m_height;
-};
-
-namespace Leaper::Utils
-{
-    static GLenum TextureFormatToGL(Leaper::TextureFormat tf)
+    class OpenGLFrameBuffer : public FrameBuffer
     {
-        switch (tf)
-        {
-        case Leaper::TextureFormat::RGB: return GL_RGBA;
-        case Leaper::TextureFormat::RGB8: return GL_RGBA8;
-        case Leaper::TextureFormat::R32I: return GL_R32I;
-        case Leaper::TextureFormat::RED_INTEGER: return GL_RED_INTEGER;
-        };
+    public:
+        OpenGLFrameBuffer();
+        ~OpenGLFrameBuffer();
 
-        return 0;
-    }
+        virtual uint32_t& GetTexture(int count) override;
+        virtual uint32_t& GetDepthTexture() override;
+        virtual void RescaleFrameBuffer(float width, float height) override;
 
-    static int GLTextureFormatToSize(GLenum tf)
-    {
-        switch (tf)
-        {
-        case GL_RGBA: return 4;
-        case GL_RGBA8: return 3;
-        case GL_R32I: return 1;
-        case GL_RED_INTEGER: return 1;
-        };
+        virtual uint32_t CreateTexture(int width, int height, TextureFormat internalformat, TextureFormat format, Attachments attachment) override;
+        virtual uint32_t CreateDepthTexture(int width, int height) override;
+        virtual uint32_t CreateDepthMap(int width, int height) override;
 
-        return 0;
-    }
-}  // namespace Leaper::Utils
+        virtual uint32_t AttachmentsToGL(Attachments attachment) override;
+
+        virtual void BindDepthTexture(uint32_t active) override;
+        virtual void UnBindDepthTexture() override;
+        virtual void BindDepthFBO() override;
+        virtual void UnBindDepthFBO() override;
+
+        virtual int ReadPixels(uint32_t attachment, int x, int y) override;
+        virtual void ClearAttachment(uint32_t attachment_index, int value) override;
+
+        virtual void Bind() const override;
+        virtual void Unbind() const override;
+
+    private:
+        unsigned int m_fbo;
+        unsigned int m_depth_texture;
+        unsigned int m_depth_map;
+        unsigned int m_depth_fbo;
+        unsigned int pbo;
+        std::vector<uint32_t> m_textures;
+        std::vector<GLenum> m_attachments;
+        std::vector<TextureFormat> m_format;
+        std::vector<TextureFormat> m_internalformat;
+
+        bool* m_has_attachment = nullptr;
+
+        float m_width, m_height;
+    };
+
+}  // namespace Leaper

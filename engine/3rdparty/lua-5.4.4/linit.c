@@ -11,7 +11,7 @@
 /*
 ** If you embed Lua in your program and need to open the standard
 ** libraries, call luaL_openlibs in your program. If you need a
-** different set of libraries, copy this file to your project and edit
+** different set of libraries, copy this file to your ContentBroswer and edit
 ** it to suit your needs.
 **
 ** You can also *preload* libraries, so that a later 'require' can

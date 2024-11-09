@@ -2,7 +2,6 @@
 #include "lppch.h"
 #include "physics2d_system.h"
 
-
 #include "core/log.h"
 #include "core/time.h"
 #include "function/ecs/components.h"
@@ -11,6 +10,7 @@
 #include <box2d/b2_fixture.h>
 #include <box2d/b2_polygon_shape.h>
 #include <box2d/b2_world.h>
+#include <cstdint>
 
 using namespace Leaper;
 
@@ -33,9 +33,10 @@ void Leaper::Physics2D_System::OnGameStart()
         auto& tag     = entity.GetComponent<TagComponent>();
 
         b2BodyDef body_def;
-        body_def.type = Rigidbody2DTypeToBox2DBodyType(rb2d.body_type);
         body_def.position.Set(trans.position.x, trans.position.y);
-        body_def.angle = trans.rotation.z;
+        body_def.type         = Rigidbody2DTypeToBox2DBodyType(rb2d.body_type);
+        body_def.angle        = trans.rotation.z;
+        body_def.gravityScale = rb2d.gravity_scale;
 
         b2Body* body      = m_physics_world->CreateBody(&body_def);
         rb2d.runtime_body = body;
@@ -54,7 +55,7 @@ void Leaper::Physics2D_System::OnGameStart()
             fixture_def.restitution = bc2d.restitution;
             fixture_def.density     = bc2d.density;
 
-            fixture_def.userData.pointer = reinterpret_cast<uintptr_t>(bc2d.user_data);
+            fixture_def.userData.pointer = reinterpret_cast<uintptr_t>((uint64_t)entity.GetComponent<UUIDComponent>().uuid);
 
             body->CreateFixture(&fixture_def);
         }

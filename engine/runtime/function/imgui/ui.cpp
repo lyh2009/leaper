@@ -89,4 +89,14 @@ namespace Leaper
             DrawItemActivityOutline(2.0f, true);
         NextColumns();
     }
+
+    void UI::DragInt(const std::string& label, int* v, int speed, int min, int max)
+    {
+        ImGui::Text(label.c_str());
+        NextColumns();
+        ImGui::DragInt(std::string("##" + label).c_str(), v, speed, min, max);
+        if (!IsItemDisabled())
+            DrawItemActivityOutline(2.0f, true);
+        NextColumns();
+    }
 }  // namespace Leaper

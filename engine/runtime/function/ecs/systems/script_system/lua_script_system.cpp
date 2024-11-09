@@ -1,11 +1,11 @@
+#include "core/log.h"
 #include "lppch.h"
 #include "lua_script_system.h"
-
 
 #include "function/ecs/components.h"
 #include "function/ecs/entity.h"
 #include "function/scripting/lua_binder.h"
-
+#include "sol/load_result.hpp"
 
 #include <filesystem>
 
@@ -15,7 +15,7 @@ void Leaper::LuaScriptSystem::OnUpdate() {}
 void Leaper::LuaScriptSystem::OnGameStart()
 {
     LuaBinder::CallBinders(state);
-    state.set_function("lpCreateEntity", [&](const std::string& name) -> Entity { return m_scene->CreateEntity(name); });
+    state.set_function("CreateEntity", [&](const std::string& name) -> Entity { return m_scene->CreateEntity(name); });
     m_scene->Reg().view<LuaScriptComponent>().each([&](auto other, LuaScriptComponent& lsc) {
         Entity entity{ other, m_scene };
         auto result = state.safe_script_file(lsc.path, &sol::script_pass_on_error);
@@ -26,6 +26,17 @@ void Leaper::LuaScriptSystem::OnGameStart()
                 lsc.self         = result[0];
                 lsc.self["this"] = &entity;
                 LuaCall(lsc, "OnAttach");
+                const sol::table& globals = lsc.self;
+                for (auto item : globals)
+                {
+                    auto key  = item.first;
+                    auto type = item.second;
+                    if (key.is<std::string>())
+                    {
+                        if (type.is<int>())
+                            lsc.int_values[key.as<std::string>()] = type.as<int>();
+                    }
+                }
             }
         }
         else

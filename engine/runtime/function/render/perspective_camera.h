@@ -13,7 +13,7 @@ namespace Leaper
             RecalculateViewMat();
         }
 
-        void UpdateProjection();
+        void UpdateContentBroswerion();
         void UpdateView();
 
         void SetPosition(glm::vec3 pos)
@@ -50,7 +50,7 @@ namespace Leaper
         }
 
         const glm::mat4& GetView();
-        const glm::mat4& GetProjection();
+        const glm::mat4& GetContentBroswerion();
 
     protected:
         void RecalculateViewMat();
@@ -68,7 +68,7 @@ namespace Leaper
         float m_fov = 45.0f;
         float m_width, m_height;
 
-        glm::mat4 m_projection;
+        glm::mat4 m_ContentBroswerion;
         glm::mat4 m_view;
     };
 }  // namespace Leaper

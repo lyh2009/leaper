@@ -10,6 +10,8 @@
 #include "function/render/renderer2d.h"
 #include "function/render/renderer3d.h"
 #include "resource/shader_library.h"
+#include <cstdint>
+#include <string>
 
 namespace Leaper
 {
@@ -42,17 +44,18 @@ namespace Leaper
                 i++;
             }
         }
+
         // depth pass
         shadow_shader         = ShaderLibrary::GetDepthMapShader();
         auto main_framebuffer = RenderCommand::GetMainFrameBuffer();
         auto depth_map        = Renderer3D::s_frame_buffer;
 
-        glm::mat4 lightProjection, lightView;
+        glm::mat4 lightContentBroswerion, lightView;
         glm::mat4 lightSpaceMatrix;
         float near_plane = 0.1f, far_plane = 75.0f;
-        lightProjection  = glm::ortho(-35.0f, 35.0f, -35.0f, 35.0f, near_plane, far_plane);
-        lightView        = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
-        lightSpaceMatrix = lightProjection * lightView;
+        lightContentBroswerion = glm::ortho(-35.0f, 35.0f, -35.0f, 35.0f, near_plane, far_plane);
+        lightView              = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+        lightSpaceMatrix       = lightContentBroswerion * lightView;
         shadow_shader->Bind();
         shadow_shader->SetMat4("lightSpaceMat", lightSpaceMatrix);
 
@@ -88,6 +91,23 @@ namespace Leaper
             depth_map->BindDepthTexture(0);
             Renderer3D::DrawModel(mrc.model, trans.GetTransform(), shader, (int)other);
         });
+
+        // Point Light
+        {
+
+            uint32_t point_light_count = 0;
+            auto view                  = m_scene->Reg().view<TransformComponent, PointLightComponent>();
+            for (auto entity : view)
+            {
+                auto [trans, plc] = view.get<TransformComponent, PointLightComponent>(entity);
+                shader->SetVec3("u_PointLights[" + std::to_string(point_light_count) + "].position", trans.position);
+                shader->SetFloat("u_PointLights[" + std::to_string(point_light_count) + "].constant", plc.constant);
+                shader->SetFloat("u_PointLights[" + std::to_string(point_light_count) + "].linear", plc.linear);
+                shader->SetFloat("u_PointLights[" + std::to_string(point_light_count) + "].quadratic", plc.quadratic);
+                point_light_count++;
+            }
+            shader->SetInt("u_PointLightsSize", point_light_count);
+        }
     }
 
 }  // namespace Leaper

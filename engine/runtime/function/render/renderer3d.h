@@ -16,9 +16,9 @@ namespace Leaper
 
         static void SetDirectionalLight(glm::vec3 color, float ambient_strength, float specular_strength);
 
-        static void BeginScene(const glm::mat4& projection_view, glm::vec3 position);
-        static void SetCamera(const glm::mat4& view, const glm::mat4& projection, glm::vec3 position);
-        static void BeginScene(const glm::mat4& projection_view, glm::mat4& trans);
+        static void BeginScene(const glm::mat4& ContentBroswerion_view, glm::vec3 position);
+        static void SetCamera(const glm::mat4& view, const glm::mat4& ContentBroswerion, glm::vec3 position);
+        static void BeginScene(const glm::mat4& ContentBroswerion_view, glm::mat4& trans);
         static void EndScene();
 
         static void DrawSkyBox(std::vector<std::string> faces);

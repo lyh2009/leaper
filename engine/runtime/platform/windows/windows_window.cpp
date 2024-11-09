@@ -35,7 +35,8 @@ void WindowsWindow::Init()
     int channels       = 3;
     window_icon.pixels = stbi_load("resource/leaper.png", &window_icon.width, &window_icon.height, &channels, 4);
     glfwSetWindowIcon(m_window, 1, &window_icon);
-    // call back
+
+    // event call back
     glfwSetScrollCallback(m_window, [](GLFWwindow* window, double xoffset, double yoffset) {
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
         Leaper::MouseScrolledEvent event((float)xoffset, (float)yoffset);
@@ -90,4 +91,9 @@ void WindowsWindow::SetVSync(bool enabled)
         glfwSwapInterval(1);
     else
         glfwSwapInterval(0);
+}
+
+void WindowsWindow::SetTitle(std::string_view title)
+{
+    glfwSetWindowTitle(m_window, title.data());
 }

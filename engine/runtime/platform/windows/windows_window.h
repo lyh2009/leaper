@@ -34,6 +34,8 @@ public:
         m_data.event_callback = event;
     }
 
+    virtual void SetTitle(std::string_view title) override;
+
     virtual void OnUpdate() override;
     virtual void OnClose() override;
 

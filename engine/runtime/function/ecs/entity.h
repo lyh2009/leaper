@@ -53,7 +53,8 @@ namespace Leaper
         };
 
     protected:
-        entt::entity m_entity = entt::null;
+        entt::entity m_entity        = entt::null;
+        entt::entity m_parent_entity = entt::null;
         Leaper::Scene* m_scene;
     };
 }  // namespace Leaper

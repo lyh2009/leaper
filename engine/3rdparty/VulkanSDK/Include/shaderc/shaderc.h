@@ -474,7 +474,7 @@ SHADERC_EXPORT shaderc_compilation_result_t shaderc_compile_into_spv(const shade
 
 // Like shaderc_compile_into_spv, but the result contains SPIR-V assembly text
 // instead of a SPIR-V binary module.  The SPIR-V assembly syntax is as defined
-// by the SPIRV-Tools open source project.
+// by the SPIRV-Tools open source ContentBroswer.
 SHADERC_EXPORT shaderc_compilation_result_t shaderc_compile_into_spv_assembly(const shaderc_compiler_t compiler, const char* source_text, size_t source_text_size,
                                                                               shaderc_shader_kind shader_kind, const char* input_file_name, const char* entry_point_name,
                                                                               const shaderc_compile_options_t additional_options);
@@ -485,7 +485,7 @@ SHADERC_EXPORT shaderc_compilation_result_t shaderc_compile_into_preprocessed_te
                                                                                    shaderc_shader_kind shader_kind, const char* input_file_name, const char* entry_point_name,
                                                                                    const shaderc_compile_options_t additional_options);
 
-// Takes an assembly string of the format defined in the SPIRV-Tools project
+// Takes an assembly string of the format defined in the SPIRV-Tools ContentBroswer
 // (https://github.com/KhronosGroup/SPIRV-Tools/blob/master/syntax.md),
 // assembles it into SPIR-V binary and a shaderc_compilation_result will be
 // returned to hold the results.

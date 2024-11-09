@@ -11,7 +11,7 @@ layout(location = 1) out flat int v_EntityID;
 
 layout(std140, binding = 0) uniform Camera
 {
-    mat4 u_ViewProjection;
+    mat4 u_ViewContentBroswerion;
 };
 
 void main()
@@ -19,7 +19,7 @@ void main()
     v_Color    = a_Color;
     v_EntityID = a_EntityID;
 
-    gl_Position = u_ViewProjection * vec4(a_Position, 1.0f);
+    gl_Position = u_ViewContentBroswerion * vec4(a_Position, 1.0f);
 }
 
 #type fragment

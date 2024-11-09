@@ -1,6 +1,6 @@
 # Leaper Engine
 
-<!-- PROJECT LOGO -->
+<!-- ContentBroswer LOGO -->
 <br />
 
 <p align="center">
@@ -35,4 +35,4 @@ cmake ../
 
 ### License
 
-The project is licensed under the **MIT license**, see  [LICENSE.txt](https://github.com/lyh2009/leaper/blob/main/LICENSE)
+The ContentBroswer is licensed under the **MIT license**, see  [LICENSE.txt](https://github.com/lyh2009/leaper/blob/main/LICENSE)

@@ -31,43 +31,50 @@
 #include <iostream>
 #include <string>
 
+#include "global.h"
+
 namespace Leaper
 {
-    extern const std::filesystem::path g_assets_path;
-    EditorLayer::EditorLayer() : Leaper::Layer("EditorLayer"), m_camera(1024.0f / 648.0f), m_game_camera(1024 / 648) {}
+    EditorLayer::EditorLayer() : Layer("EditorLayer"), m_camera(1024.0f / 648.0f), m_ortho_camera(1024 / 648) {}
+
+    void EditorLayer::InitPanels(std::string_view assets_path)
+    {
+        m_assets_path = assets_path;
+        m_hierarchy_window.OnAttach(assets_path);
+        m_content_broswer_window.OnAttach(assets_path);
+    }
+
     void EditorLayer::OnAttach()
     {
-        m_hierarchy_window.OnAttach();
-        m_project_window.OnAttach();
 
         // create FrameBuffer
-        m_framebuffer = Leaper::FrameBuffer::Create();
-        m_framebuffer->CreateTexture(1920, 1080, Leaper::TextureFormat::RGB8, Leaper::TextureFormat::RGB, Leaper::Attachments::COLOR_ATTACHMENT0);
-        m_framebuffer->CreateTexture(1920, 1080, Leaper::TextureFormat::R32I, Leaper::TextureFormat::RED_INTEGER, Leaper::Attachments::COLOR_ATTACHMENT1);
+        m_framebuffer = FrameBuffer::Create();
+        m_framebuffer->CreateTexture(1920, 1080, TextureFormat::RGB8, TextureFormat::RGB, Attachments::COLOR_ATTACHMENT0);
+        m_framebuffer->CreateTexture(1920, 1080, TextureFormat::R32I, TextureFormat::RED_INTEGER, Attachments::COLOR_ATTACHMENT1);
         m_framebuffer->CreateDepthTexture(1920, 1080);
         // create Textures
-        m_play_icon      = Leaper::Texture::Create("./resource/icons/play.png");
-        m_stop_icon      = Leaper::Texture::Create("./resource/icons/stop.png");
-        m_translate_icon = Leaper::Texture::Create("./resource/icons/translate.png");
-        m_rotate_icon    = Leaper::Texture::Create("./resource/icons/rotate.png");
-        m_scale_icon     = Leaper::Texture::Create("./resource/icons/scale.png");
+        m_play_icon      = Texture::Create("./resource/icons/play.png");
+        m_stop_icon      = Texture::Create("./resource/icons/stop.png");
+        m_translate_icon = Texture::Create("./resource/icons/translate.png");
+        m_rotate_icon    = Texture::Create("./resource/icons/rotate.png");
+        m_scale_icon     = Texture::Create("./resource/icons/scale.png");
 
-        m_active_scene = Leaper::CreateRef<Leaper::Scene>();
+        m_active_scene = CreateRef<Scene>();
         m_active_scene->OnAttach();
 
         camera_entity = m_active_scene->CreateEntity("camera");
-        camera_entity.AddComponent<Leaper::CameraComponent>(1024.0f / 648.0f);
-        camera_entity.AddComponent<Leaper::CubeRendererComponent>();
+        camera_entity.AddComponent<CameraComponent>(1024.0f / 648.0f);
+        camera_entity.AddComponent<CubeRendererComponent>();
 
         m_console.OnAttach();
 
-        m_perspective_camera = Leaper::EditorCamera(30.0f, 1024 / 648, 0.1f, 1000.0f);
+        m_perspective_camera = EditorCamera(30.0f, 1024 / 648, 0.1f, 1000.0f);
     }
 
     void EditorLayer::OnUpdate()
     {
 
-        Leaper::RenderCommand::SetClearColor(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
+        RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
         RenderCommand::Clear();
         m_framebuffer->Bind();
         RenderCommand::SetMainFrameBuffer(m_framebuffer);
@@ -78,77 +85,85 @@ namespace Leaper
         if (m_viewport_size != *((glm::vec2*)&m_viewport_panel_size))
         {
             m_camera.OnResize(m_viewport_panel_size.x, m_viewport_panel_size.y);
-            m_game_camera.OnResize(m_viewport_panel_size.x, m_viewport_panel_size.y);
+            m_ortho_camera.OnResize(m_viewport_panel_size.x, m_viewport_panel_size.y);
             m_perspective_camera.SetViewportSize(m_viewport_panel_size.x, m_viewport_panel_size.y);
             m_viewport_size = { m_viewport_panel_size.x, m_viewport_panel_size.y };
-            camera_entity.GetComponent<Leaper::CameraComponent>().camera.OnResize(m_viewport_panel_size.x, m_viewport_panel_size.y);
+            camera_entity.GetComponent<CameraComponent>().camera.OnResize(m_viewport_panel_size.x, m_viewport_panel_size.y);
 
             m_framebuffer->RescaleFrameBuffer(m_viewport_panel_size.x, m_viewport_panel_size.y);
-            LP_CORE_LOG("x{0}, y{1}", m_viewport_panel_size.x, m_viewport_size.y);
             // Renderer3D::s_frame_buffer->RescaleFrameBuffer(m_viewport_panel_size.x, m_viewport_panel_size.y);
         }
 
         // scene update
-        m_game_camera      = camera_entity.GetComponent<Leaper::CameraComponent>().camera;
-        auto& camera_trans = camera_entity.GetComponent<Leaper::TransformComponent>();
+        m_ortho_camera     = camera_entity.GetComponent<CameraComponent>().camera;
+        auto& camera_trans = camera_entity.GetComponent<TransformComponent>();
 
         if (m_scene_state == SceneState::Edit)
         {
-            m_perspective_camera.OnUpdate();
+            if (m_editor_camera_type == CameraTypes::Ortho)
+            {
+                m_camera.OnUpdate();
+                auto pos = m_camera.GetCamera().GetPosition();
+                Renderer2D::BeginScene(m_camera.GetCamera().GetViewContentBroswerionMat());
+            }
+            else
+            {
+                m_perspective_camera.OnUpdate();
 
-            Leaper::Renderer2D::BeginScene(m_perspective_camera.GetViewProjection(), m_perspective_camera.GetPosition());
-            Leaper::Renderer3D::SetCamera(m_perspective_camera.GetViewMatrix(), m_perspective_camera.GetProjection(), m_perspective_camera.GetPosition());
-            Leaper::Renderer3D::BeginScene(m_perspective_camera.GetViewProjection(), m_perspective_camera.GetPosition());
+                Renderer2D::BeginScene(m_perspective_camera.GetViewContentBroswerion(), m_perspective_camera.GetPosition());
+                Renderer3D::SetCamera(m_perspective_camera.GetViewMatrix(), m_perspective_camera.GetContentBroswerion(), m_perspective_camera.GetPosition());
+                Renderer3D::BeginScene(m_perspective_camera.GetViewContentBroswerion(), m_perspective_camera.GetPosition());
+            }
         }
         else if (m_scene_state == SceneState::Play)
         {
-            m_game_camera.OnUpdate();
-            Leaper::Renderer2D::BeginScene(m_game_camera.GetCamera().GetProjectionMat(), camera_trans.GetTransform());
+            m_ortho_camera.OnUpdate();
+            Renderer2D::BeginScene(m_ortho_camera.GetCamera().GetContentBroswerionMat(), camera_trans.GetTransform());
         }
 
-        RenderCommand::SetLightSpaceMat(m_perspective_camera.GetProjection());
+        RenderCommand::SetLightSpaceMat(m_perspective_camera.GetContentBroswerion());
         m_active_scene->OnUpdate();
 
         // render rect
         if (m_draw_rect)
         {
-            Leaper::Renderer2D::SetLineWidth(1.0f);
-            Leaper::TransformComponent transform;
-            float ratio        = m_game_camera.GetRatio();
-            float zoom_level   = m_game_camera.GetZoomLevel();
+            Renderer2D::SetLineWidth(1.0f);
+            TransformComponent transform;
+            float ratio        = m_ortho_camera.GetRatio();
+            float zoom_level   = m_ortho_camera.GetZoomLevel();
             transform.scale    = glm::vec3(ratio * zoom_level * 2, zoom_level * 2, 1.0f);
             transform.position = camera_trans.position;
             transform.rotation = camera_trans.rotation;
-            Leaper::Renderer2D::DrawRect(transform, glm::vec4(0.5, 0.5, 0.5, 1), -1);
+            Renderer2D::DrawRect(transform, glm::vec4(1.0, 1.0, 1.0, 1), -1);
 
-            auto view = m_active_scene->GetAllEntitiesWith<Leaper::TransformComponent, Leaper::BoxCollider2DComponent>();
+            auto view = m_active_scene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
             for (auto entity : view)
             {
-                auto [tc, bc2d] = view.get<Leaper::TransformComponent, Leaper::BoxCollider2DComponent>(entity);
+                auto [tc, bc2d] = view.get<TransformComponent, BoxCollider2DComponent>(entity);
 
-                Leaper::TransformComponent transform;
+                TransformComponent transform;
                 transform.position = tc.position;
                 transform.scale    = tc.scale * glm::vec3(bc2d.size * 2.0f, 1.0f);
                 transform.rotation = tc.rotation;
 
-                Leaper::Renderer2D::DrawRect(transform, glm::vec4(0, 1, 0, 1));
+                Renderer2D::DrawRect(transform, glm::vec4(0, 1, 0, 1));
             }
 
-            auto cc2d_view = m_active_scene->GetAllEntitiesWith<Leaper::TransformComponent, Leaper::CircleCollider2DComponent>();
+            auto cc2d_view = m_active_scene->GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
             for (auto entity : cc2d_view)
             {
-                auto [tc, cc2d] = cc2d_view.get<Leaper::TransformComponent, Leaper::CircleCollider2DComponent>(entity);
+                auto [tc, cc2d] = cc2d_view.get<TransformComponent, CircleCollider2DComponent>(entity);
 
-                Leaper::TransformComponent transform;
+                TransformComponent transform;
                 transform.position = tc.position;
                 transform.scale    = tc.scale * cc2d.radiu;
                 transform.rotation = tc.rotation;
 
-                Leaper::Renderer2D::DrawCircle(transform, glm::vec4(0, 1, 0, 1), 0.05f);
+                Renderer2D::DrawCircle(transform, glm::vec4(0, 1, 0, 1), 0.05f);
             }
         }
-        Leaper::Renderer2D::EndScene();
-        Leaper::Renderer3D::EndScene();
+        Renderer2D::EndScene();
+        Renderer3D::EndScene();
 
         // get entity
         auto [mx, my] = ImGui::GetMousePos();
@@ -162,7 +177,7 @@ namespace Leaper
         if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewport_size.x && mouseY < (int)viewport_size.y)
         {
             int entity_id    = m_framebuffer->ReadPixels(1, (int)mouseX, (int)mouseY);
-            m_hovered_entity = entity_id == -1 ? Leaper::Entity() : Leaper::Entity((entt::entity)entity_id, m_active_scene.get());
+            m_hovered_entity = entity_id == -1 ? Entity() : Entity((entt::entity)entity_id, m_active_scene.get());
         }
         m_framebuffer->Unbind();
     }
@@ -205,27 +220,27 @@ namespace Leaper
 
                 if (ImGui::MenuItem("Save As..."))
                 {
-                    std::string filepath = Leaper::FileDialogs::SaveFile("Leaper Scene(*.leaper)\0*.leaper\0");
+                    std::string filepath = FileDialogs::SaveFile("Leaper Scene(*.leaper)\0*.leaper\0");
                     if (!filepath.empty())
                     {
-                        Leaper::SceneSerializer serizlizer(m_active_scene);
+                        SceneSerializer serizlizer(m_active_scene);
                         serizlizer.Write(filepath + ".leaper");
                     }
                 }
 
                 if (ImGui::MenuItem("Open..."))
                 {
-                    std::string filepath = Leaper::FileDialogs::OpenFile("Leaper Scene(*.leaper)\0*.leaper\0");
+                    std::string filepath = FileDialogs::OpenFile("Leaper Scene(*.leaper)\0*.leaper\0");
                     if (!filepath.empty())
                     {
                         m_hierarchy_window.GetSelected() = {};
 
-                        m_active_scene = Leaper::CreateRef<Leaper::Scene>();
+                        m_active_scene = CreateRef<Scene>();
                         m_hierarchy_window.SetScene(m_active_scene);
-                        Leaper::SceneSerializer serizlizer(m_active_scene);
+                        SceneSerializer serizlizer(m_active_scene);
                         serizlizer.Read(filepath);
                         m_active_scene->OnAttach();
-                        auto view = m_active_scene->Reg().view<Leaper::CameraComponent>();
+                        auto view = m_active_scene->Reg().view<CameraComponent>();
                         for (auto e : view) { camera_entity = { e, m_active_scene.get() }; }
                     }
                 }
@@ -241,7 +256,29 @@ namespace Leaper
         }
 
         // scene window
-        ImGui::Begin(ICON_FA_DESKTOP "Scene");
+        ImGui::Begin(ICON_FA_DESKTOP " Scene");
+        ImGui::SameLine();
+        const char* camera_types_string[] = { "Orthographic", "Perspective" };
+        const char* current_camera_type   = camera_types_string[m_editor_camera_type];
+        if (ImGui::BeginCombo("CameraTypes", current_camera_type))
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                bool is_selected = current_camera_type == camera_types_string[i];
+                if (ImGui::Selectable(camera_types_string[i], is_selected))
+                {
+                    current_camera_type  = camera_types_string[i];
+                    m_editor_camera_type = (CameraTypes)i;
+                }
+
+                if (is_selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+
+            ImGui::EndCombo();
+        }
+
+        ImGui::BeginChild("Viewport");
 
         auto viewport_min_region = ImGui::GetWindowContentRegionMin();
         auto viewport_max_region = ImGui::GetWindowContentRegionMax();
@@ -259,13 +296,13 @@ namespace Leaper
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSETS"))
             {
                 const wchar_t* path              = (const wchar_t*)payload->Data;
-                std::filesystem::path filepath   = std::filesystem::path(g_assets_path) / path;
+                std::filesystem::path filepath   = std::filesystem::path(m_assets_path) / path;
                 m_hierarchy_window.GetSelected() = {};
 
-                m_active_scene = Leaper::CreateRef<Leaper::Scene>();
+                m_active_scene = CreateRef<Scene>();
                 m_hierarchy_window.SetScene(m_active_scene);
 
-                Leaper::SceneSerializer serizlizer(m_active_scene);
+                SceneSerializer serizlizer(m_active_scene);
                 serizlizer.Read(filepath.string());
                 m_active_scene->OnAttach();
             }
@@ -283,37 +320,52 @@ namespace Leaper
 
             // gizmo camera
 
-            auto& tc            = select.GetComponent<Leaper::TransformComponent>();
+            auto& tc            = select.GetComponent<TransformComponent>();
             glm::mat4 transform = tc.GetTransform();
             if (m_scene_state == SceneState::Edit)
             {
-                const glm::mat4& camera_projection = m_perspective_camera.GetProjection();
-                glm::mat4 camera_view              = m_perspective_camera.GetViewMatrix();
+                if (m_editor_camera_type == CameraTypes::Ortho)
+                {
+                    ImGuizmo::SetOrthographic(true);
+                    OrthgraphicCamera& camera                 = m_camera.GetCamera();
+                    const glm::mat4& camera_ContentBroswerion = camera.GetContentBroswerionMat();
+                    glm::mat4 camera_view                     = camera.GetViewMat();
 
-                ImGuizmo::Manipulate(glm::value_ptr(camera_view), glm::value_ptr(camera_projection), (ImGuizmo::OPERATION)m_gizmo, ImGuizmo::LOCAL, glm::value_ptr(transform),
-                                     nullptr, nullptr, nullptr, nullptr);
+                    ImGuizmo::Manipulate(glm::value_ptr(camera_view), glm::value_ptr(camera_ContentBroswerion), (ImGuizmo::OPERATION)m_gizmo, ImGuizmo::LOCAL,
+                                         glm::value_ptr(transform), nullptr, nullptr, nullptr, nullptr);
+                }
+
+                else
+                {
+                    ImGuizmo::SetOrthographic(false);
+                    const glm::mat4& camera_ContentBroswerion = m_perspective_camera.GetContentBroswerion();
+                    glm::mat4 camera_view                     = m_perspective_camera.GetViewMatrix();
+
+                    ImGuizmo::Manipulate(glm::value_ptr(camera_view), glm::value_ptr(camera_ContentBroswerion), (ImGuizmo::OPERATION)m_gizmo, ImGuizmo::LOCAL,
+                                         glm::value_ptr(transform), nullptr, nullptr, nullptr, nullptr);
+                }
             }
             else
             {
-                Leaper::OrthgraphicCamera& camera  = m_game_camera.GetCamera();
-                const glm::mat4& camera_projection = camera.GetProjectionMat();
-                glm::mat4 camera_view              = camera.GetViewMat();
+                OrthgraphicCamera& camera                 = m_ortho_camera.GetCamera();
+                const glm::mat4& camera_ContentBroswerion = camera.GetContentBroswerionMat();
+                glm::mat4 camera_view                     = camera.GetViewMat();
 
-                ImGuizmo::Manipulate(glm::value_ptr(camera_view), glm::value_ptr(camera_projection), (ImGuizmo::OPERATION)m_gizmo, ImGuizmo::LOCAL, glm::value_ptr(transform),
-                                     nullptr, nullptr, nullptr, nullptr);
+                ImGuizmo::Manipulate(glm::value_ptr(camera_view), glm::value_ptr(camera_ContentBroswerion), (ImGuizmo::OPERATION)m_gizmo, ImGuizmo::LOCAL,
+                                     glm::value_ptr(transform), nullptr, nullptr, nullptr, nullptr);
             }
 
-            if (Leaper::Input::IsKeyDown(LP_KEY_1))
+            if (Input::IsKeyDown(LP_KEY_1))
                 m_gizmo = ImGuizmo::OPERATION::TRANSLATE;
-            if (Leaper::Input::IsKeyDown(LP_KEY_2))
+            if (Input::IsKeyDown(LP_KEY_2))
                 m_gizmo = ImGuizmo::OPERATION::ROTATE;
-            if (Leaper::Input::IsKeyDown(LP_KEY_3))
+            if (Input::IsKeyDown(LP_KEY_3))
                 m_gizmo = ImGuizmo::OPERATION::SCALE;
 
             if (ImGuizmo::IsUsing())
             {
                 glm::vec3 position, rotation, scale;
-                Leaper::Math::DecomposeTransform(transform, position, rotation, scale);
+                Math::DecomposeTransform(transform, position, rotation, scale);
                 glm::vec3 delat_rotation = rotation - tc.rotation;
                 tc.position              = position;
                 tc.rotation += delat_rotation;
@@ -321,10 +373,11 @@ namespace Leaper
             }
         }
 
+        ImGui::EndChild();
         ImGui::End();
 
         ImGui::Begin("Debug");
-        ImGui::Image(reinterpret_cast<void*>(Renderer3D::s_frame_buffer->GetDepthTexture()), ImVec2(200, 200), ImVec2(0, 1), ImVec2(1, 0));
+        // ImGui::Image(reinterpret_cast<void*>(Renderer3D::s_frame_buffer->GetDepthTexture()), ImVec2(200, 200), ImVec2(0, 1), ImVec2(1, 0));
 
         ImGui::Text(std::to_string((uint32_t)m_hovered_entity).c_str());
         ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
@@ -333,22 +386,22 @@ namespace Leaper
         ImGui::End();
 
         DrawToolBar();
-        m_hierarchy_window.OnUpdate();
-        m_project_window.OnUpdate();
-        m_console.OnUpdate();
+        m_hierarchy_window.OnImGuiRender();
+        m_content_broswer_window.OnImGuiRender();
+        m_console.OnImGuiRender();
     }
 
-    void EditorLayer::OnEvent(Leaper::Event& e)
+    void EditorLayer::OnEvent(Event& e)
     {
         m_camera.OnEvent(e);
         m_perspective_camera.OnEvent(e);
-        Leaper::EventDispatcher dispatcher(e);
-        dispatcher.Dispatch<Leaper::MouseButtonPressedEvent>(LP_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
+        EventDispatcher dispatcher(e);
+        dispatcher.Dispatch<MouseButtonPressedEvent>(LP_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
     }
 
-    bool EditorLayer::OnMouseButtonPressed(Leaper::MouseButtonPressedEvent& e)
+    bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
     {
-        if (e.GetMouseButton() == Leaper::Mosue::ButtonLeft)
+        if (e.GetMouseButton() == Mosue::ButtonLeft)
         {
             if (m_viewport_hovered && !ImGuizmo::IsOver() && m_hovered_entity)
             {
@@ -381,7 +434,7 @@ namespace Leaper
         // editor toolbar
         ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         // play icon
-        Leaper::Ref<Leaper::Texture> button_icon = m_scene_state == SceneState::Edit ? m_play_icon : m_stop_icon;
+        Ref<Texture> button_icon = m_scene_state == SceneState::Edit ? m_play_icon : m_stop_icon;
 
         bool toolbarEnabled = (bool)m_active_scene;
 

@@ -23,6 +23,7 @@
 
 #include <functional>
 #include <string>
+#include <unordered_map>
 
 namespace Leaper
 {
@@ -67,6 +68,13 @@ namespace Leaper
 
     private:
         glm::mat4 transform = glm::mat4(1.0f);
+    };
+
+    struct ParentEntity
+    {
+        ParentEntity() = default;
+        ParentEntity(Entity entity) : parent_entity(entity) {}
+        Entity parent_entity;
     };
 
     struct Animation2DComponent
@@ -130,10 +138,10 @@ namespace Leaper
             Kinematic,
             Dynamic
         };
-        BodyType body_type = Dynamic;
-
-        glm::vec2 velocity = glm::vec2(0, 0);
-        void* runtime_body = nullptr;
+        BodyType body_type  = Dynamic;
+        float gravity_scale = 1.0f;
+        glm::vec2 velocity  = glm::vec2(0, 0);
+        void* runtime_body  = nullptr;
     };
 
     struct FixtureUserData
@@ -176,6 +184,8 @@ namespace Leaper
         LuaScriptComponent(const std::string& script_path) : path(script_path) {}
         sol::table self;
         std::string path;
+
+        std::unordered_map<std::string, int> int_values;
     };
 
     struct SoundComponent
@@ -206,6 +216,16 @@ namespace Leaper
         float intensity = 0.4f;
 
         int id;
+    };
+
+    struct PointLightComponent
+    {
+        PointLightComponent() = default;
+        PointLightComponent(float _constant, float _linear, float _quadratic) : constant(_constant), linear(_linear), quadratic(_quadratic) {}
+
+        float constant  = 1.0f;
+        float linear    = 0.09f;
+        float quadratic = 0.032f;
     };
 
     struct CubeRendererComponent

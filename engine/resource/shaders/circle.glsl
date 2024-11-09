@@ -10,7 +10,7 @@ layout(location = 5) in int a_EntityID;
 
 layout(std140, binding = 0) uniform Camera
 {
-    mat4 u_ViewProjection;
+    mat4 u_ViewContentBroswerion;
 };
 
 struct VertexOutput
@@ -33,7 +33,7 @@ void main()
 
     v_EntityID = a_EntityID;
 
-    gl_Position = u_ViewProjection * vec4(a_WorldPosition, 1.0);
+    gl_Position = u_ViewContentBroswerion * vec4(a_WorldPosition, 1.0);
 }
 #type fragment
 #version 450 core

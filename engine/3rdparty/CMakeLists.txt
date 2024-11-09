@@ -114,4 +114,8 @@ if(NOT TARGET assimp)
     add_subdirectory(assimp)
 endif()
 
+if(NOT TARGET freetype)
+  add_subdirectory(freetype)
+endif()
+
 find_package(Vulkan REQUIRED)

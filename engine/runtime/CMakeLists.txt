@@ -59,6 +59,7 @@ set(INCLUDE_DIR
  "${3RDPARTY}/assimp/include"
  "${3RDPARTY}/meshoptimizer"
  "${3RDPARTY}/IconFontCppHeaders"
+ "${3RDPARTY}/freetype/include"
  "${VulkanDir}/Include/")
  
  
@@ -76,5 +77,6 @@ set(INCLUDE_DIR
     PUBLIC lua_static
     ${VulkanSDK_Lib}
     PUBLIC assimp
+    PUBLIC freetype
     PUBLIC FMOD::Core FMOD::Fsbank FMOD::Studio
  )

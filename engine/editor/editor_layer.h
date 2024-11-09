@@ -1,8 +1,8 @@
 #pragma once
 #include "function/render/orthographic_camera.h"
 #include "panels/console.h"
+#include "panels/content_broswer.h"
 #include "panels/hierarchy.h"
-#include "panels/project.h"
 
 #include "core/events/events.h"
 #include "core/layer/layer.h"
@@ -13,10 +13,11 @@
 
 #include <ImGuizmo.h>
 #include <imgui.h>
+#include <string_view>
 namespace Leaper
 {
 
-    class EditorLayer : public Leaper::Layer
+    class EditorLayer : public Layer
     {
     public:
         EditorLayer();
@@ -24,19 +25,21 @@ namespace Leaper
         virtual void OnUpdate() override;
         virtual void OnImGuiRender() override;
 
-        virtual void OnEvent(Leaper::Event& e) override;
+        virtual void OnEvent(Event& e) override;
+
+        void InitPanels(std::string_view assets_path);
 
         inline Hierarchy& GetHierarchyWindow()
         {
             return m_hierarchy_window;
         }
-        inline Project& GetProjectWindow()
+        inline ContentBroswer& GetContentBroswerWindow()
         {
-            return m_project_window;
+            return m_content_broswer_window;
         }
 
     private:
-        bool OnMouseButtonPressed(Leaper::MouseButtonPressedEvent& e);
+        bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
     private:
         void OnSceneEdit();
@@ -45,8 +48,10 @@ namespace Leaper
 
     private:
         Hierarchy m_hierarchy_window;
-        Project m_project_window;
+        ContentBroswer m_content_broswer_window;
         Console m_console;
+
+        std::filesystem::path m_assets_path;
 
         bool m_draw_rect = false;
         bool m_viewport_hovered;
@@ -61,22 +66,28 @@ namespace Leaper
         ImVec2 m_mouse_in_window;
         ImVec2 m_mouse_in_texture;
 
-        Leaper::Entity camera_entity;
-        Leaper::Entity m_hovered_entity;
+        Entity camera_entity;
+        Entity m_hovered_entity;
 
-        Leaper::CameraController m_camera;
-        Leaper::GameCamera m_game_camera;
-        Leaper::EditorCamera m_perspective_camera;
+        CameraController m_camera;
+        GameCamera m_ortho_camera;
+        EditorCamera m_perspective_camera;
 
-        Leaper::Ref<Leaper::Scene> m_active_scene;
-        Leaper::Ref<Leaper::FrameBuffer> m_framebuffer;
-        Leaper::Ref<Leaper::Texture> m_play_icon;
-        Leaper::Ref<Leaper::Texture> m_stop_icon;
-        Leaper::Ref<Leaper::Texture> m_translate_icon;
-        Leaper::Ref<Leaper::Texture> m_rotate_icon;
-        Leaper::Ref<Leaper::Texture> m_scale_icon;
+        Ref<Scene> m_active_scene;
+        Ref<FrameBuffer> m_framebuffer;
+        Ref<Texture> m_play_icon;
+        Ref<Texture> m_stop_icon;
+        Ref<Texture> m_translate_icon;
+        Ref<Texture> m_rotate_icon;
+        Ref<Texture> m_scale_icon;
 
         glm::vec2 m_viewport_bounds[2];
+        enum CameraTypes
+        {
+            Ortho             = 0,
+            ContentBroswerion = 1
+        };
+        CameraTypes m_editor_camera_type = ContentBroswerion;
 
         bool is_read_pixel = false;
 

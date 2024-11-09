@@ -99,11 +99,12 @@ namespace Leaper
 
     void ToJson(nlohmann::json& j, const Rigidbody2DComponent& t)
     {
-        j["Rigidbody2DComponent"] = { { "type", t.body_type } };
+        j["Rigidbody2DComponent"] = { { "type", t.body_type }, { "gravity_scale", t.gravity_scale } };
     }
     void FromJson(const nlohmann::json& j, Rigidbody2DComponent& t)
     {
         j.at("Rigidbody2DComponent").at("type").get_to(t.body_type);
+        j.at("Rigidbody2DComponent").at("gravity_scale").get_to(t.gravity_scale);
     }
 
     void ToJson(nlohmann::json& j, const BoxCollider2DComponent& t)

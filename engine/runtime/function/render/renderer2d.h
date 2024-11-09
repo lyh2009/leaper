@@ -1,5 +1,6 @@
 #pragma once
 #include "buffers.h"
+#include "function/render/texture.h"
 #include "game_camera.h"
 #include "orthographic_camera.h"
 #include "render_api.h"
@@ -34,6 +35,7 @@ namespace Leaper
         static void DrawSprite(Leaper::TransformComponent trans, Leaper::Ref<Leaper::Texture> texture, glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), int entity_id = -1);
         static void DrawSprite(Leaper::TransformComponent trans, Leaper::Animation2DComponent anim, Leaper::Ref<Leaper::Texture> texture,
                                glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), int entity_id = -1);
+        static void DrawImageUI(Leaper::TransformComponent& trans, Ref<Texture> texture);
         static void DrawLight(Leaper::TransformComponent trans, Leaper::LightComponent light);
 
         static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int entity_id = -1);

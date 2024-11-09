@@ -1,13 +1,11 @@
 #include "lppch.h"
 #include "lua_globals_binder.h"
 
-
 #include "core/time.h"
 #include "function/ecs/scene.h"
 #include "function/input/input.h"
 #include "function/input/key_codes.h"
 #include "function/input/mouse_codes.h"
-
 
 void Leaper::LuaGlobalsBinder::BindGlobals(sol::state& state)
 {

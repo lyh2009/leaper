@@ -76,7 +76,7 @@ namespace Leaper
 
         struct CameraBuffer
         {
-            glm::mat4 view_projection;
+            glm::mat4 view_ContentBroswerion;
             glm::vec3 position;
         };
 
@@ -85,7 +85,7 @@ namespace Leaper
         Ref<UniformBuffer> light_uniform_buffer;
 
         glm::mat4 view;
-        glm::mat4 projection;
+        glm::mat4 ContentBroswerion;
     };
 
     static Renderer3DData s_data;
@@ -116,20 +116,20 @@ namespace Leaper
 
     void Renderer3D::BeginScene(const glm::mat4& camera, glm::vec3 position)
     {
-        s_data.camera_buffer.view_projection = camera;
-        s_data.camera_buffer.position        = position;
+        s_data.camera_buffer.view_ContentBroswerion = camera;
+        s_data.camera_buffer.position               = position;
         StartBatch();
     }
-    void Renderer3D::SetCamera(const glm::mat4& view, const glm::mat4& projection, glm::vec3 position)
+    void Renderer3D::SetCamera(const glm::mat4& view, const glm::mat4& ContentBroswerion, glm::vec3 position)
     {
         s_data.view                   = view;
-        s_data.projection             = projection;
+        s_data.ContentBroswerion      = ContentBroswerion;
         s_data.camera_buffer.position = position;
     }
 
     void Renderer3D::BeginScene(const glm::mat4& camera, glm::mat4& trans)
     {
-        s_data.camera_buffer.view_projection = camera * trans;
+        s_data.camera_buffer.view_ContentBroswerion = camera * trans;
         StartBatch();
     }
 
@@ -160,7 +160,7 @@ namespace Leaper
 
           s_data.cube_shader->Bind();
 
-          s_data.cube_shader->SetMat4("u_ViewProjection", s_data.camera_buffer.view_projection);
+          s_data.cube_shader->SetMat4("u_ViewContentBroswerion", s_data.camera_buffer.view_ContentBroswerion);
           s_data.cube_shader->SetVec3("u_ViewPosition", s_data.camera_buffer.position);
 
           s_data.cube_vertex_array->DrawArray(s_data.max_vertices);
@@ -211,7 +211,7 @@ namespace Leaper
         RenderCommand::DepthMask(false);
         s_data.skybox_shader->Bind();
         s_data.skybox_shader->SetMat4("u_View", view);
-        s_data.skybox_shader->SetMat4("u_Projection", s_data.projection);
+        s_data.skybox_shader->SetMat4("u_ContentBroswerion", s_data.ContentBroswerion);
         s_data.skybox_texture->BindCubeMap();
         s_data.cube_vertex_array->DrawArray(36);
         RenderCommand::DepthMask(true);

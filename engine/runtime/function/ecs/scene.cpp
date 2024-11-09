@@ -62,6 +62,7 @@ void Leaper::Scene::OnAttach()
 
 void Leaper::Scene::OnUpdate()
 {
+
     for (auto& item : m_systems) item->OnUpdate();
 
     if (is_running)

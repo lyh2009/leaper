@@ -18,10 +18,7 @@ namespace Leaper
 
     void Console::OnAttach()
     {
-        LP_LOG("LP_LOG");
-        LP_LOG_INFO("LP_LOG_INFO");
-        LP_LOG_WARNING("LP_LOG_WARNING");
-        LP_LOG_ERROR("LP_LOG_ERROR");
+
     }
 
     void DrawMessageTable(const std::string& label, const std::string& time_str, const std::string& str, ImVec4 color, bool is_draw, float table_row)
@@ -41,7 +38,7 @@ namespace Leaper
     }
 
     static bool checkbox[4] = { true, true, true, true };
-    void Console::OnUpdate()
+    void Console::OnImGuiRender()
     {
         float scrollY = ImGui::GetScrollY();
         if (scrollY < m_previous_scroll_y)
@@ -53,7 +50,7 @@ namespace Leaper
         m_previous_scroll_y = scrollY;
 
         auto messages_ = Leaper::Log::GetSink()->log_item;
-        ImGui::Begin(ICON_FA_TERMINAL "Console", nullptr);
+        ImGui::Begin(ICON_FA_TERMINAL " Console", nullptr);
         if (ImGui::Button(ICON_FA_TRASH_CAN "Clear"))
         {
             Leaper::Log::GetSink()->log_item.clear();
@@ -67,7 +64,7 @@ namespace Leaper
         ImGui::SameLine();
         ImGui::Checkbox("Error", &checkbox[3]);
 
-        static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+        ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
         ImGui::BeginChild("ConsoleChlid");
 
         if (ImGui::BeginTable("table1", 3, flags))

@@ -520,16 +520,16 @@ typedef struct {
 
 
 /*
-** Project the random integer 'ran' into the interval [0, n].
-** Because 'ran' has 2^B possible values, the projection can only be
+** ContentBroswer the random integer 'ran' into the interval [0, n].
+** Because 'ran' has 2^B possible values, the ContentBroswerion can only be
 ** uniform when the size of the interval is a power of 2 (exact
-** division). Otherwise, to get a uniform projection into [0, n], we
+** division). Otherwise, to get a uniform ContentBroswerion into [0, n], we
 ** first compute 'lim', the smallest Mersenne number not smaller than
-** 'n'. We then project 'ran' into the interval [0, lim].  If the result
+** 'n'. We then ContentBroswer 'ran' into the interval [0, lim].  If the result
 ** is inside [0, n], we are done. Otherwise, we try with another 'ran',
 ** until we have a result inside the interval.
 */
-static lua_Unsigned project (lua_Unsigned ran, lua_Unsigned n,
+static lua_Unsigned ContentBroswer (lua_Unsigned ran, lua_Unsigned n,
                              RanState *state) {
   if ((n & (n + 1)) == 0)  /* is 'n + 1' a power of 2? */
     return ran & n;  /* no bias */
@@ -547,7 +547,7 @@ static lua_Unsigned project (lua_Unsigned ran, lua_Unsigned n,
     lua_assert((lim & (lim + 1)) == 0  /* 'lim + 1' is a power of 2, */
       && lim >= n  /* not smaller than 'n', */
       && (lim >> 1) < n);  /* and it is the smallest one */
-    while ((ran &= lim) > n)  /* project 'ran' into [0..lim] */
+    while ((ran &= lim) > n)  /* ContentBroswer 'ran' into [0..lim] */
       ran = I2UInt(nextrand(state->s));  /* not inside [0..n]? try again */
     return ran;
   }
@@ -582,8 +582,8 @@ static int math_random (lua_State *L) {
   }
   /* random integer in the interval [low, up] */
   luaL_argcheck(L, low <= up, 1, "interval is empty");
-  /* project random integer into the interval [0, up - low] */
-  p = project(I2UInt(rv), (lua_Unsigned)up - (lua_Unsigned)low, state);
+  /* ContentBroswer random integer into the interval [0, up - low] */
+  p = ContentBroswer(I2UInt(rv), (lua_Unsigned)up - (lua_Unsigned)low, state);
   lua_pushinteger(L, p + (lua_Unsigned)low);
   return 1;
 }

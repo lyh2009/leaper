@@ -114,7 +114,7 @@ unset(_cmake_target)
 unset(_cmake_import_check_targets)
 
 # This file does not depend on other imported targets which have
-# been exported from the same project but in a separate export set.
+# been exported from the same ContentBroswer but in a separate export set.
 
 # Commands beyond this point should not need to know the version.
 set(CMAKE_IMPORT_FILE_VERSION)

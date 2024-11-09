@@ -36,10 +36,9 @@ void Leaper::ImGuiLayer::OnAttach()
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 460");
 
-    // io.Fonts->AddFontFromFileTTF("./resource/fonts/JetBrainsMonoNerdFontMono-Medium.ttf", 17.0f);
-
-    io.Fonts->AddFontDefault();
-    float baseFontSize = 13.0f;                       // 13.0f is the size of the default font. Change to the font size you use.
+    // io.Fonts->AddFontDefault();
+    io.Fonts->AddFontFromFileTTF("./resource/fonts/JetBrainsMonoNerdFontMono-Medium.ttf", 15.0f);
+    float baseFontSize = 17.0f;                       // 13.0f is the size of the default font. Change to the font size you use.
     float iconFontSize = baseFontSize * 2.0f / 3.0f;  // FontAwesome fonts need to have their sizes reduced by 2.0f/3.0f in order to align correctly
 
     // merge in icons from Font Awesome

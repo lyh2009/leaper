@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(spdlog_utests CXX)
+ContentBroswer(spdlog_utests CXX)
 
 if(NOT TARGET spdlog)
     # Stand-alone build

@@ -19,23 +19,23 @@ namespace Leaper
             m_rotation = rotation;
             RecalculateViewMat();
         }
-        void SetProjectionMat(float left, float right, float bottom, float top)
+        void SetContentBroswerionMat(float left, float right, float bottom, float top)
         {
-            m_projection_mat = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+            m_ContentBroswerion_mat = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
             RecalculateViewMat();
         }
 
-        inline const glm::mat4& GetProjectionMat() const
+        inline const glm::mat4& GetContentBroswerionMat() const
         {
-            return m_projection_mat;
+            return m_ContentBroswerion_mat;
         }
         inline const glm::mat4& GetViewMat() const
         {
             return m_view_mat;
         }
-        inline const glm::mat4& GetViewProjectionMat() const
+        inline const glm::mat4& GetViewContentBroswerionMat() const
         {
-            return m_view_projection_mat;
+            return m_view_ContentBroswerion_mat;
         }
         inline const glm::vec3& GetPosition() const
         {
@@ -54,9 +54,9 @@ namespace Leaper
         void RecalculateViewMat();
 
     private:
-        glm::mat4 m_projection_mat      = glm::mat4(1.0f);
-        glm::mat4 m_view_mat            = glm::mat4(1.0f);
-        glm::mat4 m_view_projection_mat = glm::mat4(1.0f);
+        glm::mat4 m_ContentBroswerion_mat      = glm::mat4(1.0f);
+        glm::mat4 m_view_mat                   = glm::mat4(1.0f);
+        glm::mat4 m_view_ContentBroswerion_mat = glm::mat4(1.0f);
 
         glm::vec3 m_position;
         float m_rotation = 0.0f;

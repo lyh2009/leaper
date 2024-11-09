@@ -8,7 +8,7 @@ namespace Leaper
     {
     public:
         void OnAttach();
-        void OnUpdate();
+        void OnImGuiRender();
 
     private:
         bool m_scroll_to_lastest;

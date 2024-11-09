@@ -30,20 +30,20 @@ namespace Leaper
         {
             m_viewport_width  = width;
             m_viewport_height = height;
-            UpdateProjection();
+            UpdateContentBroswerion();
         }
 
         const glm::mat4& GetViewMatrix() const
         {
             return m_view_matrix;
         }
-        glm::mat4 GetViewProjection() const
+        glm::mat4 GetViewContentBroswerion() const
         {
-            return m_projection * m_view_matrix;
+            return m_ContentBroswerion * m_view_matrix;
         }
-        glm::mat4 GetProjection() const
+        glm::mat4 GetContentBroswerion() const
         {
-            return m_projection;
+            return m_ContentBroswerion;
         }
 
         glm::vec3 GetUpDirection() const;
@@ -64,8 +64,18 @@ namespace Leaper
             return m_yaw;
         }
 
+        void SetPitch(float pitch)
+        {
+            m_pitch = pitch;
+        }
+
+        void SetYaw(float yaw)
+        {
+            m_yaw = yaw;
+        }
+
     private:
-        void UpdateProjection();
+        void UpdateContentBroswerion();
         void UpdateView();
 
         bool OnMouseScroll(Leaper::MouseScrolledEvent& e);
@@ -83,7 +93,7 @@ namespace Leaper
     private:
         float m_fov = 45.0f, m_aspect_ratio = 1.778f, m_near_clip = 0.1f, m_far_clip = 1000.0f;
 
-        glm::mat4 m_projection;
+        glm::mat4 m_ContentBroswerion;
 
         glm::mat4 m_view_matrix;
         glm::vec3 m_position    = { 0.0f, 0.0f, 0.0f };

@@ -21,7 +21,7 @@ namespace Leaper
     class Application
     {
     public:
-        Application(Leaper::RenderAPI::API api, int width, int height, std::string title);
+        Application(RenderAPI::API api, int width, int height, std::string title);
         ~Application();
 
         static Application& Get()
@@ -29,41 +29,40 @@ namespace Leaper
             return *s_instance;
         }
 
-        inline Leaper::Ref<Leaper::Window> GetWindow()
+        inline Ref<Window> GetWindow()
         {
             return m_window;
         }
-        inline Leaper::Ref<Leaper::RenderAPI> GetRenderAPI()
+        inline Ref<RenderAPI> GetRenderAPI()
         {
             return m_render_api;
         }
-        inline Leaper::ImGuiLayer* GetImGuiLayer() const
+        inline ImGuiLayer* GetImGuiLayer() const
         {
             return m_imgui_layer;
         }
 
         void OnAttach();
 
-        void PushLayer(Leaper::Layer* layer);
-        void PushOverlay(Leaper::Layer* overlay);
+        void PushLayer(Layer* layer);
+        void PushOverlay(Layer* overlay);
 
-        void OnEvent(Leaper::Event& e);
+        void OnEvent(Event& e);
         bool OnWindowResize(WindowResizeEvent& e);
 
         void Run();
-        void RenderMain();
 
     private:
         void EndFrame(RenderTaskBase* task);
 
         static Application* s_instance;
 
-        Leaper::ImGuiLayer* m_imgui_layer = nullptr;
-        Leaper::Ref<Leaper::Window> m_window;
+        ImGuiLayer* m_imgui_layer = nullptr;
+        Ref<Window> m_window;
 
-        Leaper::Ref<Leaper::RenderAPI> m_render_api;
-        Leaper::Scope<Leaper::Context> m_context;
-        Leaper::LayerStack m_layer_stack;
+        Ref<RenderAPI> m_render_api;
+        Scope<Context> m_context;
+        LayerStack m_layer_stack;
 
         std::thread m_render_thread;
         std::mutex m_mutex;

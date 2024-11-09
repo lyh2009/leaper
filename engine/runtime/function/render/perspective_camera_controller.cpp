@@ -15,14 +15,14 @@ namespace Leaper
     using namespace Leaper;
     EditorCamera::EditorCamera(float fov, float aspectRatio, float nearClip, float farClip) : m_fov(fov), m_aspect_ratio(aspectRatio), m_near_clip(nearClip), m_far_clip(farClip)
     {
-        m_projection = glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip);
+        m_ContentBroswerion = glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip);
         UpdateView();
     }
 
-    void EditorCamera::UpdateProjection()
+    void EditorCamera::UpdateContentBroswerion()
     {
-        m_aspect_ratio = m_viewport_width / m_viewport_height;
-        m_projection   = glm::perspective(glm::radians(m_fov), m_aspect_ratio, m_near_clip, m_far_clip);
+        m_aspect_ratio      = m_viewport_width / m_viewport_height;
+        m_ContentBroswerion = glm::perspective(glm::radians(m_fov), m_aspect_ratio, m_near_clip, m_far_clip);
     }
 
     void EditorCamera::UpdateView()
@@ -67,8 +67,17 @@ namespace Leaper
         m_initia_mouse_position = mouse;
         if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
             MouseRotate(delta);
+
         else if (ImGui::IsMouseDown(ImGuiMouseButton_Middle))
+            MousePan(delta);
+        /*
+        if (Input::IsMouseDown(ImGuiMouseButton_Middle))
+            MousePan(delta);
+        else if (Input::IsMouseDown(ImGuiMouseButton_Left))
+            MouseRotate(delta);
+        else if (Input::IsMouseDown(ImGuiMouseButton_Right))
             MouseZoom(delta.y);
+            */
 
         float speed = 10.f;
         if (Input::IsKeyDown(LP_KEY_W))

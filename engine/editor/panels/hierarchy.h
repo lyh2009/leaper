@@ -10,6 +10,8 @@
 #include <glm/glm.hpp>
 #include <imgui.h>
 
+#include <filesystem>
+
 namespace Leaper
 {
     class Hierarchy
@@ -18,8 +20,8 @@ namespace Leaper
         Hierarchy() = default;
         Hierarchy(const Leaper::Ref<Leaper::Scene>& scene);
 
-        void OnAttach();
-        void OnUpdate();
+        void OnAttach(std::string_view assets_path);
+        void OnImGuiRender();
 
         inline Leaper::Entity& GetSelected()
         {
@@ -49,6 +51,8 @@ namespace Leaper
         Leaper::Ref<Leaper::FrameBuffer> m_framebuffer;
         Leaper::Ref<Leaper::Texture> m_entity_icon;
         Leaper::Ref<Leaper::Texture> m_setting_icon;
+
+        std::filesystem::path m_assets_path;
 
         int m_gizmo = ImGuizmo::OPERATION::TRANSLATE;
 

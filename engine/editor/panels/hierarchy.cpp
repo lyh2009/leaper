@@ -1,3 +1,5 @@
+#include "content_broswer.h"
+#include "core/log.h"
 #include "core/math/math.h"
 #include "function/application/application.h"
 #include "function/ecs/components.h"
@@ -5,34 +7,37 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "hierarchy.h"
 #include "imgui.h"
-#include "project.h"
 #include "resource/gpu_resource_mapper.h"
 #include <IconsFontAwesome6.h>
 
-
 #include <ImGuizmo.h>
+#include <cstdint>
 #include <imgui_internal.h>
 
+#include "../global.h"
 #include <iostream>
 #include <string>
+#include <unordered_map>
 #include <utility>
 
 namespace Leaper
 {
-    extern const std::filesystem::path g_assets_path;
 
     Hierarchy::Hierarchy(const Ref<Scene>& scene)
     {
         SetScene(scene);
     }
 
-    void Hierarchy::OnAttach() {}
+    void Hierarchy::OnAttach(std::string_view assets_path)
+    {
+        m_assets_path = assets_path;
+    }
 
-    void Hierarchy::OnUpdate()
+    void Hierarchy::OnImGuiRender()
     {
         // Hierarchy Window
         {
-            ImGui::Begin(ICON_FA_LIST "Hierarchy");
+            ImGui::Begin(ICON_FA_LIST " Hierarchy");
 
             m_active_scene->Reg().each([&](entt::entity id) {
                 Entity entity = { id, m_active_scene.get() };
@@ -48,7 +53,7 @@ namespace Leaper
 
             ImGui::End();
 
-            ImGui::Begin(ICON_FA_CIRCLE_INFO "Components");
+            ImGui::Begin(ICON_FA_CIRCLE_INFO " Components");
             if (m_selected)
                 DrawComponents(m_selected);
             ImGui::End();
@@ -66,6 +71,27 @@ namespace Leaper
         bool create      = false;
         float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
         bool opened      = ImGui::TreeNodeEx((void*)(uint32_t)(entity), flag, tag.tag.c_str());
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY"))
+            {
+                auto entity_id  = (UUIDComponent*)payload->Data;
+                auto new_entity = m_active_scene->GetEntityByUUID(entity_id->uuid);
+                auto p_entity   = new_entity.AddComponent<ParentEntity>(entity);
+
+                LP_CORE_LOG_INFO("Entity Tag:{0}", new_entity.GetComponent<TagComponent>().tag);
+            }
+
+            ImGui::EndDragDropTarget();
+        }
+        if (ImGui::BeginDragDropSource())
+        {
+            auto entity_id   = entity.GetComponent<UUIDComponent>();
+            auto entity_name = entity.GetComponent<TagComponent>().tag;
+            ImGui::SetDragDropPayload("ENTITY", &entity_id, sizeof(UUIDComponent));
+            ImGui::Text(entity_name.c_str());
+            ImGui::EndDragDropSource();
+        }
         // Determine whether the entity is destroyed
         bool destroy = false;
 
@@ -85,7 +111,10 @@ namespace Leaper
         }
 
         if (opened)
+        {
+
             ImGui::TreePop();
+        }
 
         if (destroy)
         {
@@ -155,7 +184,8 @@ namespace Leaper
             DrawComponentMenuItem<SoundComponent>(ICON_FA_MUSIC "Sound Component", entity);
             DrawComponentMenuItem<LightComponent>(ICON_FA_LIGHTBULB "Light Component", entity);
             DrawComponentMenuItem<MeshRendererComponment>(ICON_FA_DICE_D20 "Mesh Renderer Component", entity);
-            DrawComponentMenuItem<DirectionalLightComponent>("Directional Light Component", entity);
+            DrawComponentMenuItem<DirectionalLightComponent>(ICON_FA_SUN "Directional Light Component", entity);
+            DrawComponentMenuItem<PointLightComponent>(ICON_FA_LIGHTBULB "Point Light Component", entity);
 
             ImGui::EndPopup();
         }
@@ -168,7 +198,7 @@ namespace Leaper
 
         DrawComponent<CameraComponent>(ICON_FA_VIDEO " Camera Component", entity, [](auto& component) {});
 
-        DrawComponent<SpriteRendererComponent>(ICON_FA_BRUSH " SpriteRenderer Component", entity, [](auto& component) {
+        DrawComponent<SpriteRendererComponent>(ICON_FA_BRUSH " SpriteRenderer Component", entity, [=](auto& component) {
             static std::filesystem::path texture_path;
             std::string label = std::filesystem::path(component.texture_path).stem().string();
             UI::BeginColumns();
@@ -180,7 +210,7 @@ namespace Leaper
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSETS"))
                     {
                         const wchar_t* path    = (const wchar_t*)payload->Data;
-                        texture_path           = std::filesystem::path(g_assets_path) / path;
+                        texture_path           = m_assets_path / path;
                         component.texture_path = texture_path.string();
                         component.m_texture    = TextureResourceManager::LoadTexture(texture_path.string());
                     }
@@ -214,6 +244,7 @@ namespace Leaper
             UI::BeginColumns();
             {
                 UI::DragFloat2("Velocity", glm::value_ptr(component.velocity), 0.01f);
+                UI::DragFloat("GravityScale", &component.gravity_scale);
             }
             UI::EndColumns();
         });
@@ -229,7 +260,7 @@ namespace Leaper
             UI::BeginColumns();
             {
 
-                UI::DragFloat2("##size", glm::value_ptr(component.size), 0.01f);
+                UI::DragFloat2("Size", glm::value_ptr(component.size), 0.01f);
                 UI::DragFloat("Frication", &component.friction, 0.01f, 0.0f, 1.0f);
                 UI::DragFloat("Restitution", &component.restitution, 0.01f, 0.0f, 1.0f);
                 UI::DragFloat("Density", &component.density, 0.01f);
@@ -268,7 +299,7 @@ namespace Leaper
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSETS"))
                     {
                         const wchar_t* path = (const wchar_t*)payload->Data;
-                        script_path         = std::filesystem::path(g_assets_path) / path;
+                        script_path         = m_assets_path / path;
                         if (script_path.extension() == ".lua")
                         {
                             component.path = script_path.string();
@@ -281,7 +312,10 @@ namespace Leaper
 
                     ImGui::EndDragDropTarget();
                 }
+                std::unordered_map<std::string, int>::iterator iter;
+                for (iter = component.int_values.begin(); iter != component.int_values.end(); ++iter) { UI::DragInt(iter->first, &iter->second); }
             }
+
             UI::EndColumns();
         });
 
@@ -303,7 +337,7 @@ namespace Leaper
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSETS"))
                     {
                         const wchar_t* path = (const wchar_t*)payload->Data;
-                        sound_path          = std::filesystem::path(g_assets_path) / path;
+                        sound_path          = m_assets_path / path;
                         component.path      = sound_path.string();
                     }
 
@@ -334,7 +368,7 @@ namespace Leaper
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSETS"))
                     {
                         const wchar_t* path = (const wchar_t*)payload->Data;
-                        model_path          = std::filesystem::path(g_assets_path) / path;
+                        model_path          = m_assets_path / path;
                         component.path      = model_path.string();
                         component.model     = ModelResourceManager::LoadModel(model_path.string());
                     }
@@ -345,12 +379,22 @@ namespace Leaper
             UI::EndColumns();
         });
 
-        DrawComponent<DirectionalLightComponent>("Directional Light Component", entity, [=](auto& component) {
+        DrawComponent<DirectionalLightComponent>(ICON_FA_SUN "Directional Light Component", entity, [=](auto& component) {
             UI::BeginColumns();
             {
                 UI::ColorEdit3("Light Color", glm::value_ptr(component.color));
                 UI::DragFloat("Ambient Strength", &component.ambient_strength, 0.01f, 0.0f, 1.0f);
                 UI::DragFloat("Specular Strength", &component.specular_strength, 0.01f, 0.0f, 1.0f);
+            }
+            UI::EndColumns();
+        });
+
+        DrawComponent<PointLightComponent>(ICON_FA_LIGHTBULB "Point Light Component", entity, [=](auto& component) {
+            UI::BeginColumns();
+            {
+                UI::DragFloat("Constant", &component.constant, 0.01f, 0.0f, 1.0f);
+                UI::DragFloat("Linear", &component.linear, 0.01f, 0.0f, 1.0f);
+                UI::DragFloat("Quadratic", &component.quadratic, 0.01f, 0.0f, 1.0f);
             }
             UI::EndColumns();
         });

@@ -1,5 +1,6 @@
 #include "camera_controller.h"
 #include "core/events/mouse_event.h"
+#include "function/input/key_codes.h"
 #include "function/input/mouse_codes.h"
 #include "imgui.h"
 #include "lppch.h"
@@ -49,7 +50,7 @@ bool Leaper::CameraController::OnMouseScrolledEvent(Leaper::MouseScrolledEvent& 
 {
     m_zoom_level -= event.GetYOffset() * 0.25f;
     m_zoom_level = std::max(m_zoom_level, 0.25f);
-    m_camera.SetProjectionMat(-m_ratio * m_zoom_level, m_ratio * m_zoom_level, -m_zoom_level, m_zoom_level);
+    m_camera.SetContentBroswerionMat(-m_ratio * m_zoom_level, m_ratio * m_zoom_level, -m_zoom_level, m_zoom_level);
     return false;
 }
 
@@ -60,20 +61,22 @@ bool Leaper::CameraController::OnMouseMovedEvent(Leaper::MouseMovedEvent& event)
 
     float offset_x = last_x - event.GetMouseX();
     float offset_y = last_y - event.GetMouseY();
-    m_camera_position.x += offset_x * Time::GetDeltaTime();
-    m_camera_position.y -= offset_y * Time::GetDeltaTime();
 
     last_x = event.GetMouseX();
     last_y = event.GetMouseY();
-
-    m_camera.SetPosition(m_camera_position);
+    if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
+    {
+        // m_camera.SetPosition(m_camera_position);
+        m_camera_position.x += offset_x * Time::GetDeltaTime();
+        m_camera_position.y -= offset_y * Time::GetDeltaTime();
+    }
     return false;
 }
 
 void Leaper::CameraController::OnResize(float width, float height)
 {
     m_ratio = width / height;
-    m_camera.SetProjectionMat(-m_ratio * m_zoom_level, m_ratio * m_zoom_level, -m_zoom_level, m_zoom_level);
+    m_camera.SetContentBroswerionMat(-m_ratio * m_zoom_level, m_ratio * m_zoom_level, -m_zoom_level, m_zoom_level);
 }
 
 bool Leaper::CameraController::OnWindowResize(Leaper::WindowResizeEvent& event)
@@ -81,7 +84,7 @@ bool Leaper::CameraController::OnWindowResize(Leaper::WindowResizeEvent& event)
     if (event.GetHeight() != 0 || event.GetHeight() != 0)
     {
         m_ratio = event.GetWidth() / event.GetHeight();
-        m_camera.SetProjectionMat(-m_ratio * m_zoom_level, m_ratio * m_zoom_level, -m_zoom_level, m_zoom_level);
+        m_camera.SetContentBroswerionMat(-m_ratio * m_zoom_level, m_ratio * m_zoom_level, -m_zoom_level, m_zoom_level);
         LP_LOG("OnWindowResize");
     }
     return false;

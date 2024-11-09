@@ -15,6 +15,7 @@ namespace Leaper
         static void EndColumns();
         static bool Button(const std::string& label, const std::string& b_label = "##button", ImVec2 size = { 0.0f, 0.0f });
         static void DragFloat(const std::string& label, float* v, float speed = 1.0f, float min = 0.0f, float max = 0.0f, const std::string& format = "%.3f");
+        static void DragInt(const std::string& label, int* v, int speed = 1, int min = 0, int max = 0);
         static void DragFloat2(const std::string& label, float* v, float speed = 1.0f, float min = 0.0f, float max = 0.0f, const std::string& format = "%.3f");
         static bool Checkbox(const std::string& label, bool* b);
         static void ColorEdit4(const std::string& label, float* v);

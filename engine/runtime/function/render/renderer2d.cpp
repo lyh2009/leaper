@@ -114,7 +114,7 @@ struct Renderer2DData
 
     struct CameraData
     {
-        glm::mat4 view_projection;
+        glm::mat4 view_ContentBroswerion;
         glm::vec3 position = { 0, 0, 0 };
     };
     CameraData camera_buffer;
@@ -204,29 +204,29 @@ void Leaper::Renderer2D::Init()
 
 void Leaper::Renderer2D::BeginScene(const glm::mat4& camera)
 {
-    s_data.camera_buffer.view_projection = camera;
+    s_data.camera_buffer.view_ContentBroswerion = camera;
     s_data.uniform_buffer->SetData(&s_data.camera_buffer, sizeof(Renderer2DData::CameraData));
     StartBatch();
 }
 void Leaper::Renderer2D::BeginScene(const glm::mat4& camera, glm::vec3 camera_position)
 {
-    s_data.camera_buffer.view_projection = camera;
-    s_data.camera_buffer.position        = camera_position;
+    s_data.camera_buffer.view_ContentBroswerion = camera;
+    s_data.camera_buffer.position               = camera_position;
     s_data.uniform_buffer->SetData(&s_data.camera_buffer, sizeof(Renderer2DData::CameraData));
     StartBatch();
 }
 
 void Leaper::Renderer2D::BeginScene(const glm::mat4& camera, glm::mat4& trans)
 {
-    s_data.camera_buffer.view_projection = camera * trans;
+    s_data.camera_buffer.view_ContentBroswerion = camera * trans;
     s_data.uniform_buffer->SetData(&s_data.camera_buffer, sizeof(Renderer2DData::CameraData));
     StartBatch();
 }
 
 void Leaper::Renderer2D::BeginScene(const glm::mat4& camera, glm::mat4& trans, glm::vec3 camera_position)
 {
-    s_data.camera_buffer.view_projection = camera * trans;
-    s_data.camera_buffer.position        = camera_position;
+    s_data.camera_buffer.view_ContentBroswerion = camera * trans;
+    s_data.camera_buffer.position               = camera_position;
     s_data.uniform_buffer->SetData(&s_data.camera_buffer, sizeof(Renderer2DData::CameraData));
     StartBatch();
 }
@@ -290,7 +290,7 @@ void Leaper::Renderer2D::Flush()
         s_data.circle_vertex_buffer->SetData(s_data.circle_vertex_buffer_base, data_size);
 
         s_data.circle_shader->Bind();
-        // s_data.circle_shader->SetMat4("u_ViewProjection", s_data.camera_buffer.view_projection);
+        // s_data.circle_shader->SetMat4("u_ViewContentBroswerion", s_data.camera_buffer.view_ContentBroswerion);
         Leaper::RenderCommand::DrawElements(s_data.circle_vertex_array, s_data.circle_index_count);
         s_data.circle_shader->UnBind();
     }
@@ -437,6 +437,50 @@ void Leaper::Renderer2D::SetLineWidth(float width)
 {
     m_line_width = width;
     Leaper::RenderCommand::SetLineWidth(width);
+}
+
+void Leaper::Renderer2D::DrawImageUI(Leaper::TransformComponent& trans, Ref<Leaper::Texture> texture)
+{
+    constexpr size_t quad_vertex_count   = 4;
+    constexpr glm::vec2 texture_coords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
+
+    float texture_index = 0.0f;
+    // 判断纹理是否重复
+    for (uint32_t i = 1; i < s_data.texture_slot_index; i++)
+    {
+        if (*s_data.texture_slots[i] == *texture)
+        {
+            texture_index = (float)i;
+            break;
+        }
+    }
+
+    if (texture_index == 0.0f)
+    {
+        if (s_data.texture_slot_index >= Renderer2DData::max_texture_slots)
+            NextBatch();
+        texture_index                                   = (float)s_data.texture_slot_index;
+        s_data.texture_slots[s_data.texture_slot_index] = texture;
+        s_data.texture_slot_index++;
+    }
+
+    if (s_data.quad_index_count >= Renderer2DData::max_indices)
+        NextBatch();
+
+    trans = glm::mat4(glm::mat3(trans));
+
+    for (uint32_t i = 0; i < quad_vertex_count; i++)
+    {
+        s_data.quad_vertex_buffer_ptr->position  = trans.GetTransform() * s_data.vertex_position[i];
+        s_data.quad_vertex_buffer_ptr->tex_coord = texture_coords[i];
+        s_data.quad_vertex_buffer_ptr->color     = glm::vec4(1, 1, 1, 1);
+        s_data.quad_vertex_buffer_ptr->tex_index = texture_index;
+        s_data.quad_vertex_buffer_ptr->entity_id = -1;
+
+        s_data.quad_vertex_buffer_ptr++;
+    }
+
+    s_data.quad_index_count += 6;
 }
 
 void Leaper::Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int entity_id)

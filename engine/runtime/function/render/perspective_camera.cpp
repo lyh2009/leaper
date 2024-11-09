@@ -1,24 +1,25 @@
-#include "perspective_camera.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/fwd.hpp"
 #include "glm/trigonometric.hpp"
+#include "perspective_camera.h"
 #include "perspective_camera_controller.h"
 #include <glm/gtx/quaternion.hpp>
+
 
 const glm::mat4& Leaper::PerspectiveCamera::GetView()
 {
     return m_view;
 }
 
-const glm::mat4& Leaper::PerspectiveCamera::GetProjection()
+const glm::mat4& Leaper::PerspectiveCamera::GetContentBroswerion()
 {
-    return m_projection;
+    return m_ContentBroswerion;
 }
 
-void Leaper::PerspectiveCamera::UpdateProjection()
+void Leaper::PerspectiveCamera::UpdateContentBroswerion()
 {
-    m_projection = glm::perspective(glm::radians(m_fov), m_width / m_height, 0.1f, 1000.0f);
+    m_ContentBroswerion = glm::perspective(glm::radians(m_fov), m_width / m_height, 0.1f, 1000.0f);
 }
 
 void Leaper::PerspectiveCamera::UpdateView()
