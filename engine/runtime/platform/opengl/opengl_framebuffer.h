@@ -37,11 +37,11 @@ namespace Leaper
         virtual void Unbind() const override;
 
     private:
-        unsigned int m_fbo;
-        unsigned int m_depth_texture;
-        unsigned int m_depth_map;
-        unsigned int m_depth_fbo;
-        unsigned int pbo;
+        uint32_t m_fbo;
+        uint32_t m_depth_texture;
+        uint32_t m_depth_map;
+        uint32_t m_depth_fbo;
+        uint32_t m_pbo[2];
         std::vector<uint32_t> m_textures;
         std::vector<GLenum> m_attachments;
         std::vector<TextureFormat> m_format;

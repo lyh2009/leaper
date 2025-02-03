@@ -181,7 +181,7 @@ namespace Leaper
 
             glDeleteProgram(program);
 
-            LP_CORE_LOG_ERROR("{0}", infoLog.data());
+            LP_CORE_ERROR("{0}", infoLog.data());
             LP_ASSERT(false, "[OpenGL] Shader link failure!");
             return false;
         }
@@ -278,7 +278,7 @@ namespace Leaper
 
                 glDeleteShader(shader);
 
-                LP_CORE_LOG_ERROR("{0}", infoLog.data());
+                LP_CORE_ERROR("{0}", infoLog.data());
                 LP_ASSERT(false, "[OpenGL] Shader compilation failure!");
                 return;
             }
@@ -359,12 +359,12 @@ namespace Leaper
             }
             else
             {
-                LP_CORE_LOG_ERROR("Could not read from file '{0}'", file_path);
+                LP_CORE_ERROR("Could not read from file '{0}'", file_path);
             }
         }
         else
         {
-            LP_CORE_LOG_ERROR("Could not open file '{0}'", file_path);
+            LP_CORE_ERROR("Could not open file '{0}'", file_path);
         }
 
         return result;
@@ -426,16 +426,16 @@ namespace Leaper
             }
             else
             {
-                // LP_CORE_LOG(m_file_path);
+                // LP_CORE(m_file_path);
                 shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(source, Utils::GLShaderStageToShaderC(stage), m_file_path.c_str(), options);
                 if (module.GetCompilationStatus() != shaderc_compilation_status_success)
                 {
-                    LP_CORE_LOG_ERROR(module.GetErrorMessage());
+                    LP_CORE_ERROR(module.GetErrorMessage());
                     assert(false);
                 }
                 if (module.GetCompilationStatus() == shaderc_compilation_status_success)
                 {
-                    LP_CORE_LOG("Success");
+                    LP_CORE("Success");
                 }
 
                 shader_data[stage] = std::vector<uint32_t>(module.cbegin(), module.cend());
@@ -495,11 +495,11 @@ namespace Leaper
                 shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(source, Utils::GLShaderStageToShaderC(stage), m_file_path.c_str());
                 if (module.GetCompilationStatus() != shaderc_compilation_status_success)
                 {
-                    LP_CORE_LOG_ERROR(module.GetErrorMessage());
+                    LP_CORE_ERROR(module.GetErrorMessage());
                 }
                 if (module.GetCompilationStatus() == shaderc_compilation_status_success)
                 {
-                    LP_CORE_LOG("Success");
+                    LP_CORE("Success");
                 }
 
                 shader_data[stage] = std::vector<uint32_t>(module.cbegin(), module.cend());
@@ -539,7 +539,7 @@ namespace Leaper
 
             std::vector<GLchar> infoLog(maxLength);
             glGetProgramInfoLog(program, maxLength, &maxLength, infoLog.data());
-            LP_CORE_LOG_ERROR("Shader linking failed ({0}):\n{1}", m_file_path, infoLog.data());
+            LP_CORE_ERROR("Shader linking failed ({0}):\n{1}", m_file_path, infoLog.data());
 
             glDeleteProgram(program);
 
@@ -559,11 +559,11 @@ namespace Leaper
         spirv_cross::Compiler compiler(shader_data);
         spirv_cross::ShaderResources resources = compiler.get_shader_resources();
 
-        LP_CORE_LOG_INFO("OpenGLShader::Reflect - {0} {1}", Utils::GLShaderStageToString(stage), m_file_path);
-        LP_CORE_LOG_INFO("    {0} uniform buffers", resources.uniform_buffers.size());
-        LP_CORE_LOG_INFO("    {0} resources", resources.sampled_images.size());
+        LP_CORE_INFO("OpenGLShader::Reflect - {0} {1}", Utils::GLShaderStageToString(stage), m_file_path);
+        LP_CORE_INFO("    {0} uniform buffers", resources.uniform_buffers.size());
+        LP_CORE_INFO("    {0} resources", resources.sampled_images.size());
 
-        LP_CORE_LOG_INFO("Uniform buffers:");
+        LP_CORE_INFO("Uniform buffers:");
         for (const auto& resource : resources.uniform_buffers)
         {
             const auto& bufferType = compiler.get_type(resource.base_type_id);
@@ -571,10 +571,10 @@ namespace Leaper
             uint32_t binding       = compiler.get_decoration(resource.id, spv::DecorationBinding);
             int memberCount        = bufferType.member_types.size();
 
-            LP_CORE_LOG_INFO("  {0}", resource.name);
-            LP_CORE_LOG_INFO("    Size = {0}", bufferSize);
-            LP_CORE_LOG_INFO("    Binding = {0}", binding);
-            LP_CORE_LOG_INFO("    Members = {0}", memberCount);
+            LP_CORE_INFO("  {0}", resource.name);
+            LP_CORE_INFO("    Size = {0}", bufferSize);
+            LP_CORE_INFO("    Binding = {0}", binding);
+            LP_CORE_INFO("    Members = {0}", memberCount);
         }
     }
 }  // namespace Leaper

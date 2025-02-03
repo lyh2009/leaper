@@ -1,5 +1,6 @@
 #include "lppch.h"
 #include "opengl_buffers.h"
+
 #include <glad/glad.h>
 namespace Leaper
 {

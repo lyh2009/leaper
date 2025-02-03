@@ -15,7 +15,7 @@ namespace Leaper
         case RenderAPI::API::OpenGL: return Leaper::CreateRef<OpenGLVertexArray>();
         }
 
-        LP_LOG_CRITICAL("Unknow render API!!!");
+        LP_CRITICAL("Unknow render API!!!");
         return nullptr;
     }
 }  // namespace Leaper

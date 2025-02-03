@@ -4,7 +4,6 @@
 #include "function/ecs/components.h"
 #include "function/ecs/systems/system.h"
 
-
 #include <sol/sol.hpp>
 
 #include <string>
@@ -27,7 +26,7 @@ namespace Leaper
             if (!result.valid())
             {
                 sol::error err = result;
-                LP_CORE_LOG_ERROR(err.what());
+                LP_CORE_ERROR(err.what());
             }
         }
 

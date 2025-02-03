@@ -1,4 +1,5 @@
 #pragma once
+#include "glm/geometric.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -47,7 +48,8 @@ namespace Leaper
             front.x = cos(glm::radians(-90.0f)) * cos(glm::radians(0.0f));
             front.y = sin(glm::radians(0.0f));
             front.z = sin(glm::radians(-90.0f)) * cos(glm::radians(0.0f));
-            return glm::normalize(front);
+            front   = glm::normalize(front);
+            return front;
         }
 
     private:
@@ -58,7 +60,7 @@ namespace Leaper
         glm::mat4 m_view_mat                   = glm::mat4(1.0f);
         glm::mat4 m_view_ContentBroswerion_mat = glm::mat4(1.0f);
 
-        glm::vec3 m_position;
-        float m_rotation = 0.0f;
+        glm::vec3 m_position = glm::vec3(0);
+        float m_rotation     = 0.0f;
     };
 }  // namespace Leaper

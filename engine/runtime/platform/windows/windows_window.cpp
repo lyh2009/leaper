@@ -24,6 +24,7 @@ void WindowsWindow::Init()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     m_window = glfwCreateWindow(m_data.width, m_data.height, m_data.title.c_str(), nullptr, nullptr);
+    glfwSetWindowPos(m_window, 30, 30);
 
     LP_ASSERT(m_window, "Failed to initialize GLFW");
 

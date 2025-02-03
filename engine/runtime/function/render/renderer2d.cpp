@@ -3,6 +3,7 @@
 #include "function/ecs/components.h"
 #include "function/render/renderer3d.h"
 #include "glm/fwd.hpp"
+#include "glm/matrix.hpp"
 #include "lppch.h"
 #include "renderer2d.h"
 
@@ -125,6 +126,7 @@ static Renderer2DData s_data;
 
 void Leaper::Renderer2D::Init()
 {
+    LP_PROFILER_SCOPE("Renderer2D");
     s_data.quad_shader   = Leaper::Shader::CreateNative("./resource/shaders/quad.glsl");
     s_data.line_shader   = Leaper::Shader::CreateNative("./resource/shaders/line.glsl");
     s_data.circle_shader = Leaper::Shader::CreateNative("./resource/shaders/circle.glsl");
@@ -204,12 +206,16 @@ void Leaper::Renderer2D::Init()
 
 void Leaper::Renderer2D::BeginScene(const glm::mat4& camera)
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     s_data.camera_buffer.view_ContentBroswerion = camera;
     s_data.uniform_buffer->SetData(&s_data.camera_buffer, sizeof(Renderer2DData::CameraData));
     StartBatch();
 }
 void Leaper::Renderer2D::BeginScene(const glm::mat4& camera, glm::vec3 camera_position)
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     s_data.camera_buffer.view_ContentBroswerion = camera;
     s_data.camera_buffer.position               = camera_position;
     s_data.uniform_buffer->SetData(&s_data.camera_buffer, sizeof(Renderer2DData::CameraData));
@@ -218,13 +224,17 @@ void Leaper::Renderer2D::BeginScene(const glm::mat4& camera, glm::vec3 camera_po
 
 void Leaper::Renderer2D::BeginScene(const glm::mat4& camera, glm::mat4& trans)
 {
-    s_data.camera_buffer.view_ContentBroswerion = camera * trans;
+    LP_PROFILER_SCOPE("Renderer2D");
+
+    s_data.camera_buffer.view_ContentBroswerion = camera * glm::inverse(trans);
     s_data.uniform_buffer->SetData(&s_data.camera_buffer, sizeof(Renderer2DData::CameraData));
     StartBatch();
 }
 
 void Leaper::Renderer2D::BeginScene(const glm::mat4& camera, glm::mat4& trans, glm::vec3 camera_position)
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     s_data.camera_buffer.view_ContentBroswerion = camera * trans;
     s_data.camera_buffer.position               = camera_position;
     s_data.uniform_buffer->SetData(&s_data.camera_buffer, sizeof(Renderer2DData::CameraData));
@@ -233,11 +243,15 @@ void Leaper::Renderer2D::BeginScene(const glm::mat4& camera, glm::mat4& trans, g
 
 void Leaper::Renderer2D::EndScene()
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     Flush();
 }
 
 void Leaper::Renderer2D::StartBatch()
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     s_data.quad_index_count       = 0;
     s_data.quad_vertex_buffer_ptr = s_data.quad_vertex_buffer_base;
 
@@ -252,6 +266,8 @@ void Leaper::Renderer2D::StartBatch()
 
 void Leaper::Renderer2D::Flush()
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     // quad
     auto start_time = std::chrono::high_resolution_clock::now();
     if (s_data.quad_index_count)
@@ -261,7 +277,7 @@ void Leaper::Renderer2D::Flush()
 
         // bind texture
         for (uint32_t i = 0; i < s_data.texture_slot_index; i++) s_data.texture_slots[i]->Bind(i);
-        Renderer3D::s_frame_buffer->BindDepthTexture(1);
+        // Renderer3D::s_frame_buffer->BindDepthTexture(1);
         s_data.quad_shader->Bind();
 
         Leaper::RenderCommand::DrawElements(s_data.quad_vertex_array, s_data.quad_index_count);
@@ -298,12 +314,16 @@ void Leaper::Renderer2D::Flush()
 
 void Leaper::Renderer2D::NextBatch()
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     Flush();
     StartBatch();
 }
 
 void Leaper::Renderer2D::DrawQuad(Leaper::TransformComponent trans, glm::vec4 color, int entity_id)
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     constexpr size_t quad_vertex_count   = 4;
     const float texture_index            = 0.0f;  // white texture
     constexpr glm::vec2 texture_coords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
@@ -327,6 +347,8 @@ void Leaper::Renderer2D::DrawQuad(Leaper::TransformComponent trans, glm::vec4 co
 
 void Leaper::Renderer2D::DrawTexture(Leaper::TransformComponent trans, const Leaper::Ref<Leaper::Texture>& texture, glm::vec4 color, int entity_id)
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     constexpr size_t quad_vertex_count   = 4;
     constexpr glm::vec2 texture_coords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 
@@ -370,6 +392,8 @@ void Leaper::Renderer2D::DrawTexture(Leaper::TransformComponent trans, const Lea
 void Leaper::Renderer2D::DrawTexture(Leaper::TransformComponent trans, Leaper::Animation2DComponent anim, const Leaper::Ref<Leaper::Texture>& texture, glm::vec4 color,
                                      int entity_id)
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     constexpr size_t quad_vertex_count = 4;
     auto texture_coords                = anim.texture_coords;
 
@@ -412,6 +436,8 @@ void Leaper::Renderer2D::DrawTexture(Leaper::TransformComponent trans, Leaper::A
 
 void Leaper::Renderer2D::DrawLight(Leaper::TransformComponent trans, Leaper::LightComponent light)
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     s_data.point_light[light.id].position  = trans.position;
     s_data.point_light[light.id].color     = light.color;
     s_data.point_light[light.id].intensity = light.intensity;
@@ -419,6 +445,8 @@ void Leaper::Renderer2D::DrawLight(Leaper::TransformComponent trans, Leaper::Lig
 
 void Leaper::Renderer2D::DrawSprite(Leaper::TransformComponent trans, Leaper::Ref<Leaper::Texture> texture, glm::vec4 color, int entity_id)
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     if (texture)
         Leaper::Renderer2D::DrawTexture(trans, texture, color, entity_id);
     else
@@ -427,6 +455,8 @@ void Leaper::Renderer2D::DrawSprite(Leaper::TransformComponent trans, Leaper::Re
 
 void Leaper::Renderer2D::DrawSprite(Leaper::TransformComponent trans, Leaper::Animation2DComponent anim, Leaper::Ref<Leaper::Texture> texture, glm::vec4 color, int entity_id)
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     if (texture)
         Leaper::Renderer2D::DrawTexture(trans, anim, texture, color, entity_id);
     else
@@ -435,12 +465,16 @@ void Leaper::Renderer2D::DrawSprite(Leaper::TransformComponent trans, Leaper::An
 
 void Leaper::Renderer2D::SetLineWidth(float width)
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     m_line_width = width;
     Leaper::RenderCommand::SetLineWidth(width);
 }
 
 void Leaper::Renderer2D::DrawImageUI(Leaper::TransformComponent& trans, Ref<Leaper::Texture> texture)
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     constexpr size_t quad_vertex_count   = 4;
     constexpr glm::vec2 texture_coords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 
@@ -485,6 +519,8 @@ void Leaper::Renderer2D::DrawImageUI(Leaper::TransformComponent& trans, Ref<Leap
 
 void Leaper::Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int entity_id)
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     // if(s_data.line_index_count >= Renderer2DData::max_vertices)
     //   NextBatch();
 
@@ -503,6 +539,8 @@ void Leaper::Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, cons
 
 void Leaper::Renderer2D::DrawRect(Leaper::TransformComponent trans, const glm::vec4& color, int entity_id)
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     glm::vec3 line_vertices[4];
     for (size_t i = 0; i < 4; i++) line_vertices[i] = trans.GetTransform() * s_data.vertex_position[i];
 
@@ -514,6 +552,8 @@ void Leaper::Renderer2D::DrawRect(Leaper::TransformComponent trans, const glm::v
 
 void Leaper::Renderer2D::DrawCircle(Leaper::TransformComponent trans, const glm::vec4& color, float thickness, float fade, int entity_id)
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     for (size_t i = 0; i < 4; i++)
     {
         s_data.circle_vertex_buffer_ptr->world_position = trans.GetTransform() * s_data.vertex_position[i];
@@ -531,10 +571,14 @@ void Leaper::Renderer2D::DrawCircle(Leaper::TransformComponent trans, const glm:
 
 void Leaper::Renderer2D::ResetStats()
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     memset(&s_data.stats, 0, sizeof(Leaper::Renderer2D::Statistics));
 }
 
 Leaper::Renderer2D::Statistics Leaper::Renderer2D::GetStats()
 {
+    LP_PROFILER_SCOPE("Renderer2D");
+
     return s_data.stats;
 }

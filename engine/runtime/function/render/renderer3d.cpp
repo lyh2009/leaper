@@ -2,6 +2,7 @@
 
 #include "3d/model.h"
 #include "buffers.h"
+#include "core/base.h"
 #include "function/ecs/components.h"
 #include "function/render/framebuffer.h"
 #include "function/render/uniform_buffer.h"
@@ -93,6 +94,7 @@ namespace Leaper
 
     void Renderer3D::Init()
     {
+        LP_PROFILER_SCOPE("Renderer3D");
         s_data.skybox_shader     = ShaderLibrary::GetSkyBoxShader();
         s_data.cube_vertex_array = Leaper::VertexArray::Create();
         s_data.cube_vertex_array->Bind();
@@ -116,12 +118,16 @@ namespace Leaper
 
     void Renderer3D::BeginScene(const glm::mat4& camera, glm::vec3 position)
     {
+        LP_PROFILER_SCOPE("Renderer3D");
+
         s_data.camera_buffer.view_ContentBroswerion = camera;
         s_data.camera_buffer.position               = position;
         StartBatch();
     }
     void Renderer3D::SetCamera(const glm::mat4& view, const glm::mat4& ContentBroswerion, glm::vec3 position)
     {
+        LP_PROFILER_SCOPE("Renderer3D");
+
         s_data.view                   = view;
         s_data.ContentBroswerion      = ContentBroswerion;
         s_data.camera_buffer.position = position;
@@ -129,6 +135,8 @@ namespace Leaper
 
     void Renderer3D::BeginScene(const glm::mat4& camera, glm::mat4& trans)
     {
+        LP_PROFILER_SCOPE("Renderer3D");
+
         s_data.camera_buffer.view_ContentBroswerion = camera * trans;
         StartBatch();
     }
@@ -205,6 +213,8 @@ namespace Leaper
 
     void Renderer3D::DrawSkyBox(std::vector<std::string> faces)
     {
+        LP_PROFILER_SCOPE("Renderer3D");
+
         // RenderCommand::EnableCull();
         // RenderCommand::CullFrontFace();
         glm::mat4 view = glm::mat4(glm::mat3(s_data.view));
@@ -220,6 +230,8 @@ namespace Leaper
 
     void Renderer3D::SetDirectionalLight(glm::vec3 color, float ambient_strength, float specular_strength)
     {
+        LP_PROFILER_SCOPE("Renderer3D");
+
         s_data.directional_light_buffer.color             = color;
         s_data.directional_light_buffer.ambient_strength  = ambient_strength;
         s_data.directional_light_buffer.specular_strength = specular_strength;
@@ -229,6 +241,8 @@ namespace Leaper
 
     void Renderer3D::DrawModel(Model model, glm::mat4& trans, Ref<Shader> shader, int entity_id)
     {
+        LP_PROFILER_SCOPE("Renderer3D");
+
         model.Draw(trans, shader, entity_id);
     }
 

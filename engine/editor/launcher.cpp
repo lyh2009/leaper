@@ -2,13 +2,12 @@
 #include "editor_layer.h"
 #include "function/application/application.h"
 #include "function/render/texture.h"
-#include "global.h"
 #include "imgui.h"
 #include "launcher.h"
-#include "project.h"
 #include <IconsFontAwesome6.h>
 #include <filesystem>
 #include <fstream>
+#include <function/imgui/ui.h>
 #include <function/utils/platform_utils.h>
 
 namespace Leaper
@@ -59,7 +58,7 @@ namespace Leaper
         ImGui::Text("%s", project.c_str());
         ImGui::EndDisabled();
 
-        if (ImGui::Button("Open"))
+        if (ImGui::Button("Edit"))
         {
             Application::Get().GetWindow()->SetTitle("Leaper Engine - " + name);
             m_editor_layer->InitPanels(std::filesystem::path(project).parent_path().string());
@@ -67,7 +66,34 @@ namespace Leaper
         }
         ImGui::SameLine();
 
-        if (ImGui::Button("Delete")) {}
+        if (ImGui::Button("Remove"))
+        {
+            ImGui::OpenPopup("##Remove");
+        }
+
+        static const ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize;
+        UI::SetNextWindowOnCenter();
+        if (ImGui::BeginPopupModal("##Remove", NULL, flags))
+        {
+            ImGui::Text("Do you want to continue removing the program?");
+            if (ImGui::Button("Remove"))
+            {
+                for (int i = 0; i < m_projects_paths.size(); i++)
+                {
+                    if (m_projects_paths[i] == project)
+                    {
+                        m_projects_paths.erase(m_projects_paths.begin() + i);
+                        m_json["projects"] = m_projects_paths;
+                        std::ofstream file(m_file_path);
+                        file << m_json.dump(4);
+                    }
+                }
+            }
+
+            if (ImGui::Button("Cancel"))
+                ImGui::CloseCurrentPopup();
+            ImGui::EndPopup();
+        }
 
         ImGui::EndChild();
     }
@@ -111,7 +137,7 @@ namespace Leaper
 
             ImGui::BeginChild("ContentWindow");
             {
-                for (auto project : m_projects_paths) { DrawProjectCoontent(project); }
+                for (int i = 0; i < m_projects_paths.size(); i++) { DrawProjectCoontent(m_projects_paths[i]); }
             }
             ImGui::EndChild();
 

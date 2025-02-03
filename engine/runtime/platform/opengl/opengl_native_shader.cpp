@@ -101,7 +101,7 @@ namespace Leaper
         }
         else
         {
-            LP_CORE_LOG_ERROR("Could not open file '{0}'", path);
+            LP_CORE_ERROR("Could not open file '{0}'", path);
         }
 
         return result;
@@ -157,7 +157,7 @@ namespace Leaper
 
                 glDeleteShader(shader);
 
-                LP_CORE_LOG_ERROR("{0}", infoLog.data());
+                LP_CORE_ERROR("{0}", infoLog.data());
                 assert(false && "Shader compilation failure!");
                 break;
             }
@@ -188,7 +188,7 @@ namespace Leaper
 
             for (auto id : glShaderIDs) glDeleteShader(id);
 
-            LP_CORE_LOG_ERROR("{0}", infoLog.data());
+            LP_CORE_ERROR("{0}", infoLog.data());
             assert(false && "NativeOpenGLNativeShader link failure!");
             return;
         }

@@ -25,7 +25,7 @@ namespace Leaper
         LoadModel(path);
     }
 
-    void Model::Draw(glm::mat4& trans,Ref<Shader> shader, int entity_id)
+    void Model::Draw(glm::mat4& trans, Ref<Shader> shader, int entity_id)
     {
         for (int i = 0; i < m_meshes.size(); ++i) { m_meshes[i].Render(trans, shader, entity_id); }
     }
@@ -37,7 +37,7 @@ namespace Leaper
         const aiScene* scene = importer.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
-            LP_LOG_ERROR(importer.GetErrorString());
+            LP_ERROR(importer.GetErrorString());
             return;
         }
 
@@ -123,7 +123,7 @@ namespace Leaper
             aiString str;
             mat->GetTexture(type, i, &str);
             std::string path = m_path + "\\" + std::string(str.C_Str());
-            LP_CORE_LOG(path);
+            LP_CORE(path);
             bool skip = false;
             for (unsigned int j = 0; j < textures_loaded.size(); j++)
             {

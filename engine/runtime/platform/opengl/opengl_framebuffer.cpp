@@ -47,6 +47,14 @@ namespace Leaper
     {
         glGenFramebuffers(1, &m_fbo);
         glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+        glGenBuffers(2, m_pbo);
+        for (int i = 0; i < 2; ++i)
+        {
+            glBindBuffer(GL_PIXEL_PACK_BUFFER, m_pbo[i]);
+            // 分配足够的内存来存储一个像素的整数数据
+            glBufferData(GL_PIXEL_PACK_BUFFER, sizeof(int), NULL, GL_STREAM_READ);
+        }
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
     }
 
     OpenGLFrameBuffer::~OpenGLFrameBuffer()
@@ -61,7 +69,7 @@ namespace Leaper
         {
             return m_textures[count];
         }
-        LP_CORE_LOG_ERROR("Failed to load image!");
+        LP_CORE_ERROR("Failed to load image!");
     }
 
     void OpenGLFrameBuffer::RescaleFrameBuffer(float width, float height)
@@ -151,6 +159,7 @@ namespace Leaper
     {
         switch (attachment)
         {
+        case Attachments::NONE: return 0;
         case Attachments::COLOR_ATTACHMENT0: return GL_COLOR_ATTACHMENT0;
         case Attachments::COLOR_ATTACHMENT1: return GL_COLOR_ATTACHMENT1;
         case Attachments::COLOR_ATTACHMENT2: return GL_COLOR_ATTACHMENT2;
@@ -167,9 +176,28 @@ namespace Leaper
 
     int OpenGLFrameBuffer::ReadPixels(uint32_t attachment, int x, int y)
     {
+        static int currentPBOIndex = 0;
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, m_pbo[currentPBOIndex]);
+
         glReadBuffer(GL_COLOR_ATTACHMENT0 + attachment);
-        int pixels;
-        glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixels);
+
+        glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, 0);
+
+        int nextPBOIndex = (currentPBOIndex + 1) % 2;
+
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, m_pbo[nextPBOIndex]);
+        int* pixelsPtr = static_cast<int*>(glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY));
+        int pixels     = 0;
+        if (pixelsPtr)
+        {
+            pixels = *pixelsPtr;
+            glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+        }
+
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+
+        currentPBOIndex = nextPBOIndex;
+
         return pixels;
     }
 

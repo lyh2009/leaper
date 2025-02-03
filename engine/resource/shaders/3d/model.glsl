@@ -120,7 +120,7 @@ void main()
 
     // diffuse
     vec3 norm     = normalize(v_Normal);
-    vec3 lightDir = normalize(lightPos - v_Position);
+    vec3 lightDir = normalize(-lightPos);
     float diff    = max(dot(norm, lightDir), 0.0) * 0.5 + 0.5;
     vec3 diffuse  = diff * lightColor;
 

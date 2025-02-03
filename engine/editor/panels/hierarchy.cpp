@@ -35,29 +35,29 @@ namespace Leaper
 
     void Hierarchy::OnImGuiRender()
     {
-        // Hierarchy Window
+        // Hierarchy
+
+        ImGui::Begin(ICON_FA_LIST " Hierarchy");
+
+        m_active_scene->Reg().each([&](entt::entity id) {
+            Entity entity = { id, m_active_scene.get() };
+            DrawEntityNode(entity);
+        });
+
+        if (ImGui::BeginPopupContextWindow(0, 1, false))
         {
-            ImGui::Begin(ICON_FA_LIST " Hierarchy");
-
-            m_active_scene->Reg().each([&](entt::entity id) {
-                Entity entity = { id, m_active_scene.get() };
-                DrawEntityNode(entity);
-            });
-
-            if (ImGui::BeginPopupContextWindow(0, 1, false))
-            {
-                if (ImGui::MenuItem("Create Empty Entity"))
-                    m_active_scene->CreateEntity("Empty Entity");
-                ImGui::EndPopup();
-            }
-
-            ImGui::End();
-
-            ImGui::Begin(ICON_FA_CIRCLE_INFO " Components");
-            if (m_selected)
-                DrawComponents(m_selected);
-            ImGui::End();
+            if (ImGui::MenuItem("Create Empty Entity"))
+                m_active_scene->CreateEntity("Empty Entity");
+            ImGui::EndPopup();
         }
+
+        ImGui::End();
+
+        // Inspector
+        ImGui::Begin(ICON_FA_CIRCLE_INFO " Components");
+        if (m_selected)
+            DrawComponents(m_selected);
+        ImGui::End();
     }
     // mbb
     void Hierarchy::DrawEntityNode(Entity entity)
@@ -79,7 +79,7 @@ namespace Leaper
                 auto new_entity = m_active_scene->GetEntityByUUID(entity_id->uuid);
                 auto p_entity   = new_entity.AddComponent<ParentEntity>(entity);
 
-                LP_CORE_LOG_INFO("Entity Tag:{0}", new_entity.GetComponent<TagComponent>().tag);
+                LP_CORE_INFO("Entity Tag:{0}", new_entity.GetComponent<TagComponent>().tag);
             }
 
             ImGui::EndDragDropTarget();
@@ -105,16 +105,10 @@ namespace Leaper
 
         // Selected Entity
         if (ImGui::IsItemClicked())
-        {
             m_selected = entity;
-            LP_LOG("Selected");
-        }
 
         if (opened)
-        {
-
             ImGui::TreePop();
-        }
 
         if (destroy)
         {
@@ -306,7 +300,7 @@ namespace Leaper
                         }
                         else
                         {
-                            LP_CORE_LOG_ERROR("It isn't lua file");
+                            LP_CORE_ERROR("It isn't lua file");
                         }
                     }
 

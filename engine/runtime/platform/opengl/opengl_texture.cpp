@@ -44,7 +44,7 @@ namespace Leaper
             }
             else
             {
-                LP_CORE_LOG_ERROR("Failed to load texture !!! Path:{0}", faces_path[i]);
+                LP_CORE_ERROR("Failed to load texture !!! Path:{0}", faces_path[i]);
                 stbi_image_free(data);
             }
         }
@@ -85,10 +85,10 @@ namespace Leaper
             glGenTextures(1, &m_texture);
             glBindTexture(GL_TEXTURE_2D, m_texture);
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
             GLenum type = internal_format == GL_RGBA16F ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
@@ -102,7 +102,7 @@ namespace Leaper
         }
         else
         {
-            LP_CORE_LOG_ERROR("Failed to load texture!!! Path: {0}", path);
+            LP_CORE_ERROR("Failed to load texture!!! Path: {0}", path);
         }
     }
 

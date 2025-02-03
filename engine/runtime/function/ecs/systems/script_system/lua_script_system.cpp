@@ -9,51 +9,57 @@
 
 #include <filesystem>
 
-void Leaper::LuaScriptSystem::OnAttach() {}
-void Leaper::LuaScriptSystem::OnUpdate() {}
-
-void Leaper::LuaScriptSystem::OnGameStart()
+namespace Leaper
 {
-    LuaBinder::CallBinders(state);
-    state.set_function("CreateEntity", [&](const std::string& name) -> Entity { return m_scene->CreateEntity(name); });
-    m_scene->Reg().view<LuaScriptComponent>().each([&](auto other, LuaScriptComponent& lsc) {
-        Entity entity{ other, m_scene };
-        auto result = state.safe_script_file(lsc.path, &sol::script_pass_on_error);
-        if (result.valid())
-        {
-            if (result.return_count() == 1 && result[0].is<sol::table>())
+    void LuaScriptSystem::OnAttach() {}
+    void LuaScriptSystem::OnUpdate() {}
+
+    void LuaScriptSystem::OnGameStart()
+    {
+        LuaBinder::CallBinders(state);
+        state.set_function("CreateEntity", [&](const std::string& name) -> Entity { return m_scene->CreateEntity(name); });
+        state.set_function("GetEntity", [&](const std::string& name) -> Entity { return m_scene->FindEntityByName(name); });
+
+        m_scene->Reg().view<LuaScriptComponent>().each([&](auto other, LuaScriptComponent& lsc) {
+            Entity entity{ other, m_scene };
+            auto result = state.safe_script_file(lsc.path, &sol::script_pass_on_error);
+            if (result.valid())
             {
-                lsc.self         = result[0];
-                lsc.self["this"] = &entity;
-                LuaCall(lsc, "OnAttach");
-                const sol::table& globals = lsc.self;
-                for (auto item : globals)
+                if (result.return_count() == 1 && result[0].is<sol::table>())
                 {
-                    auto key  = item.first;
-                    auto type = item.second;
-                    if (key.is<std::string>())
+                    lsc.self         = result[0];
+                    lsc.self["this"] = &entity;
+                    LuaCall(lsc, "OnAttach");
+                    const sol::table& globals = lsc.self;
+                    for (auto item : globals)
                     {
-                        if (type.is<int>())
-                            lsc.int_values[key.as<std::string>()] = type.as<int>();
+                        auto key  = item.first;
+                        auto type = item.second;
+                        if (key.is<std::string>())
+                        {
+                            if (type.is<int>())
+                                lsc.int_values[key.as<std::string>()] = type.as<int>();
+                        }
                     }
                 }
             }
-        }
-        else
-        {
-            sol::error err = result;
-            LP_CORE_LOG_ERROR(err.what());
-        }
-    });
-}
+            else
+            {
+                sol::error err = result;
+                LP_CORE_ERROR(err.what());
+            }
+        });
+    }
 
-void Leaper::LuaScriptSystem::OnGameUpdate()
-{
-    m_scene->Reg().view<LuaScriptComponent>().each([&](auto other, LuaScriptComponent& lsc) { LuaCall(lsc, "OnUpdate"); });
-}
+    void LuaScriptSystem::OnGameUpdate()
+    {
+        m_scene->Reg().view<LuaScriptComponent>().each([&](auto other, LuaScriptComponent& lsc) { LuaCall(lsc, "OnUpdate"); });
+    }
 
-void Leaper::LuaScriptSystem::OnGameStop()
-{
-    m_scene->Reg().view<LuaScriptComponent>().each([&](auto other, LuaScriptComponent& lsc) { lsc.self = sol::nil; });
-    state = nullptr;
-}
+    void LuaScriptSystem::OnGameStop()
+    {
+        m_scene->Reg().view<LuaScriptComponent>().each([&](auto other, LuaScriptComponent& lsc) { lsc.self = sol::nil; });
+        state = nullptr;
+    }
+
+}  // namespace Leaper

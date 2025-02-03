@@ -10,17 +10,32 @@ namespace Leaper
     {
     public:
         static void Separator(ImVec2 size, ImVec4 color);
+        // Columns
         static void BeginColumns();
         static void NextColumns();
         static void EndColumns();
+        // Buttons
         static bool Button(const std::string& label, const std::string& b_label = "##button", ImVec2 size = { 0.0f, 0.0f });
+        // Drag
         static void DragFloat(const std::string& label, float* v, float speed = 1.0f, float min = 0.0f, float max = 0.0f, const std::string& format = "%.3f");
         static void DragInt(const std::string& label, int* v, int speed = 1, int min = 0, int max = 0);
         static void DragFloat2(const std::string& label, float* v, float speed = 1.0f, float min = 0.0f, float max = 0.0f, const std::string& format = "%.3f");
+        // Ceckbox
         static bool Checkbox(const std::string& label, bool* b);
+        // Edit
         static void ColorEdit4(const std::string& label, float* v);
         static void ColorEdit3(const std::string& label, float* v);
+        // Input
         static bool InputText(const std::string& label, std::string v);
+
+        // windows
+        static void SetNextWindowOnCenter()
+        {
+            auto center = ImGui::GetMainViewport()->GetCenter();
+            ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        }
+
+        // Others
         static inline ImRect RectExpanded(const ImRect& rect, float x, float y)
         {
             ImRect result = rect;

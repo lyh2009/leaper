@@ -66,14 +66,14 @@ namespace Leaper
     };
 }  // namespace Leaper
 
-#define LP_CORE_LOG(...) ::Leaper::Log::GetCoreLogger()->debug(__VA_ARGS__)
-#define LP_CORE_LOG_INFO(...) ::Leaper::Log::GetCoreLogger()->info(__VA_ARGS__)
-#define LP_CORE_LOG_WARNING(...) ::Leaper::Log::GetCoreLogger()->warn(__VA_ARGS__)
-#define LP_CORE_LOG_ERROR(...) ::Leaper::Log::GetCoreLogger()->error(__VA_ARGS__)
-#define LP_CORE_LOG_CRITICAL(...) ::Leaper::Log::GetCoreLogger()->critical(__VA_ARGS__)
+#define LP_CORE(...) ::Leaper::Log::GetCoreLogger()->debug(__VA_ARGS__)
+#define LP_CORE_INFO(...) ::Leaper::Log::GetCoreLogger()->info(__VA_ARGS__)
+#define LP_CORE_WARNING(...) ::Leaper::Log::GetCoreLogger()->warn(__VA_ARGS__)
+#define LP_CORE_ERROR(...) ::Leaper::Log::GetCoreLogger()->error(__VA_ARGS__)
+#define LP_CORE_CRITICAL(...) ::Leaper::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
-#define LP_LOG(...) ::Leaper::Log::GetClientLogger()->debug(__VA_ARGS__)
-#define LP_LOG_INFO(...) ::Leaper::Log::GetClientLogger()->info(__VA_ARGS__)
-#define LP_LOG_WARNING(...) ::Leaper::Log::GetClientLogger()->warn(__VA_ARGS__)
-#define LP_LOG_ERROR(...) ::Leaper::Log::GetClientLogger()->error(__VA_ARGS__)
-#define LP_LOG_CRITICAL(...) ::Leaper::Log::GetClientLogger()->critical(__VA_ARGS__)
+#define LP(...) ::Leaper::Log::GetClientLogger()->debug(__VA_ARGS__)
+#define LP_INFO(...) ::Leaper::Log::GetClientLogger()->info(__VA_ARGS__)
+#define LP_WARNING(...) ::Leaper::Log::GetClientLogger()->warn(__VA_ARGS__)
+#define LP_ERROR(...) ::Leaper::Log::GetClientLogger()->error(__VA_ARGS__)
+#define LP_CRITICAL(...) ::Leaper::Log::GetClientLogger()->critical(__VA_ARGS__)

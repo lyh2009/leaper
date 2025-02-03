@@ -24,13 +24,7 @@ namespace Leaper
         Entity CreateNullEntity();
 
         Entity GetEntityByUUID(Leaper::UUID uuid);
-
-        template <typename... Components>
-
-        auto GetAllEntityWith()
-        {
-            return m_registry.view<Components...>();
-        }
+        Entity FindEntityByName(const std::string& name);
 
         void DestroyEntity(Entity entity);
 

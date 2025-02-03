@@ -22,8 +22,6 @@ namespace Leaper
 
 // assert
 #include <assert.h>
-#include <iostream>
-
 
 #define BIT(x) (1 << x)
 
@@ -36,3 +34,7 @@ namespace Leaper
         return z;                    \
     }
 #endif
+
+// profiler
+#include "leap_profiler.hpp"
+#define LP_PROFILER_SCOPE(name) LEAP_PROFILER_SCOPE(name)

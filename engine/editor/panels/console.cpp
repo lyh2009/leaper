@@ -16,10 +16,7 @@ const ImVec4 LVL_ERR_CLR{ 1.0f, 0.0f, 0.0f, 1.0f };
 namespace Leaper
 {
 
-    void Console::OnAttach()
-    {
-
-    }
+    void Console::OnAttach() {}
 
     void DrawMessageTable(const std::string& label, const std::string& time_str, const std::string& str, ImVec4 color, bool is_draw, float table_row)
     {
@@ -55,14 +52,22 @@ namespace Leaper
         {
             Leaper::Log::GetSink()->log_item.clear();
         }
+
+        auto CheckBox = [](const std::string& lable, bool* b, ImVec4 color = ImVec4(1, 1, 1, 1)) {
+            std::string tag = "##" + lable;
+            ImGui::Checkbox(tag.c_str(), b);
+            ImGui::SameLine();
+            ImGui::TextColored(color, lable.c_str());
+        };
+
         ImGui::SameLine();
-        ImGui::Checkbox("Debug", &checkbox[0]);
+        CheckBox("Debug", &checkbox[0]);
         ImGui::SameLine();
-        ImGui::Checkbox("Info", &checkbox[1]);
+        CheckBox("Info", &checkbox[1]);
         ImGui::SameLine();
-        ImGui::Checkbox("Warning", &checkbox[2]);
+        CheckBox("Warning", &checkbox[2]);
         ImGui::SameLine();
-        ImGui::Checkbox("Error", &checkbox[3]);
+        CheckBox("Error", &checkbox[3]);
 
         ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
         ImGui::BeginChild("ConsoleChlid");

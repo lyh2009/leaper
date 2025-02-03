@@ -39,7 +39,7 @@ namespace Leaper
         m_icon_map[".mtl"]   = TextureResourceManager::LoadTexture("./resource/icons/json.png");
         m_icon_map[".mp3"]   = TextureResourceManager::LoadTexture("./resource/icons/audio.png");
 
-        LP_CORE_LOG_WARNING(m_path.string());
+        LP_CORE_WARNING(m_path.string());
     }
 
     void ContentBroswer::OnImGuiRender()
@@ -131,7 +131,7 @@ namespace Leaper
 
         BaseMenu("Folder", [=](std::filesystem::path dir) { std::filesystem::create_directory(dir); });
         BaseMenu("Lua Script", [=](std::filesystem::path dir) {
-            std::ofstream of(dir.string() + ".lua");
+            std::ofstream of(dir.string() + ".lua", std::ios::out);
             of.close();
         });
         BaseMenu("Scene", [=](std::filesystem::path dir) {

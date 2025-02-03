@@ -1,19 +1,18 @@
 #include <cstdint>
+#include <cstdio>
 #include <function/render/renderer2d.h>
 
 #include "editor_layer.h"
 
 #include "ImGuizmo.h"
 #include "core/base.h"
+#include "core/leap_profiler.hpp"
 #include "core/log.h"
-#include "core/time.h"
 #include "function/ecs/components.h"
 #include "function/ecs/entity.h"
 #include "function/render/texture.h"
-#include "glm/ext/matrix_clip_space.hpp"
 #include "glm/fwd.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include "glm/trigonometric.hpp"
 #include "imgui.h"
 #include <core/math/math.h>
 #include <function/application/application.h>
@@ -28,14 +27,11 @@
 #include <glm/gtx/string_cast.hpp>
 #include <imgui_internal.h>
 
-#include <iostream>
 #include <string>
-
-#include "global.h"
 
 namespace Leaper
 {
-    EditorLayer::EditorLayer() : Layer("EditorLayer"), m_camera(1024.0f / 648.0f), m_ortho_camera(1024 / 648) {}
+    EditorLayer::EditorLayer() : Layer("EditorLayer"), m_camera(1024.0f / 648.0f), m_ortho_camera(1024.0f / 648.0f) {}
 
     void EditorLayer::InitPanels(std::string_view assets_path)
     {
@@ -68,11 +64,12 @@ namespace Leaper
 
         m_console.OnAttach();
 
-        m_perspective_camera = EditorCamera(30.0f, 1024 / 648, 0.1f, 1000.0f);
+        m_perspective_camera = EditorCamera(30.0f, 1024.0f / 648.0f, 0.1f, 1000.0f);
     }
 
     void EditorLayer::OnUpdate()
     {
+        LP_PROFILER_SCOPE("EditorLayer");
 
         RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
         RenderCommand::Clear();
@@ -127,7 +124,7 @@ namespace Leaper
         // render rect
         if (m_draw_rect)
         {
-            Renderer2D::SetLineWidth(1.0f);
+            Renderer2D::SetLineWidth(2.0f);
             TransformComponent transform;
             float ratio        = m_ortho_camera.GetRatio();
             float zoom_level   = m_ortho_camera.GetZoomLevel();
@@ -184,6 +181,8 @@ namespace Leaper
 
     void EditorLayer::OnImGuiRender()
     {
+        LP_PROFILER_SCOPE("EditorLayer");
+
         m_hierarchy_window.SetScene(m_active_scene);
 
         // DockSpace and MenuBar
@@ -258,9 +257,9 @@ namespace Leaper
         // scene window
         ImGui::Begin(ICON_FA_DESKTOP " Scene");
         ImGui::SameLine();
-        const char* camera_types_string[] = { "Orthographic", "Perspective" };
+        const char* camera_types_string[] = { "2D", "3D" };
         const char* current_camera_type   = camera_types_string[m_editor_camera_type];
-        if (ImGui::BeginCombo("CameraTypes", current_camera_type))
+        if (ImGui::BeginCombo("##CameraTypes", current_camera_type))
         {
             for (int i = 0; i < 2; i++)
             {
@@ -295,17 +294,20 @@ namespace Leaper
         {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSETS"))
             {
-                const wchar_t* path              = (const wchar_t*)payload->Data;
-                std::filesystem::path filepath   = std::filesystem::path(m_assets_path) / path;
-                m_hierarchy_window.GetSelected() = {};
+                const wchar_t* path            = (const wchar_t*)payload->Data;
+                std::filesystem::path filepath = std::filesystem::path(m_assets_path) / path;
+                if (filepath.extension() == ".leaper")
+                {
+                    m_hierarchy_window.GetSelected() = {};
 
-                m_active_scene = CreateRef<Scene>();
-                m_hierarchy_window.SetScene(m_active_scene);
-                SceneSerializer serizlizer(m_active_scene);
-                serizlizer.Read(filepath.string());
-                m_active_scene->OnAttach();
-                auto view = m_active_scene->Reg().view<CameraComponent>();
-                for (auto e : view) { camera_entity = { e, m_active_scene.get() }; }
+                    m_active_scene = CreateRef<Scene>();
+                    m_hierarchy_window.SetScene(m_active_scene);
+                    SceneSerializer serizlizer(m_active_scene);
+                    serizlizer.Read(filepath.string());
+                    m_active_scene->OnAttach();
+                    auto view = m_active_scene->Reg().view<CameraComponent>();
+                    for (auto e : view) { camera_entity = { e, m_active_scene.get() }; }
+                }
             }
 
             ImGui::EndDragDropTarget();
@@ -380,10 +382,62 @@ namespace Leaper
         ImGui::Begin("Debug");
         // ImGui::Image(reinterpret_cast<void*>(Renderer3D::s_frame_buffer->GetDepthTexture()), ImVec2(200, 200), ImVec2(0, 1), ImVec2(1, 0));
 
-        ImGui::Text(std::to_string((uint32_t)m_hovered_entity).c_str());
-        ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
-        ImGui::Text("%.3f ms", 1000.0f / ImGui::GetIO().Framerate);
-        ImGui::Checkbox("DrawRect", &m_draw_rect);
+        ImGui::Text("Current Entity: %s", std::to_string((uint32_t)m_hovered_entity).c_str());
+        char buffer[128];
+        snprintf(buffer, 128, "%.1f FPS", ImGui::GetIO().Framerate);
+        ImGui::Text("%s", buffer);
+        snprintf(buffer, 128, "%.2f ms", 1000.0 / ImGui::GetIO().Framerate);
+        ImGui::Text("%s", buffer);
+
+        ImGui::Checkbox("Draw Rect", &m_draw_rect);
+        ImGui::End();
+
+        ImGui::Begin("Profiler");
+
+        auto& profiler  = LeapProfiler::GetInstance();
+        auto totalTimes = profiler.GetTotalTimes();
+
+        // colors
+        const ImU32 colors[] = {
+            IM_COL32(0, 255, 0, 255),    // 绿色
+            IM_COL32(255, 0, 0, 255),    // 红色
+            IM_COL32(0, 0, 255, 255),    // 蓝色
+            IM_COL32(255, 255, 0, 255),  // 黄色
+        };
+        const int colorCount = IM_ARRAYSIZE(colors);
+
+        // all time
+        float totalTime = 0.0f;
+        for (const auto& pair : totalTimes) { totalTime += pair.second; }
+
+        // 绘制火焰图
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+        ImVec2 graphPos      = ImGui::GetCursorScreenPos();  // 火焰图起始位置
+        float graphHeight    = 20.0f;                        // 每个条形的高度
+        float yOffset        = 0.0f;                         // 当前条形图的垂直偏移
+
+        for (const auto& pair : totalTimes)
+        {
+            const std::string& functionName = pair.first;
+            float time                      = pair.second;
+
+            float width = (time / totalTime) * ImGui::GetWindowWidth() * 0.7;
+
+            // draw
+            ImU32 color = colors[std::hash<std::string>{}(functionName) % colorCount];
+            ImVec2 rectMin(graphPos.x, graphPos.y + yOffset);
+            ImVec2 rectMax(graphPos.x + width, graphPos.y + yOffset + graphHeight);
+            drawList->AddRectFilled(rectMin, rectMax, color);
+
+            // show name and time
+            ImGui::SetCursorScreenPos(ImVec2(rectMin.x + 5, rectMin.y + 2));
+            char profiler_buffer[128];
+            snprintf(profiler_buffer, 128, "%s: %.2f ms", functionName.c_str(), time * 0.001);
+
+            ImGui::Text("%s", profiler_buffer);
+
+            yOffset += graphHeight;
+        }
         ImGui::End();
 
         DrawToolBar();
@@ -405,10 +459,8 @@ namespace Leaper
         if (e.GetMouseButton() == Mosue::ButtonLeft)
         {
             if (m_viewport_hovered && !ImGuizmo::IsOver() && m_hovered_entity)
-            {
-                LP_CORE_LOG(std::to_string((uint32_t)m_hovered_entity));
+
                 m_hierarchy_window.GetSelected() = m_hovered_entity;
-            }
         }
 
         return false;
@@ -449,7 +501,8 @@ namespace Leaper
         ImVec4 translate_color = m_gizmo == ImGuizmo::OPERATION::TRANSLATE ? ImVec4(1.0f, 1.0f, 1.0f, 0.9f) : ImVec4(1.0f, 1.0f, 1.0f, 0.2f);
         ImVec4 rotate_color    = m_gizmo == ImGuizmo::OPERATION::ROTATE ? ImVec4(1.0f, 1.0f, 1.0f, 0.9f) : ImVec4(1.0f, 1.0f, 1.0f, 0.2f);
         ImVec4 scale_color     = m_gizmo == ImGuizmo::OPERATION::SCALE ? ImVec4(1.0f, 1.0f, 1.0f, 0.9f) : ImVec4(1.0f, 1.0f, 1.0f, 0.2f);
-        if (ImGui::ImageButton((void*)m_translate_icon->GetTexture(), ImVec2(size, size), ImVec2(0, 1), ImVec2(1, 0), 0.0f, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), translate_color))
+        if (ImGui::ImageButton(reinterpret_cast<void*>(m_translate_icon->GetTexture()), ImVec2(size, size), ImVec2(0, 1), ImVec2(1, 0), 0.0f, ImVec4(0.0f, 0.0f, 0.0f, 0.0f),
+                               translate_color))
         {
             m_gizmo = ImGuizmo::OPERATION::TRANSLATE;
         }
@@ -470,7 +523,7 @@ namespace Leaper
         // play button
         ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
 
-        if (ImGui::ImageButton((void*)button_icon->GetTexture(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0), tint_color))
+        if (ImGui::ImageButton(reinterpret_cast<void*>(button_icon->GetTexture()), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0), tint_color))
         {
             if (m_scene_state == SceneState::Edit)
                 OnScenePlay();

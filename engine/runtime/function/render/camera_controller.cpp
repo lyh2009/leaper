@@ -85,7 +85,6 @@ bool Leaper::CameraController::OnWindowResize(Leaper::WindowResizeEvent& event)
     {
         m_ratio = event.GetWidth() / event.GetHeight();
         m_camera.SetContentBroswerionMat(-m_ratio * m_zoom_level, m_ratio * m_zoom_level, -m_zoom_level, m_zoom_level);
-        LP_LOG("OnWindowResize");
     }
     return false;
 }

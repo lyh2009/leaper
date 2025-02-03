@@ -1,8 +1,9 @@
 #pragma once
 #include "core/layer/layer.h"
 #include "editor_layer.h"
+#include "function/project/project.h"
 #include "function/render/texture.h"
-#include "project.h"
+
 
 namespace Leaper
 {

@@ -53,7 +53,7 @@ namespace Leaper
 
         std::filesystem::path m_assets_path;
 
-        bool m_draw_rect = false;
+        bool m_draw_rect = true;
         bool m_viewport_hovered;
         int m_gizmo = ImGuizmo::OPERATION::TRANSLATE;
         ImVec2 m_viewport_panel_size;
@@ -84,10 +84,10 @@ namespace Leaper
         glm::vec2 m_viewport_bounds[2];
         enum CameraTypes
         {
-            Ortho             = 0,
-            ContentBroswerion = 1
+            Ortho       = 0,
+            Perspective = 1
         };
-        CameraTypes m_editor_camera_type = ContentBroswerion;
+        CameraTypes m_editor_camera_type = Ortho;
 
         bool is_read_pixel = false;
 
